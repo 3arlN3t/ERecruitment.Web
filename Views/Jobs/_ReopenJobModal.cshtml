@@ -1,0 +1,57 @@
+@model ERecruitment.Web.ViewModels.ReopenJobViewModel
+
+<div class="modal fade" id="reopenJobModal" tabindex="-1" role="dialog" aria-labelledby="reopenJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="reopenJobModalLabel">
+                    <i class="fas fa-sync-alt me-2"></i>Reopen Position
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="Reopen" asp-route-id="@Model.Id">
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong>Position:</strong> <span class="text-muted">@Model.Title</span>
+                    </p>
+                    
+                    @if (Model.CurrentClosingDate.HasValue)
+                    {
+                        <p class="mb-3">
+                            <strong>Previously Closed:</strong> <span class="text-danger">@Model.CurrentClosingDate.Value.ToString("dd MMM yyyy")</span>
+                        </p>
+                    }
+
+                    <div class="mb-3">
+                        <label for="newClosingDate" class="form-label fw-bold">New Closing Date <span class="text-danger">*</span></label>
+                        <input 
+                            type="date" 
+                            id="newClosingDate" 
+                            name="newClosingDate" 
+                            class="form-control" 
+                            value="@Model.NewClosingDate.ToString("yyyy-MM-dd")" 
+                            required 
+                            min="@DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")" />
+                        <small class="text-muted">Select a date in the future for when applications should close.</small>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>When you reopen this position:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>The position will become active and visible to applicants</li>
+                            <li>Applicants will be able to submit new applications</li>
+                            <li>Previous applications will remain in the system</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check-circle me-2"></i>Confirm Reopen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

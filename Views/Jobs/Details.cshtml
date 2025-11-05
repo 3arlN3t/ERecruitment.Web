@@ -270,9 +270,32 @@
             </div>
 
             <div class="job-cta d-flex flex-wrap gap-3 mt-4">
-                <a class="btn btn-primary-gradient" asp-controller="Applications" asp-action="Create" asp-route-jobId="@Model.Id">
-                    <i class="fas fa-paper-plane me-2"></i>Submit Application
-                </a>
+                @if (Model.IsExpired)
+                {
+                    <div class="alert alert-danger w-100" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Position Closed</strong> - This position closed on <strong>@Model.ClosingDate?.ToString("dd MMM yyyy")</strong>. Applications are no longer being accepted.
+                    </div>
+                    <button class="btn btn-secondary" disabled>
+                        <i class="fas fa-times-circle me-2"></i>Applications Closed
+                    </button>
+                }
+                else if (!Model.IsActive)
+                {
+                    <div class="alert alert-warning w-100" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Position Unavailable</strong> - This position is no longer accepting applications.
+                    </div>
+                    <button class="btn btn-secondary" disabled>
+                        <i class="fas fa-ban me-2"></i>Not Accepting Applications
+                    </button>
+                }
+                else
+                {
+                    <a class="btn btn-primary-gradient" asp-controller="Applications" asp-action="Create" asp-route-jobId="@Model.Id">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Application
+                    </a>
+                }
                 <a class="btn btn-outline-secondary" asp-action="Index">
                     <i class="fas fa-arrow-left me-2"></i>Back to Opportunities
                 </a>
@@ -295,7 +318,20 @@
                 <div class="fact"><span>Closing Date</span> <strong>@(Model.ClosingDate?.ToString("dd MMM yyyy") ?? "TBC")</strong></div>
                 <div class="fact"><span>Enquiries</span> <strong>@Model.EnquiriesContactPerson</strong></div>
                 <div class="fact"><span>Tel</span> <strong>@Model.EnquiriesPhone</strong></div>
-                <div class="fact"><span>Status</span> <strong>@(Model.IsActive ? "Active" : "Closed")</strong></div>
+                <div class="fact"><span>Status</span> <strong>
+                    @if (Model.IsExpired)
+                    {
+                        <span class="text-danger">Closed</span>
+                    }
+                    else if (!Model.IsActive)
+                    {
+                        <span class="text-warning">Inactive</span>
+                    }
+                    else
+                    {
+                        <span class="text-success">Active</span>
+                    }
+                </strong></div>
 
                 <div class="mt-4">
                     <h3>Share</h3>

@@ -48,4 +48,16 @@ public class JobPosting
     public DateTime DateLastModified { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
     public string? PostedByUserId { get; set; }
+
+    /// <summary>
+    /// Determines if the job posting is expired based on the closing date.
+    /// </summary>
+    /// <returns>True if the closing date has passed, false otherwise.</returns>
+    public bool IsExpired => ClosingDate.HasValue && ClosingDate.Value < DateTime.UtcNow;
+
+    /// <summary>
+    /// Determines if the job is accepting applications.
+    /// A job accepts applications if it's active and not expired.
+    /// </summary>
+    public bool IsAcceptingApplications => IsActive && !IsExpired;
 }

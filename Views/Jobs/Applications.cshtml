@@ -10,12 +10,31 @@
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold mb-2">
                     <i class="fas fa-file-alt me-3 text-primary"></i>Applications for @Model.JobPosting.Title
+                    @if (Model.JobPosting.IsExpired)
+                    {
+                        <span class="badge bg-danger ms-2">
+                            <i class="fas fa-times-circle me-1"></i>Closed
+                        </span>
+                    }
                 </h1>
                 <p class="text-muted mb-0">
                     <i class="fas fa-building me-1"></i>@Model.JobPosting.Department 
                     <span class="mx-2">•</span> 
                     <i class="fas fa-map-marker-alt me-1"></i>@Model.JobPosting.Location
                 </p>
+                @if (Model.JobPosting.IsExpired)
+                {
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This position is closed. These applications are archived.
+                        @if (!Model.JobPosting.IsActive)
+                        {
+                            <a href="javascript:reopenJob('@Model.JobPosting.Id')" class="alert-link">
+                                Click here to reopen this position.
+                            </a>
+                        }
+                    </div>
+                }
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
                 <a class="btn btn-outline-primary" asp-action="Index">
@@ -204,3 +223,36 @@
         </div>
     </div>
 </div>
+
+<!-- Reopen Job Modal -->
+<div id="modalContainer"></div>
+
+@section Scripts {
+    <script>
+        function reopenJob(jobId) {
+            // Load the modal content via AJAX
+            fetch(`/Jobs/ReopenModal/${jobId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load modal');
+                    return response.text();
+                })
+                .then(html => {
+                    const container = document.getElementById('modalContainer');
+                    container.innerHTML = html;
+                    
+                    // Find and show the modal
+                    const modalElement = container.querySelector('#reopenJobModal');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    } else {
+                        console.error('Modal element not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading modal:', error);
+                    alert('Failed to load reopen dialog. Please try again.');
+                });
+        }
+    </script>
+}

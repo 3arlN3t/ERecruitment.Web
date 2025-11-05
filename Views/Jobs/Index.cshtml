@@ -77,8 +77,10 @@
                 var isInterviewOrOffer = existingApplication?.Status == ApplicationStatus.Interview || existingApplication?.Status == ApplicationStatus.Offer;
                 var isRejected = existingApplication?.Status == ApplicationStatus.Rejected;
                 var isWithdrawn = existingApplication?.Status == ApplicationStatus.Withdrawn;
+                var isExpired = job.IsExpired;
+                var isNotAcceptingApps = !job.IsAcceptingApplications;
                 <div class="col-md-6 col-lg-4">
-                    <div class="job-card fade-in" style="@(hasApplied ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : "")">
+                    <div class="job-card fade-in" style="@(hasApplied ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (isExpired && !Model.IsAdmin ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (isExpired ? "opacity: 0.7; background-color: #f8f9fa; border: 1px solid #dee2e6;" : "")))">
                         @if (hasApplied)
                         {
                             <div class="position-absolute top-0 end-0 m-2">
@@ -114,8 +116,16 @@
                                 }
                             </div>
                         }
+                        else if (isExpired)
+                        {
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-dark">
+                                    <i class="fas fa-times-circle me-1"></i>Closed
+                                </span>
+                            </div>
+                        }
 
-                        <h3 class="@(hasApplied ? "text-muted" : "")">@job.Title</h3>
+                        <h3 class="@(hasApplied || isExpired ? "text-muted" : "")">@job.Title</h3>
 
                         <div class="job-meta">
                             <div class="job-meta-item">
@@ -145,6 +155,12 @@
                                             <i class="fas fa-check-circle me-1"></i>View Application Status
                                         </a>
                                     }
+                                    else if (isExpired)
+                                    {
+                                        <button class="btn btn-secondary btn-sm flex-grow-1" disabled title="This position closed on @job.ClosingDate?.ToString("dd MMM yyyy")">
+                                            <i class="fas fa-times-circle me-1"></i>Position Closed
+                                        </button>
+                                    }
                                     else if (isDraft)
                                     {
                                         <a asp-controller="Applications" asp-action="Job" asp-route-id="@job.Id" class="btn btn-warning btn-sm flex-grow-1">
@@ -173,6 +189,12 @@
                                     <a asp-action="Edit" asp-route-id="@job.Id" class="btn btn-outline-secondary btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @if (isExpired)
+                                    {
+                                        <button type="button" class="btn btn-outline-success btn-sm" title="Reopen Position" style="cursor: pointer;" onclick="reopenJob('@job.Id'); return false;">
+                                            <i class="fas fa-sync-alt me-1"></i>Reopen
+                                        </button>
+                                    }
                                     <a asp-action="Delete" asp-route-id="@job.Id" class="btn btn-outline-danger btn-sm" title="Delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
@@ -202,5 +224,38 @@
         </div>
     }
 </div>
+
+<!-- Reopen Job Modal -->
+<div id="modalContainer"></div>
+
+@section Scripts {
+    <script>
+        function reopenJob(jobId) {
+            // Load the modal content via AJAX
+            fetch(`/Jobs/ReopenModal/${jobId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load modal');
+                    return response.text();
+                })
+                .then(html => {
+                    const container = document.getElementById('modalContainer');
+                    container.innerHTML = html;
+                    
+                    // Find and show the modal
+                    const modalElement = container.querySelector('#reopenJobModal');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    } else {
+                        console.error('Modal element not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading modal:', error);
+                    alert('Failed to load reopen dialog. Please try again.');
+                });
+        }
+    </script>
+}
 
 

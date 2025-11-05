@@ -30,11 +30,20 @@ public class ApplicantController : Controller
             return RedirectToAction("Login", "Account");
         }
 
+        var allJobs = await _workflowService.GetAllJobPostingsAsync();
+        var allApplications = await _workflowService.GetApplicantApplicationsAsync(applicant.Id);
+
+        // Filter to only show open jobs and applications to open jobs
+        var openJobs = allJobs.Where(j => j.IsAcceptingApplications).ToList();
+        var applicationsForOpenJobs = allApplications
+            .Where(app => allJobs.Any(j => j.Id == app.JobPostingId && j.IsAcceptingApplications))
+            .ToList();
+
         var viewModel = new ApplicantDashboardViewModel
         {
             Applicant = applicant,
-            Jobs = await _workflowService.GetAllJobPostingsAsync(),
-            Applications = await _workflowService.GetApplicantApplicationsAsync(applicant.Id)
+            Jobs = openJobs,
+            Applications = applicationsForOpenJobs
         };
 
         return View(viewModel);

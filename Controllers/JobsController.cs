@@ -31,11 +31,16 @@ public class JobsController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
-        var jobs = await _repo.GetAllJobPostingsAsync();
+        var allJobs = await _repo.GetAllJobPostingsAsync();
         var isAdmin = User?.IsInRole("Admin") == true;
         var isApplicant = User?.Identity?.IsAuthenticated == true && !isAdmin;
 
         _logger.LogInformation("Is Applicant: {isApplicant}", isApplicant);
+
+        // Filter jobs: applicants only see open jobs, admins see all
+        var jobs = isApplicant 
+            ? allJobs.Where(j => j.IsAcceptingApplications).ToList()
+            : allJobs;
 
         var viewModel = new BrowseJobsViewModel
         {
@@ -68,10 +73,21 @@ public class JobsController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> Details(Guid id)
     {
         var job = await _repo.GetJobPostingAsync(id);
         if (job is null) return NotFound();
+        
+        var isAdmin = User?.IsInRole("Admin") == true;
+        var isApplicant = User?.Identity?.IsAuthenticated == true && !isAdmin;
+        
+        // Prevent applicants from viewing closed/expired jobs
+        if (isApplicant && !job.IsAcceptingApplications)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+        
         return View(job);
     }
 
@@ -282,6 +298,46 @@ public class JobsController : Controller
             parts.Add($"\nDUTIES:\n{model.DutiesDescription}");
         
         return string.Join("\n\n", parts);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ReopenModal(Guid id)
+    {
+        var job = await _repo.GetJobPostingAsync(id);
+        if (job is null) return NotFound();
+        
+        var viewModel = new ReopenJobViewModel
+        {
+            Id = job.Id,
+            Title = job.Title,
+            CurrentClosingDate = job.ClosingDate,
+            NewClosingDate = DateTime.UtcNow.AddDays(30) // Suggest 30 days from now
+        };
+        
+        return PartialView("_ReopenJobModal", viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reopen(Guid id, DateTime newClosingDate)
+    {
+        var job = await _repo.GetJobPostingAsync(id);
+        if (job is null) return NotFound();
+
+        if (newClosingDate <= DateTime.UtcNow)
+        {
+            TempData["Flash"] = "New closing date must be in the future.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Reopen the job
+        job.IsActive = true;
+        job.ClosingDate = newClosingDate;
+        job.DateLastModified = DateTime.UtcNow;
+
+        await _repo.UpdateJobPostingAsync(job);
+        TempData["Flash"] = $"Position '{job.Title}' has been reopened and will close on {newClosingDate:dd MMM yyyy}.";
+        return RedirectToAction(nameof(Index));
     }
 }
 

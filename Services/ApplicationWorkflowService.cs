@@ -35,6 +35,18 @@ public class ApplicationWorkflowService : IApplicationWorkflowService
             return new ApplicationFlowResult(false, "Job not found.");
         }
 
+        // Check if job has expired
+        if (job.IsExpired)
+        {
+            return new ApplicationFlowResult(false, $"This position closed on {job.ClosingDate:dd MMM yyyy}. Applications are no longer accepted.");
+        }
+
+        // Check if job is inactive
+        if (!job.IsActive)
+        {
+            return new ApplicationFlowResult(false, "This position is no longer accepting applications.");
+        }
+
         // Check if application already exists
         var existing = await _repository.FindJobApplicationAsync(applicantId, jobId, cancellationToken);
         if (existing is not null)
@@ -66,6 +78,18 @@ public class ApplicationWorkflowService : IApplicationWorkflowService
         if (job is null)
         {
             return new ApplicationFlowResult(false, "Job not found.");
+        }
+
+        // Check if job has expired
+        if (job.IsExpired)
+        {
+            return new ApplicationFlowResult(false, $"This position closed on {job.ClosingDate:dd MMM yyyy}. Applications are no longer accepted.");
+        }
+
+        // Check if job is inactive
+        if (!job.IsActive)
+        {
+            return new ApplicationFlowResult(false, "This position is no longer accepting applications.");
         }
 
         // Direct submission not allowed if job has killer questions
@@ -139,6 +163,18 @@ public class ApplicationWorkflowService : IApplicationWorkflowService
         if (job is null)
         {
             return new ApplicationFlowResult(false, "Job not found.", null, meetsRequirement);
+        }
+
+        // Check if job has expired
+        if (job.IsExpired)
+        {
+            return new ApplicationFlowResult(false, $"This position closed on {job.ClosingDate:dd MMM yyyy}. Applications are no longer accepted.");
+        }
+
+        // Check if job is inactive
+        if (!job.IsActive)
+        {
+            return new ApplicationFlowResult(false, "This position is no longer accepting applications.");
         }
 
         var application = await _repository.FindJobApplicationAsync(applicantId, jobId, cancellationToken);
@@ -246,6 +282,18 @@ public class ApplicationWorkflowService : IApplicationWorkflowService
         if (job is null)
         {
             return new ApplicationFlowResult(false, "Job not found.");
+        }
+
+        // Check if job has expired
+        if (job.IsExpired)
+        {
+            return new ApplicationFlowResult(false, $"This position closed on {job.ClosingDate:dd MMM yyyy}. Applications are no longer accepted.");
+        }
+
+        // Check if job is inactive
+        if (!job.IsActive)
+        {
+            return new ApplicationFlowResult(false, "This position is no longer accepting applications.");
         }
 
         // Validate all questions answered and passed
