@@ -1,0 +1,214 @@
+@model ERecruitment.Web.ViewModels.ApplicationTimelineViewModel
+@{
+    ViewData["Title"] = $"Timeline - {Model.Job.Title}";
+}
+
+<div class="container">
+    <!-- Timeline Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-history me-3 text-primary"></i>Application Timeline
+                </h1>
+                <p class="text-muted mb-0">
+                    <i class="fas fa-briefcase me-2"></i>@Model.Job.Title
+                    <span class="mx-2">•</span>
+                    <span class="badge bg-info">
+                        <i class="fas fa-info-circle me-1"></i>@Model.Application.Status
+                    </span>
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a class="btn btn-outline-secondary" asp-controller="Applicant" asp-action="Dashboard">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline Card -->
+    <div class="card">
+        <div class="card-body">
+            @if (!Model.Events.Any())
+            {
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3" style="font-size: 3rem;">
+                        <i class="fas fa-hourglass-start"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No Events Yet</h5>
+                    <p class="text-muted mb-0">The timeline will update as your application progresses through our review process.</p>
+                </div>
+            }
+            else
+            {
+                <div class="timeline">
+                    @{
+                        var eventCount = Model.Events.Count();
+                        var eventIndex = 0;
+                    }
+                    @foreach (var e in Model.Events)
+                    {
+                        eventIndex++;
+                        var isFirst = eventIndex == 1;
+                        var iconClass = "fas fa-circle-check";
+                        var timelineClass = "text-success";
+
+                        @if (e.Action.Contains("Submitted", StringComparison.OrdinalIgnoreCase) || 
+                             e.Action.Contains("Submit", StringComparison.OrdinalIgnoreCase))
+                        {
+                            iconClass = "fas fa-paper-plane";
+                            timelineClass = "text-info";
+                        }
+                        else if (e.Action.Contains("Rejected", StringComparison.OrdinalIgnoreCase) || 
+                                 e.Action.Contains("Reject", StringComparison.OrdinalIgnoreCase))
+                        {
+                            iconClass = "fas fa-times-circle";
+                            timelineClass = "text-danger";
+                        }
+                        else if (e.Action.Contains("Withdrawn", StringComparison.OrdinalIgnoreCase) || 
+                                 e.Action.Contains("Withdraw", StringComparison.OrdinalIgnoreCase))
+                        {
+                            iconClass = "fas fa-ban";
+                            timelineClass = "text-warning";
+                        }
+                        else if (e.Action.Contains("Interview", StringComparison.OrdinalIgnoreCase))
+                        {
+                            iconClass = "fas fa-user-tie";
+                            timelineClass = "text-success";
+                        }
+                        else if (e.Action.Contains("Offer", StringComparison.OrdinalIgnoreCase))
+                        {
+                            iconClass = "fas fa-trophy";
+                            timelineClass = "text-success";
+                        }
+                        else if (e.Action.Contains("Created", StringComparison.OrdinalIgnoreCase) || 
+                                 e.Action.Contains("Create", StringComparison.OrdinalIgnoreCase))
+                        {
+                            iconClass = "fas fa-plus-circle";
+                            timelineClass = "text-secondary";
+                        }
+
+                        <div class="timeline-item">
+                            <div class="timeline-icon @timelineClass" style="background: linear-gradient(135deg, var(--primary-dark), var(--primary-color)); color: white;">
+                                <i class="@iconClass"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="mb-1">@e.Action</h5>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-user me-2"></i>
+                                            <strong>@e.Actor</strong>
+                                        </p>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="badge bg-light text-dark">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            @e.TimestampUtc.ToLocalTime().ToString("MMM dd, yyyy")
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-muted small">
+                                    <i class="fas fa-clock me-1"></i>
+                                    @e.TimestampUtc.ToLocalTime().ToString("hh:mm tt")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Application Details Card -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Application Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3">
+                            <i class="fas fa-briefcase text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Position</div>
+                            <div class="fw-bold">@Model.Job.Title</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3">
+                            <i class="fas fa-info-circle text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Current Status</div>
+                            <div class="fw-bold">
+                                @if (Model.Application.Status == ApplicationStatus.Draft)
+                                {
+                                    <span class="badge bg-secondary"><i class="fas fa-pencil-alt me-1"></i>Draft</span>
+                                }
+                                else if (Model.Application.Status == ApplicationStatus.Submitted)
+                                {
+                                    <span class="badge bg-info"><i class="fas fa-paper-plane me-1"></i>Submitted</span>
+                                }
+                                else if (Model.Application.Status == ApplicationStatus.Interview)
+                                {
+                                    <span class="badge bg-success"><i class="fas fa-user-tie me-1"></i>Interview</span>
+                                }
+                                else if (Model.Application.Status == ApplicationStatus.Offer)
+                                {
+                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Offer</span>
+                                }
+                                else if (Model.Application.Status == ApplicationStatus.Withdrawn)
+                                {
+                                    <span class="badge bg-secondary"><i class="fas fa-ban me-1"></i>Withdrawn</span>
+                                }
+                                else if (Model.Application.Status == ApplicationStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Rejected</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Model.Application.Status</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3">
+                            <i class="fas fa-history text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Total Events</div>
+                            <div class="fw-bold">@Model.Events.Count</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Helpful Information -->
+    <div class="alert alert-info mt-4">
+        <div class="d-flex align-items-start gap-3">
+            <div style="font-size: 1.5rem;">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <div>
+                <h5 class="alert-heading mb-2">Timeline Information</h5>
+                <p class="mb-0">
+                    This timeline shows all significant events related to your application. You'll see updates as our recruitment team reviews your submission, 
+                    conducts interviews, or makes hiring decisions. Check back regularly for the latest updates on your application status.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+

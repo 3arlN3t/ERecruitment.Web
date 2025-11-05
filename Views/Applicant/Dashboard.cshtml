@@ -1,0 +1,433 @@
+@using ERecruitment.Web.Utilities
+@using ERecruitment.Web.Services
+@model ApplicantDashboardViewModel
+
+@{
+    ViewData["Title"] = "My Dashboard";
+    var completionPercentage = Model.Applicant.Profile.CalculateCompletionPercentage();
+    var completionStatus = Model.Applicant.Profile.GetCompletionStatus();
+    var completionBadgeClass = Model.Applicant.Profile.GetCompletionBadgeClass();
+    var missingFields = Model.Applicant.Profile.GetMissingCriticalFields();
+}
+
+<div class="container">
+    <!-- Welcome Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-user-circle me-3 text-primary"></i>Welcome back, @(Model.Applicant.Profile.FirstName ?? Model.Applicant.Email)!
+                </h1>
+                <p class="text-muted mb-0">Keep your profile up to date and explore new opportunities</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a class="btn btn-primary btn-lg" asp-action="Profile">
+                    <i class="fas fa-user-edit me-2"></i>Update Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-value">@Model.Applications.Count(a => a.Status != ApplicationStatus.Draft)</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">@Model.Applications.Count(a => a.Status == ApplicationStatus.Submitted)</div>
+                <div class="stat-label">In Review</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">@Model.Applications.Count(a => a.Status == ApplicationStatus.Interview || a.Status == ApplicationStatus.Offer)</div>
+                <div class="stat-label">Interview/Offer</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-value">@Model.Jobs.Count</div>
+                <div class="stat-label">Open Positions</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Completion Indicator -->
+    @if (completionPercentage < 100)
+    {
+        <div class="card mb-4 border-0 shadow-sm profile-progress-card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="profile-progress-header d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="profile-progress-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div>
+                                    <div class="profile-progress-title">Profile Completion</div>
+                                    <div class="profile-progress-status">
+                                        <span class="profile-progress-badge">@completionStatus</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-progress-percent">
+                                <span>@completionPercentage%</span>
+                            </div>
+                        </div>
+                        <div class="profile-progress-track mb-2" role="progressbar"
+                             aria-valuenow="@completionPercentage"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                            <div class="profile-progress-bar" style="width: @completionPercentage%;">
+                                <span class="profile-progress-value">@completionPercentage%</span>
+                            </div>
+                        </div>
+                        <div class="profile-progress-scale d-flex justify-content-between text-muted small">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                        @if (missingFields.Any())
+                        {
+                            <p class="mb-2 fw-semibold small text-uppercase profile-progress-subtitle">
+                                Key items still outstanding
+                            </p>
+                            <ul class="profile-missing-list mb-0">
+                                @foreach (var field in missingFields.Take(5))
+                                {
+                                    <li class="profile-missing-chip">@field</li>
+                                }
+                                @if (missingFields.Count > 5)
+                                {
+                                    <li class="profile-missing-chip profile-missing-chip--more">+ @(missingFields.Count - 5) more</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a class="btn btn-outline-primary" asp-action="Profile">
+                            <i class="fas fa-user-edit me-2"></i>Complete Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Profile Complete!
+                        <span class="badge bg-success ms-2">100%</span>
+                    </h5>
+                    <p class="mb-0 mt-2"><small>Your profile is fully complete. You're ready to apply for positions!</small></p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a class="btn btn-outline-success" asp-action="Profile">
+                        <i class="fas fa-eye me-2"></i>View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Your Applications -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="mb-0"><i class="fas fa-file-alt me-2"></i>Your Applications</h2>
+        </div>
+        <div class="card-body">
+            @if (!Model.Applications.Any())
+            {
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3" style="font-size: 3rem;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h4 class="text-muted mb-2">No Applications Yet</h4>
+                    <p class="text-muted">You haven't applied for any roles yet. Browse available positions below.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-briefcase me-2"></i>Role</th>
+                                <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                <th><i class="fas fa-calendar me-2"></i>Last Update</th>
+                                <th><i class="fas fa-comment me-2"></i>Notes</th>
+                                <th class="text-end"><i class="fas fa-cog me-2"></i>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var application in Model.Applications)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@application.JobTitle</td>
+                                    <td>
+                                        @if (application.Status == ApplicationStatus.Draft)
+                                        {
+                                            <span class="badge bg-secondary"><i class="fas fa-pencil-alt me-1"></i>Draft</span>
+                                        }
+                                        else if (application.Status == ApplicationStatus.Submitted)
+                                        {
+                                            <span class="badge bg-info"><i class="fas fa-paper-plane me-1"></i>Submitted</span>
+                                        }
+                                        else if (application.Status == ApplicationStatus.Interview)
+                                        {
+                                            <span class="badge bg-success"><i class="fas fa-user-tie me-1"></i>Interview</span>
+                                        }
+                                        else if (application.Status == ApplicationStatus.Offer)
+                                        {
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Offer</span>
+                                        }
+                                        else if (application.Status == ApplicationStatus.Withdrawn)
+                                        {
+                                            <span class="badge bg-secondary"><i class="fas fa-ban me-1"></i>Withdrawn</span>
+                                        }
+                                        else if (application.Status == ApplicationStatus.Rejected)
+                                        {
+                                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Rejected</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@application.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        @(application.SubmittedAtUtc?.ToLocalTime().ToString("MMM dd, yyyy") ?? application.CreatedAtUtc.ToLocalTime().ToString("MMM dd, yyyy"))
+                                    </td>
+                                    <td>
+                                        @if (application.Status == ApplicationStatus.Rejected && application.RejectionReason == "Did not meet mandatory requirement")
+                                        {
+                                            <span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>Failed Requirement</span>
+                                        }
+                                        else if (!string.IsNullOrWhiteSpace(application.RejectionReason))
+                                        {
+                                            <small class="text-muted">@application.RejectionReason</small>
+                                        }
+                                        else if (application.Status == ApplicationStatus.Submitted)
+                                        {
+                                            <span class="text-muted"><i class="fas fa-hourglass-half me-1"></i>In Review</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a class="btn btn-outline-primary" asp-controller="Applications" asp-action="Timeline" asp-route-id="@application.JobPostingId" title="View Timeline">
+                                                <i class="fas fa-history"></i>
+                                            </a>
+                                            @{
+                                                var canWithdraw = ApplicationStatusRules.CanTransition(application.Status, ApplicationStatus.Withdrawn);
+                                            }
+                                            @if (canWithdraw)
+                                            {
+                                                <button class="btn btn-withdraw btn-withdraw-sm" type="button" title="Withdraw Application" data-job-id="@application.JobPostingId" onclick="confirmWithdrawal(this)">
+                                                    <i class="fas fa-times me-1"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h2 class="mb-0"><i class="fas fa-briefcase me-2"></i>Open Positions</h2>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-outline-primary btn-sm" asp-controller="Jobs" asp-action="Index">
+                        <i class="fas fa-th-large me-1"></i>View All Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.Jobs.Any())
+            {
+                <div class="row g-4">
+                    @foreach (var job in Model.Jobs)
+                    {
+                        var existingApplication = Model.Applications.FirstOrDefault(a => a.JobPostingId == job.Id);
+                        var hasApplied = existingApplication != null && existingApplication.Status != ApplicationStatus.Draft;
+                        var isSubmitted = existingApplication?.Status == ApplicationStatus.Submitted;
+                        var isInterviewOrOffer = existingApplication?.Status == ApplicationStatus.Interview || existingApplication?.Status == ApplicationStatus.Offer;
+                        var isRejected = existingApplication?.Status == ApplicationStatus.Rejected;
+                        
+                        <div class="col-md-6 col-lg-4">
+                            <div class="job-card @(hasApplied ? "opacity-75" : "")" style="@(hasApplied ? "background-color: #f8f9fa; border: 1px solid #dee2e6;" : "")">
+                                @if (hasApplied)
+                                {
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        @if (isSubmitted)
+                                        {
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-paper-plane me-1"></i>Applied
+                                            </span>
+                                        }
+                                        else if (isInterviewOrOffer && existingApplication != null)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>@(existingApplication.Status == ApplicationStatus.Interview ? "Interview" : "Offer")
+                                            </span>
+                                        }
+                                        else if (isRejected)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>Rejected
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-check me-1"></i>Applied
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                                <h3 class="@(hasApplied ? "text-muted" : "")">@job.Title</h3>
+                                <div class="job-meta">
+                                    <div class="job-meta-item">
+                                        <i class="fas fa-building"></i>
+                                        <span>@job.Department</span>
+                                    </div>
+                                    <div class="job-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>@job.Location</span>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(job.Description))
+                                {
+                                    <p class="text-muted mt-3 mb-3" style="font-size: 0.9rem;">
+                                        @(job.Description.Length > 100 ? job.Description.Substring(0, 100) + "..." : job.Description)
+                                    </p>
+                                }
+                                <div class="mt-auto">
+                                    @if (hasApplied)
+                                    {
+                                        <div class="d-grid gap-2">
+                                            <a class="btn btn-outline-secondary btn-sm w-100" asp-controller="Applications" asp-action="Job" asp-route-id="@job.Id">
+                                                <i class="fas fa-check-circle me-1"></i>View Application Status
+                                            </a>
+                                            @if (existingApplication != null && (existingApplication.Status == ApplicationStatus.Submitted || existingApplication.Status == ApplicationStatus.Interview || existingApplication.Status == ApplicationStatus.Offer))
+                                            {
+                                                <a class="btn btn-outline-primary btn-sm w-100" asp-controller="Applications" asp-action="Timeline" asp-route-id="@job.Id">
+                                                    <i class="fas fa-history me-1"></i>View Timeline
+                                                </a>
+                                            }
+                                        </div>
+                                    }
+                                    else if (existingApplication?.Status == ApplicationStatus.Draft)
+                                    {
+                                        <a class="btn btn-warning btn-sm w-100" asp-controller="Applications" asp-action="Job" asp-route-id="@job.Id">
+                                            <i class="fas fa-pencil-alt me-1"></i>Continue Draft
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-primary btn-sm w-100" asp-controller="Applications" asp-action="Job" asp-route-id="@job.Id">
+                                            <i class="fas fa-eye me-1"></i>View & Apply
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <p class="text-muted mb-0">No open positions available at this time.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmWithdrawal(button) {
+            const jobId = button.getAttribute('data-job-id');
+            
+            Swal.fire({
+                title: 'Confirm Withdrawal',
+                html: '<p>Are you sure you want to withdraw this application?</p><p class="text-muted"><small>This action cannot be undone.</small></p>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-check me-2"></i>Yes, Withdraw',
+                cancelButtonText: '<i class="fas fa-times me-2"></i>Cancel',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger me-2',
+                    cancelButton: 'btn btn-secondary'
+                },
+                didOpen: (modal) => {
+                    modal.querySelector('.swal2-confirm').innerHTML = '<i class="fas fa-check me-2"></i>Yes, Withdraw';
+                    modal.querySelector('.swal2-cancel').innerHTML = '<i class="fas fa-times me-2"></i>Cancel';
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performWithdrawal(jobId);
+                }
+            });
+        }
+
+        function performWithdrawal(jobId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("Withdraw", "Applications")';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = jobId;
+            form.appendChild(idInput);
+
+            // Get existing anti-forgery token from page
+            const existingToken = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (existingToken) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = existingToken.value;
+                form.appendChild(tokenInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+}

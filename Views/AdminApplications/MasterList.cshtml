@@ -1,0 +1,259 @@
+@model MasterListViewModel
+@{
+    ViewData["Title"] ??= "MasterList";
+    var activeFilter = Model.Filters.FirstOrDefault(f => f.IsSelected) ?? Model.Filters.First();
+}
+
+<div class="container masterlist-container mt-4">
+    <div class="card masterlist-shell mb-4">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                <div>
+                    <h1 class="masterlist-title mb-1">MasterList</h1>
+                    <p class="text-muted mb-0 small">(Total Applications = @Model.TotalCount)</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-outline-secondary" asp-action="Index" asp-route-jobId="@Model.Job.Id">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Applications
+                    </a>
+                    <a class="btn btn-primary-gradient" asp-action="ExportMasterList" asp-route-jobId="@Model.Job.Id" asp-route-scope="@Model.SelectedFilterCode">
+                        <i class="fas fa-file-excel me-2"></i>Export to Excel
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end masterlist-toolbar mb-4">
+                <div class="col-md-5">
+                    <label class="form-label text-muted text-uppercase small mb-1">Filter Control</label>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100 d-flex justify-content-between align-items-center" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>
+                                <i class="fas fa-filter me-2"></i>@activeFilter.Label
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+                            @foreach (var option in Model.Filters)
+                            {
+                                <li>
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center @(option.IsSelected ? "active" : null)" asp-action="MasterList" asp-route-jobId="@Model.Job.Id" asp-route-scope="@option.Code">
+                                        <span>
+                                            @option.Label
+                                            <small class="d-block text-muted">@option.Description</small>
+                                        </span>
+                                        @if (option.IsSelected)
+                                        {
+                                            <i class="fas fa-check text-primary"></i>
+                                        }
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label text-muted text-uppercase small mb-1">Job Posting Context</label>
+                    <div class="masterlist-context p-3">
+                        <div class="d-flex flex-column flex-lg-row gap-3">
+                            <div>
+                                <div class="text-muted small text-uppercase">Post</div>
+                                <div class="fw-semibold">@Model.Job.Title</div>
+                            </div>
+                            <div class="vr d-none d-lg-block"></div>
+                            <div>
+                                <div class="text-muted small text-uppercase">Ref No</div>
+                                <div class="fw-semibold">@(!string.IsNullOrWhiteSpace(Model.Job.ReferenceNumber) ? Model.Job.ReferenceNumber : "Not set")</div>
+                            </div>
+                            <div class="vr d-none d-lg-block"></div>
+                            <div>
+                                <div class="text-muted small text-uppercase">Applications</div>
+                                <div class="fw-semibold">@Model.TotalCount</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row masterlist-insights g-3 mb-4">
+                <div class="col-lg-4">
+                    <div class="masterlist-summary-card h-100">
+                        <div class="masterlist-summary-title">Pipeline Status</div>
+                        @if (!Model.StatusSummary.Any())
+                        {
+                            <div class="text-muted small">No applications available.</div>
+                        }
+                        else
+                        {
+                            <ul class="masterlist-summary-list mb-0">
+                                @foreach (var item in Model.StatusSummary)
+                                {
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="masterlist-chip @item.CssClass">@item.Label</span>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-semibold">@item.Count</div>
+                                            <div class="small text-muted">@item.Percentage.ToString("0.0")%</div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="masterlist-summary-card h-100">
+                        <div class="masterlist-summary-title">Equity Snapshot</div>
+                        @if (!Model.EquitySummary.Any())
+                        {
+                            <div class="text-muted small">No equity data captured.</div>
+                        }
+                        else
+                        {
+                            <ul class="masterlist-summary-list mb-0">
+                                @foreach (var item in Model.EquitySummary)
+                                {
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="masterlist-chip @item.CssClass">@item.Label</span>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-semibold">@item.Count</div>
+                                            <div class="small text-muted">@item.Percentage.ToString("0.0")%</div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="masterlist-summary-card h-100">
+                        <div class="masterlist-summary-title">Gender &amp; Disability</div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <span class="text-muted small text-uppercase">Gender</span>
+                                @if (!Model.GenderSummary.Any())
+                                {
+                                    <div class="text-muted small">No gender data captured.</div>
+                                }
+                                else
+                                {
+                                    <ul class="masterlist-summary-list mb-0">
+                                        @foreach (var item in Model.GenderSummary)
+                                        {
+                                            <li class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="masterlist-chip @item.CssClass">@item.Label</span>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div class="fw-semibold">@item.Count</div>
+                                                    <div class="small text-muted">@item.Percentage.ToString("0.0")%</div>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <span class="text-muted small text-uppercase">Disability</span>
+                                @if (!Model.DisabilitySummary.Any())
+                                {
+                                    <div class="text-muted small">No disability data captured.</div>
+                                }
+                                else
+                                {
+                                    <ul class="masterlist-summary-list mb-0">
+                                        @foreach (var item in Model.DisabilitySummary)
+                                        {
+                                            <li class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="masterlist-chip @item.CssClass">@item.Label</span>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div class="fw-semibold">@item.Count</div>
+                                                    <div class="small text-muted">@item.Percentage.ToString("0.0")%</div>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive masterlist-table-wrapper">
+                <table class="table table-borderless align-middle masterlist-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Name</th>
+                            <th scope="col"><span title="Race/Ethnicity">DLR</span></th>
+                            <th scope="col"><span title="Age">A</span></th>
+                            <th scope="col"><span title="Gender">G</span></th>
+                            <th scope="col"><span title="Disability">D</span></th>
+                            <th scope="col">Quals</th>
+                            <th scope="col">Exp</th>
+                            <th scope="col">Cmts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Applicants.Any())
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <i class="fas fa-users-slash fa-2x mb-3"></i>
+                                    <div>No applicants match the current filter.</div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var applicant in Model.Applicants)
+                            {
+                                <tr>
+                                    <td class="fw-semibold text-muted">@applicant.Index</td>
+                                    <td>
+                                        <div class="fw-semibold">@applicant.ApplicantName</div>
+                                        <div class="small text-muted">@applicant.ApplicantEmail</div>
+                                        <div class="small text-muted"><i class="fas fa-clock me-1"></i>@applicant.DlrDisplay</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">@applicant.Race</span></td>
+                                    <td>@applicant.AgeDisplay</td>
+                                    <td>@applicant.GenderDisplay</td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(applicant.DisabilityDisplay))
+                                        {
+                                            <span class="masterlist-pill">@applicant.DisabilityDisplay</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="masterlist-qual">@applicant.QualificationSummary</div>
+                                    </td>
+                                    <td>
+                                        <div class="masterlist-exp">@applicant.ExperienceSummary</div>
+                                        <span class="badge rounded-pill masterlist-status-badge masterlist-status-@applicant.Status.ToString().ToLowerInvariant()">@applicant.Status</span>
+                                    </td>
+                                    <td class="masterlist-comment">@applicant.Comments</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-secondary mt-4 d-flex align-items-start gap-3 masterlist-legend">
+                <div class="mt-1"><i class="fas fa-circle-info text-primary"></i></div>
+                <div>
+                    <strong>Legend</strong>
+                    <div class="small text-muted">DLR = Race/Ethnicity • Timeline within the Name column shows submission activity • A = Age • G = Gender • D = Disability flag • Quals = Highest qualifications • Exp = Experience summary • Cmts = Suggested panel prompts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

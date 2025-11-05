@@ -1,0 +1,287 @@
+@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - eRecruitment Portal</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Toastr Notifications -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" integrity="sha512-vKMx8UnwWzMHrqvplejVoUfAU/V4ffHxQVEjHO6EuQu7dzlbVkqKzFr+3/0eRBJd+Zs3xjJhM/YZAhCwzGxC8Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" />
+    
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+@{ var isAuthenticated = User?.Identity?.IsAuthenticated == true; var isAdmin = User?.IsInRole("Admin") == true; }
+<body class="application-shell">
+    <header class="site-header shadow-sm">
+        <div class="site-header__utility">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2 text-uppercase small tracking-wide text-white-50">
+                    <i class="fas fa-building-columns"></i>
+                    National Department of Tourism
+                </div>
+                <div class="d-flex align-items-center gap-3 small">
+                    <span class="d-none d-md-inline text-white-50">
+                        <i class="fas fa-phone me-1"></i> +27 (0) 12 310 3911
+                    </span>
+                    <span class="d-none d-md-inline text-white-50">
+                        <i class="fas fa-envelope me-1"></i> recruitment@tourism.gov.za
+                    </span>
+                    @if (isAuthenticated && isAdmin)
+                    {
+                        <div class="admin-chip d-flex align-items-center gap-2 text-uppercase fw-semibold text-white">
+                            <i class="fas fa-shield-halved"></i>
+                            Admin Mode
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="text-white" asp-controller="Admin" asp-action="Login">
+                            <i class="fas fa-lock me-1"></i> Secure Admin Access
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-lg site-header__nav">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-3" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/brand/dept-tourism-logo.png" alt="Department of Tourism, Republic of South Africa" class="brand-mark" />
+                    <div class="brand-divider d-none d-md-block"></div>
+                    <div class="brand-text d-none d-lg-block">
+                        <span class="brand-title">National eRecruitment Portal</span>
+                        <span class="brand-subtitle">Empowering people-centred public service</span>
+                    </div>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home me-2"></i>Home
+                            </a>
+                        </li>
+                        @if (!isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Jobs" asp-action="Index">
+                                    <i class="fas fa-briefcase me-2"></i>Opportunities
+                                </a>
+                            </li>
+                        }
+                        @if (isAuthenticated)
+                        {
+                            if (isAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AdminApplications" asp-action="MasterListHub">
+                                        <i class="fas fa-clipboard-list me-2"></i>MasterList Hub
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link @(isAdmin ? "nav-link-admin" : string.Empty)" asp-controller="@(isAdmin ? "Jobs" : "Applicant")" asp-action="@(isAdmin ? "Index" : "Dashboard")">
+                                    <i class="fas @(isAdmin ? "fa-gauge-high" : "fa-chart-line") me-2"></i>My Dashboard
+                                    @if (isAdmin)
+                                    {
+                                        <span class="badge badge-admin ms-2">Admin</span>
+                                    }
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-2"></i>Account
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Applicant" asp-action="Profile">
+                                            <i class="fas fa-id-badge me-2"></i>My Profile
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button class="dropdown-item" type="submit">
+                                                <i class="fas fa-arrow-right-from-bracket me-2"></i>Sign Out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item d-lg-none">
+                            @if (isAuthenticated)
+                            {
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-outline-light w-100 mt-3" type="submit">
+                                        <i class="fas fa-arrow-right-from-bracket me-2"></i>Sign Out
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a class="btn btn-primary-gradient w-100 mt-3" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-right-to-bracket me-2"></i>Applicant Sign In
+                                </a>
+                            }
+                        </li>
+                    </ul>
+
+                    @if (!isAuthenticated)
+                    {
+                        <div class="nav-actions ms-lg-4 d-none d-lg-flex">
+                            <a class="btn btn-ghost" asp-controller="Account" asp-action="Login">
+                                <i class="fas fa-right-to-bracket me-2"></i>Applicant Sign In
+                            </a>
+                            <a class="btn btn-primary-gradient" asp-controller="Account" asp-action="Register">
+                                <i class="fas fa-user-plus me-2"></i>Create Profile
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="nav-actions ms-lg-4 d-none d-lg-flex">
+                            <a class="btn btn-primary-gradient" asp-controller="@(isAdmin ? "Jobs" : "Applicant")" asp-action="@(isAdmin ? "Index" : "Dashboard")">
+                                <i class="fas @(isAdmin ? "fa-briefcase" : "fa-gauge-high") me-2"></i>@(isAdmin ? "Manage Opportunities" : "Back to Dashboard")
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+
+        <div class="site-header__shadow"></div>
+    </header>
+
+    @if (TempData["Flash"] is string flash)
+    {
+        <div class="flash-banner alert alert-dismissible fade show" role="alert">
+            <div class="container">
+                <div class="flash-banner__message">
+                    <i class="fas fa-info-circle me-2"></i>@flash
+                </div>
+                <button class="flash-banner__dismiss" type="button" data-bs-dismiss="alert" aria-label="Close">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const flashMessage = '@Html.Raw(flash)';
+                const messageType = '@(TempData["FlashType"] ?? "info")';
+                
+                if (flashMessage && toastr) {
+                    toastr[messageType](flashMessage);
+                }
+            });
+        </script>
+    }
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__gradient"></div>
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-5">
+                    <div class="footer-brand">
+                        <img src="~/images/brand/dept-tourism-logo.png" alt="Department of Tourism crest" class="footer-logo" />
+                        <div>
+                            <h5>National eRecruitment Portal</h5>
+                            <p class="mb-0 text-white-50">
+                                Driving inclusive tourism employment through a transparent, digital-first hiring experience.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="text-uppercase text-white-50">Need Assistance?</h6>
+                    <ul class="list-unstyled footer-list">
+                        <li><i class="fas fa-envelope me-2"></i> recruitment@tourism.gov.za</li>
+                        <li><i class="fas fa-phone me-2"></i> +27 (0) 12 310 3911</li>
+                        <li><i class="fas fa-clock me-2"></i> Monday – Friday, 08:00 – 16:30</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="text-uppercase text-white-50">Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-footer" asp-controller="Jobs" asp-action="Index">
+                            <i class="fas fa-briefcase me-2"></i>Explore Vacancies
+                        </a>
+                        <a class="btn btn-footer" asp-controller="Account" asp-action="Register">
+                            <i class="fas fa-user-plus me-2"></i>Create Applicant Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-meta">
+                <span>&copy; @DateTime.UtcNow.Year Department of Tourism. All Rights Reserved.</span>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-white-50">POPIA Notice</a>
+                    <a href="#" class="text-white-50">Terms of Use</a>
+                    <a href="#" class="text-white-50">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDMvn3qJJra0juvsUOUkXfksSnxlFRsQc0ggT2MFdIOMsDmEFlF8rpl1HwqvP8/iBjA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Toastr Configuration -->
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "slideDown",
+            "hideMethod": "slideUp"
+        };
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

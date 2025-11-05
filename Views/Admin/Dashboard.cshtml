@@ -1,0 +1,320 @@
+@model ERecruitment.Web.Services.AdminDashboardModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <!-- Page Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-shield-alt me-3 text-warning"></i>Admin Dashboard
+                </h1>
+                <p class="text-muted mb-0">Monitor recruitment activities and manage applications</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="btn-group">
+                    <a class="btn btn-outline-primary" asp-controller="Jobs" asp-action="Index">
+                        <i class="fas fa-briefcase me-2"></i>Manage Jobs
+                    </a>
+                    <a class="btn btn-outline-primary" asp-controller="AdminApplications" asp-action="Index">
+                        <i class="fas fa-list me-2"></i>All Applications
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">@Model.TotalApplicants</div>
+                <div class="stat-label">Total Applicants</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-value">@Model.TotalApplications</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-value">@Model.ActiveApplications</div>
+                <div class="stat-label">Active Pipeline</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employment Equity Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Employment Equity Overview (Anonymized)</h2>
+        </div>
+        <div class="card-body">
+            @if (!Model.EquityOptInSummary.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i>No voluntary EE data captured yet.
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var item in Model.EquityOptInSummary)
+                    {
+                        <div class="col-md-4">
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-muted">@item.Key</span>
+                                    <span class="badge bg-primary fs-6">@item.Value</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="alert alert-warning mt-3 mb-0">
+                    <small>
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Individual EE responses remain hidden to protect applicant privacy in accordance with POPIA.
+                    </small>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Bulk Application Management -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="mb-0"><i class="fas fa-tasks me-2"></i>Application Management</h2>
+        </div>
+        <div class="card-body">
+            @if (Model.Applications.Any())
+            {
+                <form asp-action="BulkReject" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <input type="checkbox" class="form-check-input" id="selectAll" onclick="document.querySelectorAll('input[name=SelectedApplicationIds]').forEach(cb => cb.checked = this.checked)">
+                                    </th>
+                                    <th><i class="fas fa-briefcase me-2"></i>Role</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                    <th><i class="fas fa-calendar me-2"></i>Submitted</th>
+                                    <th><i class="fas fa-comment me-2"></i>Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var application in Model.Applications)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" name="SelectedApplicationIds" value="@application.Id" />
+                                        </td>
+                                        <td class="fw-bold">@application.JobTitle</td>
+                                        <td>
+                                            @if (application.Status == ApplicationStatus.Draft)
+                                            {
+                                                <span class="badge bg-secondary">Draft</span>
+                                            }
+                                            else if (application.Status == ApplicationStatus.Submitted)
+                                            {
+                                                <span class="badge bg-info">Submitted</span>
+                                            }
+                                            else if (application.Status == ApplicationStatus.Interview)
+                                            {
+                                                <span class="badge bg-success">Interview</span>
+                                            }
+                                            else if (application.Status == ApplicationStatus.Offer)
+                                            {
+                                                <span class="badge bg-success">Offer</span>
+                                            }
+                                            else if (application.Status == ApplicationStatus.Withdrawn)
+                                            {
+                                                <span class="badge bg-secondary">Withdrawn</span>
+                                            }
+                                            else if (application.Status == ApplicationStatus.Rejected)
+                                            {
+                                                <span class="badge bg-danger">Rejected</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">@application.Status</span>
+                                            }
+                                        </td>
+                                        <td class="text-muted">@(application.SubmittedAtUtc?.ToLocalTime().ToString("MMM dd, yyyy") ?? "—")</td>
+                                        <td>
+                                            @if (!string.IsNullOrWhiteSpace(application.RejectionReason))
+                                            {
+                                                <span class="text-danger"><i class="fas fa-times-circle me-1"></i>@application.RejectionReason</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted"><i class="fas fa-search me-1"></i>In review</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-top pt-4">
+                        <h5 class="mb-3"><i class="fas fa-envelope me-2"></i>Bulk Rejection Template</h5>
+                        <div class="mb-3 col-md-8">
+                            <label for="templateBody" class="form-label">Rejection Message</label>
+                            <textarea id="templateBody" name="TemplateBody" class="form-control form-control-sm" rows="4" placeholder="Hi {{firstName}}, thank you for applying..." required></textarea>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Use {{firstName}} and {{lastName}} for personalization
+                            </small>
+                        </div>
+                        <button class="btn btn-danger btn-lg" type="submit" onclick="return confirm('Are you sure you want to reject the selected applications? This action will send rejection emails.');">
+                            <i class="fas fa-times-circle me-2"></i>Bulk Reject & Notify
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <div class="text-muted mb-3" style="font-size: 3rem;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h4 class="text-muted">No Applications Yet</h4>
+                    <p class="text-muted mb-0">Applications will appear here once candidates start applying.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Quick Links Row -->
+    <div class="row g-4 mb-4">
+        <!-- Audit Trail Card -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-0"><i class="fas fa-history me-2"></i>Recent Audit Trail</h2>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Audit" asp-action="Index">
+                                <i class="fas fa-list me-1"></i>View All
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (!Model.AuditLog.Any())
+                    {
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No audit entries yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="timeline">
+                            @foreach (var entry in Model.AuditLog.OrderByDescending(a => a.TimestampUtc).Take(5))
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <small class="text-muted d-block mb-1">
+                                            <i class="fas fa-clock me-1"></i>@entry.TimestampUtc.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                        </small>
+                                        <strong>@entry.Actor</strong>
+                                        <p class="mb-0 text-muted">@entry.Action</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Deliveries Card -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-0"><i class="fas fa-envelope me-2"></i>Recent Email Deliveries</h2>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Email" asp-action="Index">
+                                <i class="fas fa-list me-1"></i>View All
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (!Model.EmailDeliveries.Any())
+                    {
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No emails sent yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var e in Model.EmailDeliveries.Take(5))
+                            {
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="flex-grow-1">
+                                            <strong class="d-block">@e.Subject</strong>
+                                            <small class="text-muted">
+                                                <i class="fas fa-user me-1"></i>@e.ToEmail
+                                            </small>
+                                        </div>
+                                        <div>
+                                            @if (e.Status == EmailDeliveryStatus.Sent)
+                                            {
+                                                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Sent</span>
+                                            }
+                                            else if (e.Status == EmailDeliveryStatus.Failed)
+                                            {
+                                                <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Failed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning"><i class="fas fa-clock me-1"></i>@e.Status</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>@e.TimestampUtc.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                    </small>
+                                    @if (!string.IsNullOrWhiteSpace(e.Error))
+                                    {
+                                        <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2">
+                                            <small>@e.Error</small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+@model ERecruitment.Web.Models.JobPosting
+@{
+    ViewData["Title"] = "Confirm Application";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2 class="mb-0">Confirm Your Application</h2>
+                </div>
+                <div class="card-body p-5">
+                    <div class="text-center">
+                        <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
+                        <h1 class="display-5 fw-bold">Ready to Submit?</h1>
+                        <p class="lead text-muted">You are applying for the position of: <strong>@Model.Title</strong></p>
+                    </div>
+                    <hr />
+                    <p class="mt-4 text-center">
+                        You have successfully answered all screening questions. Please review the job title above and click the button below to formally submit your application.
+                    </p>
+                    <div class="mt-5 d-grid">
+                        <form asp-action="SubmitScreenedApplication" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-paper-plane me-2"></i> Confirm & Submit Application
+                            </button>
+                        </form>
+                    </div>
+                     <div class="text-center mt-3">
+                        <a asp-controller="Applicant" asp-action="Dashboard" class="btn btn-link">Cancel and return to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

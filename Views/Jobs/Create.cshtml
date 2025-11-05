@@ -1,0 +1,250 @@
+@model ERecruitment.Web.ViewModels.CreateJobPostingViewModel
+@{
+    ViewData["Title"] = "Create Government Job Posting";
+}
+
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-file-contract me-3 text-primary"></i>Create Government Job Posting
+                </h1>
+                <p class="text-muted mb-0">Create a compliant job posting following official government recruitment format</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a class="btn btn-outline-secondary" asp-action="Index">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Jobs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form asp-action="Create" method="post" novalidate id="jobPostingForm">
+        @Html.AntiForgeryToken()
+        
+        <div asp-validation-summary="All" class="alert alert-danger mb-4"></div>
+
+        <!-- PRIMARY IDENTIFICATION SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Primary Identification</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="PostNumber" class="form-label fw-bold">Post Number <span class="text-danger">*</span></label>
+                        <input asp-for="PostNumber" class="form-control" placeholder="e.g., 36/111" />
+                        <span asp-validation-for="PostNumber" class="text-danger small"></span>
+                        <small class="text-muted">Sequential post number</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="ReferenceNumber" class="form-label fw-bold">Reference Number <span class="text-danger">*</span></label>
+                        <input asp-for="ReferenceNumber" class="form-control" placeholder="e.g., DT 14/2025" />
+                        <span asp-validation-for="ReferenceNumber" class="text-danger small"></span>
+                        <small class="text-muted">Department reference code</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Department" class="form-label fw-bold">Department/Ministry</label>
+                        <input asp-for="Department" class="form-control" placeholder="e.g., Department of Tourism" />
+                        <span asp-validation-for="Department" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold">Job Title <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control form-control-lg" placeholder="e.g., DEPUTY DIRECTOR: INFORMATION TECHNOLOGY AUDIT" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                    <small class="text-muted">Full official job title in uppercase</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- SALARY SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Salary Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="SalaryRange" class="form-label fw-bold">Salary Range <span class="text-danger">*</span></label>
+                    <textarea asp-for="SalaryRange" rows="4" class="form-control" placeholder="e.g., R896 436 per annum, (all-inclusive remuneration package consisting of a basic salary, the State's contribution to the Government Employees Pension Fund and a flexible portion that may be structured according to the MMS dispensation)"></textarea>
+                    <span asp-validation-for="SalaryRange" class="text-danger small"></span>
+                    <small class="text-muted">Enter the complete salary information including all details about remuneration package, pension contributions, and flexible portions.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTRE SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Work Centre/Location</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label asp-for="Centre" class="form-label fw-bold">Centre <span class="text-danger">*</span></label>
+                        <input asp-for="Centre" class="form-control" placeholder="e.g., Pretoria" />
+                        <span asp-validation-for="Centre" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Province" class="form-label fw-bold">Province</label>
+                        <input asp-for="Province" class="form-control" placeholder="e.g., Gauteng" />
+                        <span asp-validation-for="Province" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REQUIREMENTS SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Requirements</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="Requirements" class="form-label fw-bold">Requirements <span class="text-danger">*</span></label>
+                    <textarea asp-for="Requirements" rows="12" class="form-control" placeholder="Enter all requirements including qualifications, experience, certifications, knowledge, skills, and other requirements..."></textarea>
+                    <span asp-validation-for="Requirements" class="text-danger small"></span>
+                    <small class="text-muted">Include all requirements: qualifications, experience, professional certifications, knowledge of legislation/frameworks, skills & competencies, and other requirements (driver's license, travel, etc.)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- DUTIES SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Duties and Responsibilities</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="DutiesDescription" class="form-label fw-bold">Duties Description <span class="text-danger">*</span></label>
+                    <textarea asp-for="DutiesDescription" rows="12" class="form-control" placeholder="Provide a comprehensive description of duties and responsibilities..."></textarea>
+                    <span asp-validation-for="DutiesDescription" class="text-danger small"></span>
+                    <small class="text-muted">Detailed list of job responsibilities and duties</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENQUIRIES SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Enquiries</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="EnquiriesContactPerson" class="form-label fw-bold">Contact Person <span class="text-danger">*</span></label>
+                        <input asp-for="EnquiriesContactPerson" class="form-control" placeholder="e.g., Ms T Sibiya" />
+                        <span asp-validation-for="EnquiriesContactPerson" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="EnquiriesPhone" class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
+                        <input asp-for="EnquiriesPhone" class="form-control" placeholder="e.g., (012) 444 6291" />
+                        <span asp-validation-for="EnquiriesPhone" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APPLICATIONS SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Applications</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ApplicationEmail" class="form-label fw-bold">Application Email <span class="text-danger">*</span></label>
+                        <input asp-for="ApplicationEmail" type="email" class="form-control" placeholder="e.g., Recruitment14@tourism.gov.za" />
+                        <span asp-validation-for="ApplicationEmail" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ClosingDate" class="form-label fw-bold">Closing Date <span class="text-danger">*</span></label>
+                        <input asp-for="ClosingDate" type="date" class="form-control" />
+                        <span asp-validation-for="ClosingDate" class="text-danger small"></span>
+                        <small class="text-muted">Date when applications close</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light border-dark">
+                <h5 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Additional Notes</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="AdditionalNotes" class="form-label fw-bold">Additional Notes</label>
+                    <textarea asp-for="AdditionalNotes" rows="6" class="form-control" placeholder="Any other compliance or additional information"></textarea>
+                    <span asp-validation-for="AdditionalNotes" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREENING QUESTIONS SECTION -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Screening Questions (Killer Questions)</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="KillerQuestionsText" class="form-label fw-bold">Screening Questions</label>
+                    <textarea asp-for="KillerQuestionsText" rows="6" class="form-control" placeholder="Enter one mandatory screening question per line. Leave empty if not required."></textarea>
+                    <span asp-validation-for="KillerQuestionsText" class="text-danger small"></span>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>About Screening Questions:</strong> These are mandatory requirements that applicants must meet. If an applicant indicates they don't meet a requirement, their application cannot proceed.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="card shadow-sm mb-5">
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-lg btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-lg btn-primary">
+                        <i class="fas fa-check-circle me-2"></i>Create Job Posting
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Help Section -->
+    <div class="card mt-5 bg-light">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-lightbulb me-2 text-warning"></i>Tips for Creating Government-Compliant Job Postings</h5>
+            <ul class="mb-0">
+                <li><strong>Follow Official Format:</strong> Ensure all sections match the standard government recruitment document structure</li>
+                <li><strong>Be Comprehensive:</strong> Include all required details in each section for compliance</li>
+                <li><strong>Use Official Language:</strong> Maintain formal, professional tone throughout</li>
+                <li><strong>Include All Requirements:</strong> Clearly specify qualifications, experience, certifications, and skills</li>
+                <li><strong>Employment Equity:</strong> Include EE requirements and diversity statements as appropriate</li>
+                <li><strong>Contact Information:</strong> Ensure enquiry and application contact details are accurate</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Set minimum date for closing date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const closingDateInput = document.querySelector('#ClosingDate');
+            if (closingDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                closingDateInput.setAttribute('min', today);
+            }
+        });
+    </script>
+}

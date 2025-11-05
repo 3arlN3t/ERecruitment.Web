@@ -1,0 +1,1436 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Apply for a position";
+    var yesNoOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Yes", Value = "true" },
+        new SelectListItem { Text = "No", Value = "false" }
+    };
+    var ethnicityOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "African", Value = "African" },
+        new SelectListItem { Text = "White", Value = "White" },
+        new SelectListItem { Text = "Coloured", Value = "Coloured" },
+        new SelectListItem { Text = "Indian", Value = "Indian" },
+        new SelectListItem { Text = "Other", Value = "Other" }
+    };
+    var genderOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Male", Value = "Male" },
+        new SelectListItem { Text = "Female", Value = "Female" },
+        new SelectListItem { Text = "Other", Value = "Other" }
+    };
+    var languageOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "English", Value = "English" },
+        new SelectListItem { Text = "Zulu", Value = "Zulu" },
+        new SelectListItem { Text = "Afrikaans", Value = "Afrikaans" },
+        new SelectListItem { Text = "Northern Sotho", Value = "Northern Sotho" },
+        new SelectListItem { Text = "Setswana", Value = "Setswana" },
+        new SelectListItem { Text = "Sesotho", Value = "Sesotho" },
+        new SelectListItem { Text = "Tsonga", Value = "Tsonga" },
+        new SelectListItem { Text = "Swati", Value = "Swati" },
+        new SelectListItem { Text = "Venda", Value = "Venda" },
+        new SelectListItem { Text = "Ndebele", Value = "Ndebele" },
+        new SelectListItem { Text = "Xhosa", Value = "Xhosa" }
+    };
+    var proficiencyOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Good", Value = "Good" },
+        new SelectListItem { Text = "Fair", Value = "Fair" },
+        new SelectListItem { Text = "Poor", Value = "Poor" }
+    };
+}
+
+@section Styles {
+    <!-- Tempus Dominus CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+    <!-- Z83 Custom CSS -->
+    <link rel="stylesheet" href="~/css/z83.css" />
+}
+
+<div class="wrapper wrapper-full-page">
+    <div class="content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12">
+                    <div class="card" style="margin-top:10px;border-style:none;">
+                    <!-- Z83 Header -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-6 d-none d-md-block" style="vertical-align: bottom;">
+                                    <span id="rcorners2" class="rcorners2">G.P.S 81/971431</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <img src="~/images/sa_emblem.jpeg" alt="SA Emblem" style="max-width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7 d-none d-md-block">
+                            <div class="row">
+                                <h4>Republic of South Africa</h4>
+                            </div>
+                            <div class="row">
+                                <p id="rcorners1" class="rcorners1">APPLICATION FOR EMPLOYMENT</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-none d-md-block">
+                            <div class="row">
+                                Z83 (81/971431)
+                            </div>
+                            <div class="row">
+                                <p class="boldbox">Effective 01 January 2021</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Profile" method="post" enctype="multipart/form-data" id="add-edit-form" autocomplete="off">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Assistance Alert 
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    If you need any assistance, please contact us at <a href="mailto:support@ngntelecoms.com" class="alert-link">support@ngntelecoms.com</a>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>-->
+
+                        <!-- Handy Hints Alert 
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    <h5 class="alert-heading">Handy Hints for Completing Your Application</h5>
+                                    <ul class="mb-0">
+                                        <li><strong>Reference Number</strong>
+                                            <ul>
+                                                <li>Start typing the job post reference number (e.g., DHET01/09/2025) in the "Reference number (as stated in the advert)" field. <strong>Do not</strong> copy/paste into this field or include spaces in the reference number.</li>
+                                                <li>A list will appear — please allow a few moments, as internet speed may cause a delay.</li>
+                                                <li>Select the correct reference number from the list.</li>
+                                                <li>The "Position Name" will automatically populate. <strong>Do not</strong> edit this field.</li>
+                                            </ul>
+                                        </li>
+                                        <li><strong>If the list does not appear:</strong>
+                                            <ul>
+                                                <li>Try refreshing the page and re-entering the reference number.</li>
+                                                <li>If the issue persists, try using a different browser (e.g., Chrome, Edge, or Firefox).</li>
+                                            </ul>
+                                        </li>
+                                        <li><strong>General Tips</strong>
+                                            <ul>
+                                                <li>The speed and responsiveness of this form may be affected by your internet connection. If you experience delays, check your connectivity and allow the form a moment to update. Ensure you have a stable internet connection.</li>
+                                                <li>Be patient — some fields may take a few seconds to load.</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>-->
+
+                        <div class="row">
+                            <!-- Sidebar with Information -->
+                            <div class="col-md-3">
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        WHAT IS THE PURPOSE OF THIS FORM
+                                    </div>
+                                    <div class="card-body">
+                                        <p>WHAT IS THE PURPOSE OF THIS FORM</p>
+                                        <p>
+                                            To assist a government department in selecting a person for an advertised post.
+                                            This form may be used to identify candidates to be interviewed. You need to fill in all
+                                            sections of this form completely, accurately and legibly.
+                                            This will help to process your application fairly.
+                                        </p>
+
+                                        <p>WHO SHOULD COMPLETE THIS FORM</p>
+                                        <p>
+                                            Only persons wishing to apply for an advertised position in a government department.
+                                        </p>
+                                        <p>ADDITIONAL INFORMATION</p>
+                                        <p>
+                                            This form requires basic information. Candidates who are selected for interviews will be
+                                            requested to furnish additional certified information that may be required to make a
+                                            final selection.
+                                        </p>
+                                        <p>SPECIAL NOTES</p>
+                                        <ul>
+                                            <li>1 – All information will be treated with the strictest confidentiality and will not
+                                                be disclosed or used for any other purpose than to assess the suitability of a
+                                                person, except in so far as it may be required and permitted by law. Your personal
+                                                details must correspond with the details in your ID or passport.
+                                            </li>
+                                            <li>2 – Passport number in the case of non-South Africans.</li>
+                                            <li>3 – This information is required to enable the department to comply with the
+                                                Employment Equity Act, 1998.
+                                            </li>
+                                            <li>4 – This information will only be taken into account if it directly relates to the
+                                                requirements of the position.
+                                            </li>
+                                            <li>5- The Executive Authority shall consider the criminal record (s) against the nature
+                                                of the job functions in line with internal information security and disciplinary
+                                                code.
+                                            </li>
+                                            <li>6- The applicant may submit additional information separately where the space
+                                                provided is not sufficient.
+                                            </li>
+                                            <li>7- Departments must accept certified documents that accompany the application(s)
+                                                with certification that is up to 6 months, unless the advert prescribes a longer
+                                                period.
+                                            </li>
+                                            <li>8- Each application for employment form must be duly signed and initialed by the
+                                                applicant. Failure to sign this form may lead to disqualification of the application
+                                                during the selection process.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Form Content -->
+                            <div class="col-md-8">
+                                <!-- Section A: The Advertised Post -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        A. THE ADVERTISED POST (All sections of this form are compulsory)
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Reference number (as stated in the advert)
+                                            </div>
+                                            <div class="col-md-6">
+                                                Department where the position was advertised
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <meta name="csrf-token" content="@Context.Request.Cookies[".AspNetCore.Antiforgery.Token"]"/>
+                                            <div class="col-md-6">
+                                                <input asp-for="ReferenceNumber" class="form-control form-control-inline" 
+                                                       placeholder="Please Enter Job Reference Number Here" />
+                                                <div id="job_list"></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input asp-for="DepartmentName" class="form-control" 
+                                                       placeholder="Department" value="DEPARTMENT OF TOURISM" autofocus="autofocus" disabled="disabled" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Position Name
+                                            </div>
+                                            <div class="col-md-6">
+                                                If you are offered the position, when can you start OR how much notice must you
+                                                serve with your current employer?
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input asp-for="PositionName" class="form-control" 
+                                                       placeholder="Position Name" required autofocus="autofocus" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select asp-for="AvailabilityNotice" class="form-select" required autofocus="autofocus">
+                                                    <option value="Available Immediately">Available Immediately</option>
+                                                    <option value="1 Week">1 Week</option>
+                                                    <option value="2 Weeks">2 Weeks</option>
+                                                    <option value="1 Month">1 Month</option>
+                                                    <option value="2 Months">2 Months</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section B: Personal Information -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        B. PERSONAL INFORMATION<sup>1</sup>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Surname</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="LastName" class="form-control" 
+                                                       placeholder="Surname / Last Name" required autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Full names</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="FirstName" class="form-control" 
+                                                       placeholder="Full Names" required autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Date Of Birth</div>
+                                            <div class="col-md-6">
+                                                <div class="input-group date" id="date_of_birth">
+                                                    <input type="text" class="form-control" required name="DateOfBirth" id="date_of_birth_cb" 
+                                                           value="@(Model.DateOfBirth?.ToString("yyyy-MM-dd"))" />
+                                                    <span class="input-group-text">
+                                                        <span class="fa fa-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Identity Number (Required if SA citizen)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="SaIdNumber" class="form-control" 
+                                                       placeholder="ID Number" autofocus="autofocus" required onchange="Check_ID()" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Passport number</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="PassportNumber" class="form-control" 
+                                                       placeholder="Passport Number" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Ethnicity*</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="EquityEthnicity" asp-items="ethnicityOptions" class="form-select" required autofocus="autofocus"></select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Gender*</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="EquityGender" asp-items="genderOptions" class="form-select" required autofocus="autofocus"></select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Do you have a disability?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="HasDisability" class="form-select" autofocus="autofocus">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Are you a South African citizen?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="IsSouthAfrican" id="sa_citizen" class="form-select" autofocus="autofocus" onchange="CheckValue('citizen')">
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="nationality_div">
+                                            <div class="col-md-6">If no, what is your nationality?</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="Nationality" class="form-control" 
+                                                       placeholder="Nationality" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="work_permit_div">
+                                            <div class="col-md-6">Do you have a valid work permit? (only if non-South African)</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="HasWorkPermit" class="form-select" autofocus="autofocus">
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Have you been convicted or found guilty of a criminal offence (including an admission of guilt)?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="HasCriminalRecord" id="guilty_of_offence" class="form-select" autofocus="autofocus" onchange="CheckValue('guilty_of_offence')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="guilty_of_offence_div">
+                                            <div class="col-md-6">If yes (provide the details)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="CriminalRecordDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Do you have any pending criminal case against you?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="HasPendingCase" id="pending_criminal_case" class="form-select" autofocus="autofocus" onchange="CheckValue('pending_criminal_case')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="pending_criminal_case_div">
+                                            <div class="col-md-6">If yes, (provide the details)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="PendingCaseDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Have you ever been dismissed for misconduct from the Public Service?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="DismissedForMisconduct" id="dismissed_for_misconduct" class="form-select" autofocus="autofocus" onchange="CheckValue('dismissed_for_misconduct')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="dismissed_for_misconduct_div">
+                                            <div class="col-md-6">If yes (provide the details)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="DismissedDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Do you have any pending disciplinary case against you?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="PendingDisciplinaryCase" id="pending_disciplinary" class="form-select" autofocus="autofocus" onchange="CheckValue('pending_disciplinary')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="pending_disciplinary_div">
+                                            <div class="col-md-6">If yes (provide the details)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="PendingDisciplinaryDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Have you resigned from a recent job pending any disciplinary proceeding against you?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="ResignedPendingDisciplinary" id="resigned_pending_disciplinary" class="form-select" autofocus="autofocus" onchange="CheckValue('resigned_pending_disciplinary')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="resigned_pending_disciplinary_div">
+                                            <div class="col-md-6">If yes, (please note that the provisions of the Public Service Act shall apply).</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="ResignedPendingDisciplinaryDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Have you been discharged or retired from the Public Service on grounds of Ill-health or on condition that you cannot be re-employed?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="DischargedForIllHealth" id="discharged_on_ill_health" class="form-select" autofocus="autofocus" onchange="CheckValue('discharged_on_ill_health')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="discharged_on_ill_health_div">
+                                            <div class="col-md-6">If yes, (provide the details)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="DischargedDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Are you conducting business with the State or are you a Director of a Public or Private company conducting business with the State?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="BusinessWithState" id="business_with_state" class="form-select" autofocus="autofocus" onchange="CheckValue('business_with_state')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="business_with_state_div">
+                                            <div class="col-md-6">If yes, (provide the details)</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="BusinessDetails" class="form-control" 
+                                                       placeholder="Please provide details" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">In the event that you are employed in the Public Service, will you immediately relinquish such business interests?</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="WillRelinquishBusiness" class="form-select" autofocus="autofocus">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Please specify the total number of years of experience you have</div>
+                                            <div class="col-md-6"></div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Public Sector</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="PublicSectorYears" type="text" class="form-control" 
+                                                       placeholder="Number of Years - Public Sector" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Private Sector</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="PrivateSectorYears" type="text" class="form-control" 
+                                                       placeholder="Number of Years - Private Sector" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">If you were previously employed in the Public Service, is there any condition that prevents your re-appointment</div>
+                                            <div class="col-md-6">
+                                                <select asp-for="ReappointmentCondition" id="reappointment_prevented" class="form-select" autofocus="autofocus" onchange="CheckValue('reappointment_prevented')">
+                                                    <option value="false">No</option>
+                                                    <option value="true">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="reappointment_prevented_name_div">
+                                            <div class="col-md-6">Please Provide the Name of the Department</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="ReappointmentDepartment" class="form-control" 
+                                                       placeholder="Please enter Name of the Previous Employing Department" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body hidden" id="reappointment_prevented_details_div">
+                                            <div class="col-md-6">Provide indicate the nature of the condition.</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="ReappointmentConditionDetails" class="form-control" 
+                                                       placeholder="Please indicate the nature of the condition" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">If your profession or occupation requires official registration, provide date and particulars of registration</div>
+                                            <div class="col-md-6"></div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Date</div>
+                                            <div class="col-md-6">
+                                                <div class='input-group date' id='profession_reg_date'>
+                                                    <input type='text' class="form-control" name='ProfessionalRegistrationDate' 
+                                                           value="@(Model.ProfessionalRegistrationDate?.ToString("yyyy-MM-dd"))" />
+                                                    <span class="input-group-text">
+                                                        <span class="fa fa-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Institution Name</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="ProfessionalInstitution" class="form-control" 
+                                                       placeholder="Institute Name" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-6">Reg No</div>
+                                            <div class="col-md-6">
+                                                <input asp-for="ProfessionalRegistrationNumber" class="form-control" 
+                                                       placeholder="Professional Registration Number" autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section C: Contact Details -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        C. CONTACT DETAILS AND MEDIUM OF COMMUNICATIONS
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-3">Preferred language for correspondence</div>
+                                            <div class="col-md-9">
+                                                <select asp-for="PreferredLanguage" asp-items="languageOptions" class="form-select" autofocus="autofocus"></select>
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-3">Email</div>
+                                            <div class="col-md-9">
+                                                <input asp-for="ContactEmail" type="email" class="form-control" 
+                                                       placeholder="Email Address" required autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-3">Contact Number / Mobile Number <br /> (eg. 0123125911)</div>
+                                            <div class="col-md-9">
+                                                <input asp-for="PhoneNumber" type="text" id="contact-mobile" class="form-control" 
+                                                       placeholder="Contact / Mobile Number" required autofocus="autofocus" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section D: Language Proficiency -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        D. SOUTH AFRICAN OFFICIAL LANGUAGE PROFICIENCY – state 'good', 'fair', or 'poor'
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <input type="hidden" id="language_count" name="language_count" value="@Model.Languages.Count" />
+                                            <div class="col-md-3">Language</div>
+                                            <div class="col-md-9">
+                                                @for (int i = 0; i < (Model.Languages.Count > 0 ? Model.Languages.Count : 1); i++)
+                                                {
+                                                    var idx = i;
+                                                    <div class="language-section" id="language_section_@idx">
+                                                        <div class="row z83_form_body">
+                                                            Language Name
+                                                            <select name="Languages[@idx].LanguageName" id="language_name[@idx]" class="form-select" autofocus="autofocus">
+                                                                @foreach (var lang in languageOptions)
+                                                                {
+                                                                    if (Model.Languages.Count > idx && Model.Languages[idx].LanguageName == lang.Value)
+                                                                    {
+                                                                        <option value="@lang.Value" selected>@lang.Text</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@lang.Value">@lang.Text</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Speak Proficiency
+                                                            <select name="Languages[@idx].SpeakProficiency" id="language_speak_proficiency[@idx]" class="form-select" autofocus="autofocus">
+                                                                @foreach (var prof in proficiencyOptions)
+                                                                {
+                                                                    if (Model.Languages.Count > idx && Model.Languages[idx].SpeakProficiency == prof.Value)
+                                                                    {
+                                                                        <option selected>@prof.Text</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option>@prof.Text</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Write and Read Proficiency
+                                                            <select name="Languages[@idx].ReadWriteProficiency" id="language_rw_proficiency[@idx]" class="form-select" autofocus="autofocus">
+                                                                @foreach (var prof in proficiencyOptions)
+                                                                {
+                                                                    if (Model.Languages.Count > idx && Model.Languages[idx].ReadWriteProficiency == prof.Value)
+                                                                    {
+                                                                        <option selected>@prof.Text</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option>@prof.Text</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <hr />
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div name="additional_language" id="additional_language"></div>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-9">
+                                                <div class="row z83_button_start">
+                                                    <button type="button" id="add_language" onclick="AddLanguageSection(); return false;" class="form-control btn btn-primary">
+                                                        Add Another Language
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section E: Formal Qualifications -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        E. FORMAL QUALIFICATION<sup>7</sup> (from highest to the lowest)
+                                    </div>
+                                    <div class="card-body">
+                                        <input type="hidden" id="qualification_count" name="qualification_count" value="@Model.Qualifications.Count" />
+                                        @for (int i = 0; i < (Model.Qualifications.Count > 0 ? Model.Qualifications.Count : 1); i++)
+                                        {
+                                            var idx = i;
+                                            <div class="qualification-section" id="qualification_section_@idx">
+                                                <div class="row">
+                                                    <div class="col-md-3">Name of Institution</div>
+                                                    <div class="col-md-9">
+                                                        <div class="row z83_form_body">
+                                                            Name of Institution
+                                                            <input name="Qualifications[@idx].InstitutionName" class="form-control" 
+                                                                   placeholder="Name of Institution" value="@(Model.Qualifications.Count > idx ? Model.Qualifications[idx].InstitutionName : "")" required autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Name of qualification obtained
+                                                            <input type="text" name="Qualifications[@idx].QualificationName" class="form-control" 
+                                                                   placeholder="Name of Qualification" value="@(Model.Qualifications.Count > idx ? Model.Qualifications[idx].QualificationName : "")" required autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Student Number
+                                                            <input name="Qualifications[@idx].StudentNumber" class="form-control" 
+                                                                   placeholder="Student Number" value="@(Model.Qualifications.Count > idx ? Model.Qualifications[idx].StudentNumber : "")" required autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Year obtained
+                                                            <div class='input-group date' id='year_obtained_@idx'>
+                                                                <input type='text' class="form-control" name='Qualifications[@idx].YearObtained' id='year_obtained_txt_@idx' 
+                                                                       value="@(Model.Qualifications.Count > idx ? Model.Qualifications[idx].YearObtained : "")" />
+                                                                <span class="input-group-text">
+                                                                    <span class="fa fa-calendar"></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Status
+                                                            <select type="text" name="Qualifications[@idx].Status" class="form-select" autofocus="autofocus">
+                                                                @if (Model.Qualifications.Count > idx && Model.Qualifications[idx].Status == "In Progress")
+                                                                {
+                                                                    <option value="In Progress" selected>In Progress</option>
+                                                                    <option value="Completed">Completed</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="In Progress">In Progress</option>
+                                                                    <option value="Completed" selected>Completed</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        }
+                                        <div name="additional_qualification" id="additional_qualification"></div>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-9">
+                                                <div class="row z83_button_start">
+                                                    <button type="button" id="add-qualification" onclick="AddQualificationSection(); return false;" class="form-control btn btn-primary">
+                                                        Add Another Qualification
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section F: Work Experience -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        F. WORK EXPERIENCE (Also attach a detailed CV)
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-12" style="border-style: solid;border-width: thin;">
+                                                <p>
+                                                    <h3 class="document-upload-title mb-3">
+                                                        PLEASE CAPTURE MOST RECENT WORK EXPERIENCE FIRST
+                                                    </h3>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="position_count" name="position_count" value="@Model.WorkExperience.Count" />
+                                        @for (int i = 0; i < (Model.WorkExperience.Count > 0 ? Model.WorkExperience.Count : 1); i++)
+                                        {
+                                            var idx = i;
+                                            <div class="work-experience-section" id="work_experience_section_@idx">
+                                                <div class="row">
+                                                    <div class="col-md-3">@(i == 0 ? "Most Recent Employer" : "Employer")</div>
+                                                    <div class="col-md-9">
+                                                        <div class="row z83_form_body">
+                                                            @(i == 0 ? "Most Recent Employer Name" : "Employer Name")
+                                                            <input name="WorkExperience[@idx].EmployerName" class="form-control" 
+                                                                   placeholder="Employer Name" value="@(Model.WorkExperience.Count > idx ? Model.WorkExperience[idx].EmployerName : "")" required autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            @(i == 0 ? "Most Recent Post held" : "Post held")
+                                                            <input type="text" name="WorkExperience[@idx].PositionHeld" class="form-control" 
+                                                                   placeholder="Post Held" value="@(Model.WorkExperience.Count > idx ? Model.WorkExperience[idx].PositionHeld : "")" required autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            From
+                                                            <div class='input-group date' id='post_from_date_@idx'>
+                                                                <input type='text' class="form-control" name='WorkExperience[@idx].FromDate' id='post_from_date_txt_@idx' 
+                                                                       value="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].FromDate != null ? Model.WorkExperience[idx].FromDate?.ToString("yyyy-MM-dd") : "")" />
+                                                                <span class="input-group-text">
+                                                                    <span class="fa fa-calendar"></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            To
+                                                            <div class='input-group date' id='post_to_date_@idx'>
+                                                                <input type='text' class="form-control" name='WorkExperience[@idx].ToDate' id='post_to_date_txt_@idx' 
+                                                                       value="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].ToDate != null ? Model.WorkExperience[idx].ToDate?.ToString("yyyy-MM-dd") : "")" />
+                                                                <span class="input-group-text">
+                                                                    <span class="fa fa-calendar"></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Status
+                                                            <select type="text" name="WorkExperience[@idx].Status" class="form-select" autofocus="autofocus">
+                                                                <option value="Current" selected="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].Status == "Current")">Current</option>
+                                                                <option value="Resigned" selected="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].Status == "Resigned")">Resigned</option>
+                                                                <option value="Retrenched" selected="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].Status == "Retrenched")">Retrenched</option>
+                                                                <option value="Dismissed" selected="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].Status == "Dismissed")">Dismissed</option>
+                                                                <option value="Other" selected="@(Model.WorkExperience.Count > idx && Model.WorkExperience[idx].Status == "Other")">Other</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Reason for leaving
+                                                            <input type="text" name="WorkExperience[@idx].ReasonForLeaving" class="form-control" 
+                                                                   placeholder="Reason for Leaving" value="@(Model.WorkExperience.Count > idx ? Model.WorkExperience[idx].ReasonForLeaving : "")" required autofocus="autofocus" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        }
+                                        <div name="additional_position" id="additional_position"></div>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-9">
+                                                <div class="row z83_button_start">
+                                                    <button type="button" id="add-employer" onclick="AddPositionSection(); return false;" class="form-control btn btn-primary">
+                                                        Add Another Employer / Position
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section G: References -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        G. REFERENCES
+                                    </div>
+                                    <div class="card-body">
+                                        <input type="hidden" id="reference_count" name="reference_count" value="@Model.References.Count" />
+                                        @for (int i = 0; i < (Model.References.Count > 0 ? Model.References.Count : 1); i++)
+                                        {
+                                            var idx = i;
+                                            <div class="reference-section" id="reference_section_@idx">
+                                                <div class="row">
+                                                    <div class="col-md-3">References</div>
+                                                    <div class="col-md-9">
+                                                        <div class="row z83_form_body">
+                                                            Name of reference
+                                                            <input name="References[@idx].Name" class="form-control" 
+                                                                   placeholder="Name of Reference" value="@(Model.References.Count > idx ? Model.References[idx].Name : "")" autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Relationship to you
+                                                            <input type="text" name="References[@idx].Relationship" class="form-control" 
+                                                                   placeholder="Relationship to Reference" value="@(Model.References.Count > idx ? Model.References[idx].Relationship : "")" autofocus="autofocus" />
+                                                        </div>
+                                                        <div class="row z83_form_body">
+                                                            Contact Number (Office Hours)
+                                                            <input type="text" name="References[@idx].ContactNumber" class="form-control" 
+                                                                   placeholder="Contact Details" value="@(Model.References.Count > idx ? Model.References[idx].ContactNumber : "")" autofocus="autofocus" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        }
+                                        <div name="additional_reference" id="additional_reference"></div>
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-9">
+                                                <div class="row z83_button_start">
+                                                    <button type="button" id="add-reference" onclick="AddReferenceSection(); return false;" class="form-control btn btn-primary">
+                                                        Add Another Reference
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Declaration -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        DECLARATION
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row z83_form_body">
+                                            <div class="col-md-12">
+                                                I declare that all the information provided (including any attachments) is complete and
+                                                correct to the best of my knowledge. I understand that any false information provided will
+                                                result in my application being disqualified or disciplinary action taken against me if I am
+                                                appointed:
+                                            </div>
+                                        </div>
+                                        <div class="row z83_form_body z83_form_section_end">
+                                            <div class="col-md-6">
+                                                I agree
+                                                <input type="checkbox" id="declaration" name="DeclarationAccepted" value="true" required autofocus="autofocus" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                Date
+                                                <div class='input-group date' id='declaration-date'>
+                                                    <input type='text' class="form-control" required name='DeclarationDate' id='declaration_date' 
+                                                           value="@(Model.DeclarationDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" />
+                                                    <span class="input-group-text">
+                                                        <span class="fa fa-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Signature -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        Signature
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div id="signature">
+                                                <canvas id="signature-pad" class="signature-pad" width="300px" height="200px"></canvas>
+                                                <input type="hidden" id="signature_url" name="SignatureData" />
+                                            </div>
+                                            <a style="cursor: pointer" onclick="clear_signature()">
+                                                Clear Signature <i class="fa fa-times-rectangle"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upload CV -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        Upload your CV
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h3 class="document-upload-title mb-3">
+                                                    Please upload your CV in .PDF format only <span class="highlight-size-limit">(maximum size: 25MB)</span>. Other file types will not be accepted, and applications without a .PDF CV will be automatically declined.
+                                                </h3>
+                                                <div class="mb-3 mt-3">
+                                                    <label for="cv_file" class="form-label">CV (Compulsory)</label>
+                                                    <input type="file" class="form-control" name="CvFile" id="cv_file" accept=".pdf" required />
+                                                </div>
+                                                @if (Model.ExistingCv != null)
+                                                {
+                                                    <small class="text-muted d-block mt-1">Current CV: <strong>@Model.ExistingCv.FileName</strong></small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upload Supporting Documentation -->
+                                <div class="card mb-3 cv-review">
+                                    <div class="card-header">
+                                        Upload Supporting Documentation
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h3 class="document-upload-title mb-3">
+                                                    Please upload each additional supporting document individually, selecting the correct document for each file.
+                                                </h3>
+
+                                                <div class="mb-3">
+                                                    <label for="id_file" class="form-label">ID/Passport (please attach if available)</label>
+                                                    <input type="file" class="form-control" name="IdDocumentFile" id="id_file" accept=".pdf, .jpg, .tif, .tiff, .doc, .docx, .xls, .xlsx, .png, .gif" />
+                                                    @if (Model.ExistingIdDocument != null)
+                                                    {
+                                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingIdDocument.FileName</strong></small>
+                                                    }
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="qualification_files" class="form-label">Qualification (please attach if available)</label>
+                                                    <input type="file" class="form-control" name="QualificationDocumentFile" id="qualification_files" accept=".pdf, .jpg, .tif, .tiff, .doc, .docx, .xls, .xlsx, .png, .gif" />
+                                                    @if (Model.ExistingQualificationDocument != null)
+                                                    {
+                                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingQualificationDocument.FileName</strong></small>
+                                                    }
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="dl_file" class="form-label">Drivers License (please attach if available)</label>
+                                                    <input type="file" class="form-control" name="DriversLicenseDocumentFile" id="dl_file" accept=".pdf, .jpg, .tif, .tiff, .doc, .docx, .xls, .xlsx, .png, .gif" />
+                                                    @if (Model.ExistingDriversLicenseDocument != null)
+                                                    {
+                                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingDriversLicenseDocument.FileName</strong></small>
+                                                    }
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="reference_files" class="form-label">Additional Information/References (at least 3 references if not already provided in Section G)</label>
+                                                    <input type="file" class="form-control" name="AdditionalDocumentFile" id="reference_files" accept=".pdf, .jpg, .tif, .tiff, .doc, .docx, .xls, .xlsx, .png, .gif" />
+                                                    @if (Model.ExistingAdditionalDocument != null)
+                                                    {
+                                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingAdditionalDocument.FileName</strong></small>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="row z83_form_body">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <input type="button" id="save_application" name="save_application" 
+                                                   class="form-control btn btn-primary" onclick="Submit_Form();" value="Save Profile" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js"></script>
+    
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    
+    <!-- Tempus Dominus JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@@6.9.4/dist/plugins/fa-five.min.js" crossorigin="anonymous"></script>
+    
+    <!-- Signature Pad -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.min.js"></script>
+    
+    <script type="text/javascript">
+        var signaturePad;
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Signature Pad
+            signaturePad = new SignaturePad(document.getElementById('signature-pad'));
+            
+            // Set the Font Awesome plugin for Tempus Dominus
+            tempusDominus.extend(window.tempusDominus.plugins.fa_five.load);
+
+            // Initialize Date Pickers
+            const dateOfBirth = new tempusDominus.TempusDominus(document.getElementById('date_of_birth'), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            const professionRegDate = new tempusDominus.TempusDominus(document.getElementById('profession_reg_date'), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            const declarationDate = new tempusDominus.TempusDominus(document.getElementById('declaration-date'), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            // Initialize existing qualification year pickers
+            var qualCount = $('#qualification_count').val();
+            for(var i = 0; i <= qualCount; i++) {
+                if (document.getElementById('year_obtained_' + i)) {
+                    initializeYearPicker(i);
+                }
+            }
+
+            // Initialize existing work experience date pickers
+            var posCount = $('#position_count').val();
+            for(var i = 0; i <= posCount; i++) {
+                if (document.getElementById('post_from_date_' + i)) {
+                    initializeWorkExperiencePickers(i);
+                }
+            }
+        });
+
+        function initializeYearPicker(index) {
+            const picker = new tempusDominus.TempusDominus(document.getElementById('year_obtained_' + index), {
+                localization: { format: 'yyyy' },
+                display: {
+                    viewMode: 'years',
+                    components: {
+                        calendar: true, date: false, month: false, year: true, 
+                        decades: true, clock: false, hours: false, minutes: false, seconds: false
+                    },
+                    icons: window.tempusDominus.plugins.fa_five.faFiveIcons
+                }
+            });
+        }
+
+        function initializeWorkExperiencePickers(index) {
+            const fromPicker = new tempusDominus.TempusDominus(document.getElementById('post_from_date_' + index), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            const toPicker = new tempusDominus.TempusDominus(document.getElementById('post_to_date_' + index), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+        }
+
+        function AddLanguageSection() {
+            var count = parseInt($('#language_count').val()) + 1;
+            $('#language_count').val(count);
+            
+            var html = `
+                <div class="language-section" id="language_section_${count}">
+                    <div class="row z83_form_body">
+                        Language Name
+                        <select name="Languages[${count}].LanguageName" id="language_name[${count}]" class="form-select">
+                            <option value="English">English</option>
+                            <option value="Zulu">Zulu</option>
+                            <option value="Afrikaans">Afrikaans</option>
+                            <option value="Northern Sotho">Northern Sotho</option>
+                            <option value="Tswana">Tswana</option>
+                            <option value="Sotho">Sotho</option>
+                            <option value="Tsonga">Tsonga</option>
+                            <option value="Swati">Swati</option>
+                            <option value="Venda">Venda</option>
+                            <option value="Ndebele">Ndebele</option>
+                            <option value="Xhosa">Xhosa</option>
+                        </select>
+                    </div>
+                    <div class="row z83_form_body">
+                        Speak Proficiency
+                        <select name="Languages[${count}].SpeakProficiency" id="language_speak_proficiency[${count}]" class="form-select">
+                            <option>Good</option>
+                            <option>Fair</option>
+                            <option>Poor</option>
+                        </select>
+                    </div>
+                    <div class="row z83_form_body">
+                        Write and Read Proficiency
+                        <select name="Languages[${count}].ReadWriteProficiency" id="language_rw_proficiency[${count}]" class="form-select">
+                            <option>Good</option>
+                            <option>Fair</option>
+                            <option>Poor</option>
+                        </select>
+                    </div>
+                    <hr />
+                </div>
+            `;
+            $('#additional_language').before(html);
+        }
+
+        function AddQualificationSection() {
+            var count = parseInt($('#qualification_count').val()) + 1;
+            $('#qualification_count').val(count);
+            
+            var html = `
+                <div class="qualification-section" id="qualification_section_${count}">
+                    <div class="row">
+                        <div class="col-md-3">Name of Institution</div>
+                        <div class="col-md-9">
+                            <div class="row z83_form_body">
+                                Name of Institution
+                                <input name="Qualifications[${count}].InstitutionName" class="form-control" placeholder="Name of Institution" required />
+                            </div>
+                            <div class="row z83_form_body">
+                                Name of qualification obtained
+                                <input name="Qualifications[${count}].QualificationName" class="form-control" placeholder="Name of Qualification" required />
+                            </div>
+                            <div class="row z83_form_body">
+                                Student Number
+                                <input name="Qualifications[${count}].StudentNumber" class="form-control" placeholder="Student Number" required />
+                            </div>
+                            <div class="row z83_form_body">
+                                Year obtained
+                                <div class='input-group date' id='year_obtained_${count}'>
+                                    <input type='text' class="form-control" name='Qualifications[${count}].YearObtained' id='year_obtained_txt_${count}' />
+                                    <span class="input-group-text">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row z83_form_body">
+                                Status
+                                <select name="Qualifications[${count}].Status" class="form-select">
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            `;
+            $('#additional_qualification').before(html);
+            
+            // Initialize year picker for the new qualification
+            setTimeout(function() {
+                initializeYearPicker(count);
+            }, 100);
+        }
+
+        function AddPositionSection() {
+            var count = parseInt($('#position_count').val()) + 1;
+            $('#position_count').val(count);
+            
+            var html = `
+                <div class="work-experience-section" id="work_experience_section_${count}">
+                    <div class="row">
+                        <div class="col-md-3">Employer</div>
+                        <div class="col-md-9">
+                            <div class="row z83_form_body">
+                                Employer Name
+                                <input name="WorkExperience[${count}].EmployerName" class="form-control" placeholder="Employer Name" required />
+                            </div>
+                            <div class="row z83_form_body">
+                                Post held
+                                <input name="WorkExperience[${count}].PositionHeld" class="form-control" placeholder="Post Held" required />
+                            </div>
+                            <div class="row z83_form_body">
+                                From
+                                <div class='input-group date' id='post_from_date_${count}'>
+                                    <input type='text' class="form-control" name='WorkExperience[${count}].FromDate' id='post_from_date_txt_${count}' />
+                                    <span class="input-group-text">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row z83_form_body">
+                                To
+                                <div class='input-group date' id='post_to_date_${count}'>
+                                    <input type='text' class="form-control" name='WorkExperience[${count}].ToDate' id='post_to_date_txt_${count}' />
+                                    <span class="input-group-text">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row z83_form_body">
+                                Status
+                                <select name="WorkExperience[${count}].Status" class="form-select">
+                                    <option value="Current">Current</option>
+                                    <option value="Resigned">Resigned</option>
+                                    <option value="Retrenched">Retrenched</option>
+                                    <option value="Dismissed">Dismissed</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="row z83_form_body">
+                                Reason for leaving
+                                <input name="WorkExperience[${count}].ReasonForLeaving" class="form-control" placeholder="Reason for Leaving" required />
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            `;
+            $('#additional_position').before(html);
+            
+            // Initialize date pickers for the new position
+            setTimeout(function() {
+                initializeWorkExperiencePickers(count);
+            }, 100);
+        }
+
+        function AddReferenceSection() {
+            var count = parseInt($('#reference_count').val()) + 1;
+            $('#reference_count').val(count);
+            
+            var html = `
+                <div class="reference-section" id="reference_section_${count}">
+                    <div class="row">
+                        <div class="col-md-3">References</div>
+                        <div class="col-md-9">
+                            <div class="row z83_form_body">
+                                Name of reference
+                                <input name="References[${count}].Name" class="form-control" placeholder="Name of Reference" />
+                            </div>
+                            <div class="row z83_form_body">
+                                Relationship to you
+                                <input name="References[${count}].Relationship" class="form-control" placeholder="Relationship to Reference" />
+                            </div>
+                            <div class="row z83_form_body">
+                                Contact Number (Office Hours)
+                                <input name="References[${count}].ContactNumber" class="form-control" placeholder="Contact Details" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            `;
+            $('#additional_reference').before(html);
+        }
+
+        function CheckValue(element_name) {
+            if (element_name == 'citizen') {
+                const id_txtbx = document.getElementById('id_number');
+                if ($("#sa_citizen").val() == 'false') {
+                    $('#nationality_div').removeClass('hidden');
+                    $('#work_permit_div').removeClass('hidden');
+                    if (id_txtbx) {
+                        id_txtbx.removeAttribute('required');
+                        id_txtbx.required = false;
+                    }
+                } else {
+                    $('#nationality_div').addClass('hidden');
+                    $('#work_permit_div').addClass('hidden');
+                    if (id_txtbx) {
+                        id_txtbx.setAttribute('required', '');
+                        id_txtbx.required = true;
+                    }
+                }
+            } else if(element_name == 'reappointment_prevented'){
+                if ($("#reappointment_prevented").val() == 'true') {
+                    $('#reappointment_prevented_name_div').removeClass('hidden');
+                    $('#reappointment_prevented_details_div').removeClass('hidden');
+                } else {
+                    $('#reappointment_prevented_name_div').addClass('hidden');
+                    $('#reappointment_prevented_details_div').addClass('hidden');
+                }
+            } else {
+                if ($("#" + element_name).val() == 'true') {
+                    $('#' + element_name + '_div').removeClass('hidden');
+                } else {
+                    $('#' + element_name + '_div').addClass('hidden');
+                }
+            }
+        }
+
+        function clear_signature() {
+            signaturePad.clear();
+        }
+
+        function Check_ID(){
+            // ID validation can be implemented here if needed
+            console.log('ID validation placeholder');
+        }
+
+        function isNumber(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
+        }
+
+        function Submit_Form() {
+            var correct = true;
+
+            // Get signature data
+            var signature = signaturePad.toDataURL();
+            $('#signature_url').val(signature);
+
+            if(signaturePad.isEmpty() && correct){
+                correct = false;
+                alert('Please sign the Form.');
+            }
+
+            // CV file validation
+            const cvInput = $('#cv_file');
+            const file = cvInput[0].files[0];
+            const maxSize = 50 * 1024 * 1024; // 50MB
+
+            if (cvInput[0].files.length === 0) {
+                alert('Validation failed: No CV file selected');
+                cvInput.focus();
+                return false;
+            }
+
+            if (file.type !== 'application/pdf') {
+                alert('Validation failed: File is not a PDF');
+                cvInput.focus();
+                return false;
+            }
+
+            if (file.size > maxSize) {
+                alert('CV Document Validation failed: File size exceeds 50MB');
+                cvInput.focus();
+                return false;
+            }
+
+            // Date validations
+            var date_regex = /^\d{4}-\d{2}-\d{2}$/;
+            var birth_date = $('#date_of_birth_cb').val();
+            var declaration_date = $('#declaration_date').val();
+
+            if((!birth_date.match(date_regex)) && (correct)) {
+                correct = false;
+                alert('Please Enter a Valid Date Of Birth');
+                $('#date_of_birth_cb').focus();
+            }
+
+            if((!declaration_date.match(date_regex)) && (correct)) {
+                correct = false;
+                alert('Please Enter a Valid Declaration Date');
+                $('#declaration_date').focus();
+            }
+
+            // Phone validation
+            var phone_regex = /^\d{10}$/;
+            var contact_number = $('#contact-mobile').val();
+
+            if((!contact_number.match(phone_regex)) && (correct)) {
+                correct = false;
+                alert('Please Enter a Valid Contact Number');
+                $('#contact-mobile').focus();
+            }
+
+            // SA ID validation
+            var citizen = $('#sa_citizen').val();
+            if((citizen == 'true') && (correct)) {
+                var idNumber = $('#SaIdNumber').val();
+
+                if (idNumber && idNumber.length != 13 || !isNumber(idNumber)) {
+                    correct = false;
+                    alert('Please Enter a Valid ID Number');
+                    $('#SaIdNumber').focus();
+                }
+            }
+
+            // Work experience date validations
+            var count = $('#position_count').val();
+            for(var i = 0; i <= count; i++) {
+                var post_from_date = $('#post_from_date_txt_' + i ).val();
+                if(post_from_date && (!post_from_date.match(date_regex)) && (correct)) {
+                    correct = false;
+                    alert('Please Enter a valid date that you started this position');
+                    $('#post_from_date_txt_' + i).focus();
+                }
+
+                var post_to_date = $('#post_to_date_txt_' + i ).val();
+                if(post_to_date && (!post_to_date.match(date_regex)) && (correct)) {
+                    correct = false;
+                    alert('Please Enter a valid date that you left this position');
+                    $('#post_to_date_txt_' + i).focus();
+                }
+            }
+
+            // Qualification year validations
+            count = $('#qualification_count').val();
+            for(var i = 0; i <= count; i++) {
+                var year_regex = /^\d{4}$/;
+                var qualification_year_obtained = $('#year_obtained_txt_' + i ).val();
+                if(qualification_year_obtained && (!qualification_year_obtained.match(year_regex)) && (correct)) {
+                    correct = false;
+                    alert('Please Enter a valid year that you obtained this qualification');
+                    $('#year_obtained_txt_' + i).focus();
+                }
+            }
+
+            if (correct) {
+                if (document.getElementById("add-edit-form").checkValidity()) {
+                    document.getElementById("add-edit-form").submit();
+                } else {
+                    document.getElementById("add-edit-form").reportValidity();
+                }
+            }
+
+            return false;
+        }
+    </script>
+}

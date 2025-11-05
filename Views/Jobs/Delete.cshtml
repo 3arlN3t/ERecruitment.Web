@@ -1,0 +1,17 @@
+@model ERecruitment.Web.Models.JobPosting
+@{
+    ViewData["Title"] = "Delete job";
+}
+
+<div class="card">
+    <h1>Delete job</h1>
+    <p>Are you sure you want to delete <strong>@Model.Title</strong>?</p>
+    <form asp-action="DeleteConfirmed" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button class="button" type="submit">Delete</button>
+        <a class="button" asp-action="Index">Cancel</a>
+    </form>
+</div>
+
+

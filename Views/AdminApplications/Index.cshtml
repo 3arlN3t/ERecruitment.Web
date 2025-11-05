@@ -1,0 +1,229 @@
+@model ERecruitment.Web.ViewModels.ApplicationsListViewModel
+@{
+    ViewData["Title"] = "Applications";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-file-alt me-3 text-primary"></i>All Applications
+                </h1>
+                <p class="text-muted mb-0">Review and manage all submitted applications across job postings</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+                    <a class="btn btn-primary-gradient" asp-action="MasterListHub">
+                        <i class="fas fa-clipboard-list me-2"></i>MasterList Hub
+                    </a>
+                    <a class="btn btn-outline-primary" asp-action="ExportCsv" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-jobId="@Model.JobId">
+                        <i class="fas fa-download me-2"></i>Export CSV
+                    </a>
+                    @if (Model.JobId.HasValue)
+                    {
+                        <a class="btn btn-outline-secondary" asp-action="MasterList" asp-route-jobId="@Model.JobId" asp-route-scope="all">
+                            <i class="fas fa-users me-2"></i>Open MasterList
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Applications</h5>
+        </div>
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Search by Email or Job Title</label>
+                        <input type="text" class="form-control" name="search" value="@Model.Search" placeholder="Search..." />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status">
+                            <option value="">Any status</option>
+                            @foreach (var s in Enum.GetValues(typeof(ERecruitment.Web.Models.ApplicationStatus)).Cast<ERecruitment.Web.Models.ApplicationStatus>())
+                            {
+                                <option value="@s" selected="@(Model.Status == s)">@s</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Job Posting</label>
+                        <select class="form-select" name="jobId">
+                            <option value="">Any job</option>
+                            @foreach (var j in Model.Jobs)
+                            {
+                                <option value="@j.Id" selected="@(Model.JobId == j.Id)">@j.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-search me-1"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Applications Table Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-table me-2"></i>Applications
+                <span class="badge bg-info ms-2">@Model.TotalCount total</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            @{
+                int totalPages = (Model.TotalCount + Model.PageSize - 1) / Model.PageSize;
+            }
+            @if (Model.Items.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Email</th>
+                                <th>Job Title</th>
+                                <th>Status</th>
+                                <th>Submitted Date</th>
+                                <th>Rejection Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in Model.Items)
+                            {
+                                <tr>
+                                    <td>@a.ApplicantEmail</td>
+                                    <td>@a.JobTitle</td>
+                                    <td>
+                                        @if (a.Status == ERecruitment.Web.Models.ApplicationStatus.Draft)
+                                        {
+                                            <span class="badge bg-secondary"><i class="fas fa-pencil-alt me-1"></i>Draft</span>
+                                        }
+                                        else if (a.Status == ERecruitment.Web.Models.ApplicationStatus.Submitted)
+                                        {
+                                            <span class="badge bg-info"><i class="fas fa-paper-plane me-1"></i>Submitted</span>
+                                        }
+                                        else if (a.Status == ERecruitment.Web.Models.ApplicationStatus.Interview)
+                                        {
+                                            <span class="badge bg-success"><i class="fas fa-user-tie me-1"></i>Interview</span>
+                                        }
+                                        else if (a.Status == ERecruitment.Web.Models.ApplicationStatus.Offer)
+                                        {
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Offer</span>
+                                        }
+                                        else if (a.Status == ERecruitment.Web.Models.ApplicationStatus.Withdrawn)
+                                        {
+                                            <span class="badge bg-secondary"><i class="fas fa-ban me-1"></i>Withdrawn</span>
+                                        }
+                                        else if (a.Status == ERecruitment.Web.Models.ApplicationStatus.Rejected)
+                                        {
+                                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Rejected</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@a.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-muted">
+                                        @if (a.SubmittedAtUtc.HasValue)
+                                        {
+                                            <i class="fas fa-clock me-1"></i>
+                                            @a.SubmittedAtUtc.Value.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(a.RejectionReason))
+                                        {
+                                            <small class="text-muted">@a.RejectionReason</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @*
+                                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@a.Id" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+*@
+                                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@a.Id" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@a.Id" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <nav class="d-flex justify-content-center mt-4" aria-label="Page navigation">
+                        <ul class="pagination">
+                            @if (Model.Page > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.PageSize" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-jobId="@Model.JobId">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Page - 1)" asp-route-pageSize="@Model.PageSize" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-jobId="@Model.JobId">Previous</a>
+                                </li>
+                            }
+                            @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(totalPages, Model.Page + 2); i++)
+                            {
+                                if (i == Model.Page)
+                                {
+                                    <li class="page-item active"><span class="page-link">@i</span></li>
+                                }
+                                else
+                                {
+                                    <li class="page-item"><a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="@Model.PageSize" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-jobId="@Model.JobId">@i</a></li>
+                                }
+                            }
+                            @if (Model.Page < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Page + 1)" asp-route-pageSize="@Model.PageSize" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-jobId="@Model.JobId">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-pageSize="@Model.PageSize" asp-route-search="@Model.Search" asp-route-status="@Model.Status" asp-route-jobId="@Model.JobId">Last</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3" style="font-size: 3rem;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h4 class="text-muted mb-2">No Applications Found</h4>
+                    <p class="text-muted">No applications match your filters. Try adjusting your search criteria.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

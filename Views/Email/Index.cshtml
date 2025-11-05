@@ -1,0 +1,165 @@
+@model ERecruitment.Web.ViewModels.EmailListViewModel
+@{
+    ViewData["Title"] = "Email deliveries";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-envelope me-3 text-primary"></i>Email Deliveries
+                </h1>
+                <p class="text-muted mb-0">Monitor and manage all email communications sent from the system</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Emails</h5>
+        </div>
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Recipient Email</label>
+                        <input type="text" class="form-control" name="to" value="@Model.ToFilter" placeholder="Search recipient..." />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" name="subject" value="@Model.SubjectFilter" placeholder="Search subject..." />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status">
+                            <option value="">Any status</option>
+                            <option value="Sent" selected="@(Model.StatusFilter == ERecruitment.Web.Models.EmailDeliveryStatus.Sent ? "selected" : null)">Sent</option>
+                            <option value="Failed" selected="@(Model.StatusFilter == ERecruitment.Web.Models.EmailDeliveryStatus.Failed ? "selected" : null)">Failed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-search me-1"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Email Table Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Email Messages
+                <span class="badge bg-info ms-2">@Model.TotalCount total</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            @{
+                int totalPages = (Model.TotalCount + Model.PageSize - 1) / Model.PageSize;
+            }
+            @if (Model.Items.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Time</th>
+                                <th>Recipient</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in Model.Items)
+                            {
+                                <tr>
+                                    <td class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        @e.TimestampUtc.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                    </td>
+                                    <td>@e.ToEmail</td>
+                                    <td>@e.Subject</td>
+                                    <td>
+                                        @if (e.Status == ERecruitment.Web.Models.EmailDeliveryStatus.Sent)
+                                        {
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Sent</span>
+                                        }
+                                        else if (e.Status == ERecruitment.Web.Models.EmailDeliveryStatus.Failed)
+                                        {
+                                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Failed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@e.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@e.Id" title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <nav class="d-flex justify-content-center mt-4" aria-label="Page navigation">
+                        <ul class="pagination">
+                            @if (Model.Page > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.PageSize" asp-route-to="@Model.ToFilter" asp-route-subject="@Model.SubjectFilter" asp-route-status="@Model.StatusFilter">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Page - 1)" asp-route-pageSize="@Model.PageSize" asp-route-to="@Model.ToFilter" asp-route-subject="@Model.SubjectFilter" asp-route-status="@Model.StatusFilter">Previous</a>
+                                </li>
+                            }
+                            @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(totalPages, Model.Page + 2); i++)
+                            {
+                                if (i == Model.Page)
+                                {
+                                    <li class="page-item active"><span class="page-link">@i</span></li>
+                                }
+                                else
+                                {
+                                    <li class="page-item"><a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="@Model.PageSize" asp-route-to="@Model.ToFilter" asp-route-subject="@Model.SubjectFilter" asp-route-status="@Model.StatusFilter">@i</a></li>
+                                }
+                            }
+                            @if (Model.Page < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Page + 1)" asp-route-pageSize="@Model.PageSize" asp-route-to="@Model.ToFilter" asp-route-subject="@Model.SubjectFilter" asp-route-status="@Model.StatusFilter">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-pageSize="@Model.PageSize" asp-route-to="@Model.ToFilter" asp-route-subject="@Model.SubjectFilter" asp-route-status="@Model.StatusFilter">Last</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3" style="font-size: 3rem;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h4 class="text-muted mb-2">No Emails Found</h4>
+                    <p class="text-muted">No emails match your filters. Try adjusting your search criteria.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+

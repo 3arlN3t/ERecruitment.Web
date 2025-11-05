@@ -1,0 +1,14 @@
+@{
+    Layout = "~/Views/Shared/Emails/_BaseEmailLayout.cshtml";
+    ViewData["Title"] = "Application update";
+}
+<h2>Update on your application</h2>
+<p>
+    Unfortunately, you did not meet a mandatory requirement for <strong>@Model.JobTitle</strong>.
+    You may reapply in the future if your circumstances change.
+    @if (!string.IsNullOrWhiteSpace(Model.PersonalisedReason as string))
+    {
+        <span> Details: @Model.PersonalisedReason</span>
+    }
+</p>
+

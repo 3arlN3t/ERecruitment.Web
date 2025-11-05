@@ -1,0 +1,323 @@
+@using System
+@model ERecruitment.Web.Models.JobPosting
+@{
+    ViewData["Title"] = Model.Title;
+    var requirements = string.IsNullOrWhiteSpace(Model.Requirements) ? null : Model.Requirements.Replace("\r\n", "\n");
+    var duties = string.IsNullOrWhiteSpace(Model.DutiesDescription) ? null : Model.DutiesDescription.Replace("\r\n", "\n");
+    var notes = string.IsNullOrWhiteSpace(Model.AdditionalNotes) ? null : Model.AdditionalNotes.Replace("\r\n", "\n");
+    var salary = string.IsNullOrWhiteSpace(Model.SalaryRange) ? "Market related" : Model.SalaryRange;
+    var centre = string.IsNullOrWhiteSpace(Model.Province) ? Model.Centre : $"{Model.Centre}, {Model.Province}";
+    var jobDetailUrl = Url.Action("Details", "Jobs", new { id = Model.Id }, Context.Request.Scheme) ?? string.Empty;
+    var jobUrlEscaped = string.IsNullOrEmpty(jobDetailUrl) ? string.Empty : Uri.EscapeDataString(jobDetailUrl);
+    var jobTitleEscaped = Uri.EscapeDataString(Model.Title ?? "Job Opportunity");
+}
+
+@section Styles {
+    <style>
+        .job-hero {
+            background: linear-gradient(120deg, rgba(120, 53, 15, 0.92), rgba(249, 115, 22, 0.9) 55%, rgba(13, 148, 136, 0.9) 100%);
+            border-radius: 28px;
+            box-shadow: 0 35px 70px -40px rgba(17, 24, 39, 0.65);
+            padding: 3rem;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.22), transparent 55%),
+                        radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.18), transparent 60%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        .job-hero .badge-ref {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            padding: 0.4rem 0.8rem;
+            letter-spacing: 0.12em;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .job-hero h1 {
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .job-meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 16px;
+            padding: 0.55rem 0.95rem;
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .job-card {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 24px;
+            border: 1px solid rgba(249, 115, 22, 0.18);
+            box-shadow: 0 32px 60px -45px rgba(15, 23, 42, 0.28);
+        }
+
+        .job-card h2 {
+            font-size: 1.15rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+        }
+
+        .job-section + .job-section {
+            border-top: 1px solid rgba(148, 81, 24, 0.15);
+        }
+
+        .job-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 12px;
+            background: rgba(249, 115, 22, 0.12);
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .job-cta .btn {
+            border-radius: 999px;
+            padding: 0.75rem 1.8rem;
+            font-weight: 600;
+        }
+
+        .job-sidebar {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(148, 81, 24, 0.14);
+            border-radius: 22px;
+            box-shadow: 0 28px 60px -40px rgba(15, 23, 42, 0.3);
+            position: sticky;
+            top: 120px;
+        }
+
+        .job-sidebar h3 {
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(71, 85, 105, 0.82);
+            margin-bottom: 1rem;
+        }
+
+        .job-sidebar .fact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.65rem 0;
+            border-bottom: 1px dashed rgba(148, 81, 24, 0.18);
+            font-size: 0.9rem;
+        }
+
+        .job-sidebar .fact strong {
+            color: var(--secondary-color);
+        }
+
+        .job-bullet-list ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .job-bullet-list ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        @@media (max-width: 991.98px) {
+            .job-sidebar {
+                position: static;
+                margin-top: 2rem;
+            }
+        }
+    </style>
+}
+
+<div class="container-xxl my-5">
+    <div class="job-hero mb-5">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <span class="badge-ref">REF: @Model.ReferenceNumber</span>
+                <h1 class="display-5 mt-3 mb-2">@Model.Title</h1>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="job-meta-chip"><i class="fas fa-location-dot"></i>@centre</span>
+                    <span class="job-meta-chip"><i class="fas fa-briefcase"></i>@Model.Department</span>
+                    <span class="job-meta-chip"><i class="fas fa-hashtag"></i>@Model.PostNumber</span>
+                    @if (Model.ClosingDate.HasValue)
+                    {
+                        <span class="job-meta-chip"><i class="fas fa-calendar-day"></i>Closes @Model.ClosingDate.Value.ToString("dd MMM yyyy")</span>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="job-pill mb-3"><i class="fas fa-money-bill-wave"></i>@salary</div>
+                <div class="job-pill"><i class="fas fa-envelope"></i>@Model.ApplicationEmail</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="job-card p-4 p-lg-5">
+                <section class="job-section pb-4 mb-4">
+                    <h2 class="mb-3"><i class="fas fa-circle-info me-2 text-warning"></i>Role Overview</h2>
+                    <p class="text-muted mb-3">Posted @Model.DatePosted.ToString("dd MMM yyyy") • Updated @Model.DateLastModified.ToString("dd MMM yyyy")</p>
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p>@Model.Description</p>
+                    }
+                    else
+                    {
+                        <p>This position plays a strategic role within @Model.Department, supporting inclusive tourism growth through modern public service delivery.</p>
+                    }
+                </section>
+
+                <section class="job-section py-4 mb-4">
+                    <h2 class="mb-3"><i class="fas fa-clipboard-list me-2 text-primary"></i>Requirements</h2>
+                    <div class="job-bullet-list">
+                        @if (string.IsNullOrWhiteSpace(requirements))
+                        {
+                            <p class="text-muted">Full requirements to be confirmed in the advertisement attachment.</p>
+                        }
+                        else if (requirements.Contains("<ul"))
+                        {
+                            @Html.Raw(requirements)
+                        }
+                        else
+                        {
+                            <ul>
+                                @foreach (var line in requirements.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <li>@line.Trim()</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </section>
+
+                <section class="job-section py-4 mb-4">
+                    <h2 class="mb-3"><i class="fas fa-list-check me-2 text-success"></i>Key Duties</h2>
+                    <div class="job-bullet-list">
+                        @if (string.IsNullOrWhiteSpace(duties))
+                        {
+                            <p class="text-muted">Detailed duties will be shared with shortlisted applicants.</p>
+                        }
+                        else if (duties.Contains("<ul"))
+                        {
+                            @Html.Raw(duties)
+                        }
+                        else
+                        {
+                            <ul>
+                                @foreach (var line in duties.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <li>@line.Trim()</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </section>
+
+                <section class="job-section py-4 mb-4">
+                    <h2 class="mb-3"><i class="fas fa-comments-question-check me-2 text-info"></i>Screening Questions</h2>
+                    @if (Model.KillerQuestions.Any())
+                    {
+                        <ul class="ps-3">
+                            @foreach (var question in Model.KillerQuestions)
+                            {
+                                <li class="mb-2">@question</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No pre-screening questions are configured for this post.</p>
+                    }
+                </section>
+
+                @if (!string.IsNullOrWhiteSpace(notes))
+                {
+                    <section class="job-section pt-4">
+                        <h2 class="mb-3"><i class="fas fa-note-sticky me-2 text-danger"></i>Important Notes</h2>
+                        <div class="job-bullet-list">
+                            @if (notes.Contains("<ul"))
+                            {
+                                @Html.Raw(notes)
+                            }
+                            else
+                            {
+                                <ul>
+                                    @foreach (var line in notes.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <li>@line.Trim()</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+
+            <div class="job-cta d-flex flex-wrap gap-3 mt-4">
+                <a class="btn btn-primary-gradient" asp-controller="Applications" asp-action="Create" asp-route-jobId="@Model.Id">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Application
+                </a>
+                <a class="btn btn-outline-secondary" asp-action="Index">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Opportunities
+                </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">
+                        <i class="fas fa-pen-to-square me-2"></i>Edit Posting
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <aside class="job-sidebar p-4">
+                <h3>Quick Facts</h3>
+                <div class="fact"><span>Post Number</span> <strong>@Model.PostNumber</strong></div>
+                <div class="fact"><span>Reference</span> <strong>@Model.ReferenceNumber</strong></div>
+                <div class="fact"><span>Department</span> <strong>@Model.Department</strong></div>
+                <div class="fact"><span>Location</span> <strong>@centre</strong></div>
+                <div class="fact"><span>Closing Date</span> <strong>@(Model.ClosingDate?.ToString("dd MMM yyyy") ?? "TBC")</strong></div>
+                <div class="fact"><span>Enquiries</span> <strong>@Model.EnquiriesContactPerson</strong></div>
+                <div class="fact"><span>Tel</span> <strong>@Model.EnquiriesPhone</strong></div>
+                <div class="fact"><span>Status</span> <strong>@(Model.IsActive ? "Active" : "Closed")</strong></div>
+
+                <div class="mt-4">
+                    <h3>Share</h3>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sm btn-outline-primary" href="mailto:?subject=@jobTitleEscaped&body=@jobUrlEscaped"><i class="fas fa-envelope"></i></a>
+                        <a class="btn btn-sm btn-outline-primary" target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=@jobUrlEscaped"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-sm btn-outline-primary" target="_blank" href="https://twitter.com/intent/tweet?url=@jobUrlEscaped&text=@jobTitleEscaped"><i class="fab fa-x-twitter"></i></a>
+                    </div>
+                </div>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="mt-4 p-3 bg-light rounded-3">
+                        <h3>Admin Meta</h3>
+                        <p class="mb-1"><strong>Posted:</strong> @Model.DatePosted.ToString("dd MMM yyyy HH:mm")</p>
+                        <p class="mb-1"><strong>Last Modified:</strong> @Model.DateLastModified.ToString("dd MMM yyyy HH:mm")</p>
+                        <a class="btn btn-sm btn-outline-secondary mt-2" asp-action="Applications" asp-route-id="@Model.Id">
+                            <i class="fas fa-users"></i> View Applications
+                        </a>
+                    </div>
+                }
+            </aside>
+        </div>
+    </div>
+</div>

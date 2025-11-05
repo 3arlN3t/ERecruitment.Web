@@ -1,0 +1,112 @@
+@model ERecruitment.Web.Models.EmailDelivery
+@{
+    ViewData["Title"] = "Email Details";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-envelope-open me-3 text-primary"></i>Email Details
+                </h1>
+                <p class="text-muted mb-0">View the complete email message and delivery information</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a class="btn btn-outline-primary" asp-action="Index">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Details Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>Message Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Sent Time</label>
+                        <p class="text-muted">
+                            <i class="fas fa-clock me-2"></i>
+                            @Model.TimestampUtc.ToLocalTime().ToString("dddd, MMMM dd, yyyy HH:mm:ss")
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Status</label>
+                        <p>
+                            @if (Model.Status == ERecruitment.Web.Models.EmailDeliveryStatus.Sent)
+                            {
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Successfully Sent</span>
+                            }
+                            else if (Model.Status == ERecruitment.Web.Models.EmailDeliveryStatus.Failed)
+                            {
+                                <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Failed</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Model.Status</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Recipient Email</label>
+                        <p class="text-muted">
+                            <i class="fas fa-envelope me-2"></i>
+                            @Model.ToEmail
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Subject</label>
+                        <p class="text-muted">@Model.Subject</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Error))
+            {
+                <div class="alert alert-warning mb-0" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> @Model.Error
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Email Body Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-file-alt me-2"></i>Email Body
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="email-preview" style="border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1.5rem; background-color: #fff; min-height: 300px;">
+                @Html.Raw(Model.FullBody)
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <p class="text-muted small mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                <strong>Note:</strong> HTML content is rendered as-is for inspection purposes.
+            </p>
+        </div>
+    </div>
+</div>
+
+

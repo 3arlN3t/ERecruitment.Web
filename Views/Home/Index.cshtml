@@ -1,0 +1,217 @@
+@{
+    ViewData["Title"] = "Welcome";
+}
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-pill">
+                    <i class="fas fa-circle-dot me-2"></i>
+                    Republic of South Africa &bull; Department of Tourism
+                </div>
+                <h1>Modern, People-Centred Recruitment for South Africa's Tourism Sector</h1>
+                <p class="lead mb-4">
+                    Manage your applicant journey from a single digital hub. Build compliant Z83 profiles, upload documents securely, and follow every step from submission to appointment while administrators gain transparent oversight.
+                </p>
+                <div class="d-flex flex-wrap gap-3 hero-actions">
+                    <a class="btn btn-light btn-lg px-4" asp-controller="Account" asp-action="Register">
+                        <i class="fas fa-user-plus me-2"></i>Create Applicant Profile
+                    </a>
+                    <a class="btn btn-outline-light btn-lg px-4" asp-controller="Jobs" asp-action="Index">
+                        <i class="fas fa-magnifying-glass me-2"></i>Explore Opportunities
+                    </a>
+                </div>
+                <div class="hero-metrics mt-4">
+                    <div class="hero-metric">
+                        <span class="hero-metric__value">24K+</span>
+                        <span class="hero-metric__label">Applications processed annually</span>
+                    </div>
+                    <div class="hero-metric">
+                        <span class="hero-metric__value">120+</span>
+                        <span class="hero-metric__label">Tourism and hospitality roles</span>
+                    </div>
+                    <div class="hero-metric">
+                        <span class="hero-metric__value">100%</span>
+                        <span class="hero-metric__label">POPIA & EEA aligned workflows</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 mt-5 mt-lg-0">
+                <div class="hero-board shadow">
+                    <div class="hero-board__header">
+                        <span class="hero-board__badge"><i class="fas fa-bolt me-2"></i>Live system status</span>
+                        <span class="hero-board__status text-success"><i class="fas fa-circle me-2"></i>Operational</span>
+                    </div>
+                    <div class="hero-board__body">
+                        <div class="hero-board__item">
+                            <div>
+                                <h3>Applicant registrations</h3>
+                                <p>Active onboarding journeys in the last 30 days</p>
+                            </div>
+                            <span class="hero-board__value text-primary">1 842</span>
+                        </div>
+                        <div class="hero-board__item">
+                            <div>
+                                <h3>Screening compliance</h3>
+                                <p>Applications meeting minimum screening requirements</p>
+                            </div>
+                            <span class="hero-board__value text-success">92%</span>
+                        </div>
+                        <div class="hero-board__divider"></div>
+                        <div class="hero-board__foot">
+                            <div>
+                                <h4 class="mb-1">Digital-first recruitment</h4>
+                                <p class="mb-0">Automated CV parsing, Z83 data capture and equity-safe insights aligned with National Treasury guidance.</p>
+                            </div>
+                            <a class="btn btn-primary-gradient mt-3" asp-controller="Admin" asp-action="Dashboard">
+                                <i class="fas fa-gauge-high me-2"></i>View Admin Console
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container">
+    <div class="text-center mb-5">
+        <h2 class="display-6 fw-bold mb-3">Comprehensive Recruitment Solution</h2>
+        <p class="lead text-muted">Everything you need for modern, compliant public sector recruitment</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h3>Easy Registration</h3>
+                <p>Register securely with South African ID validation and duplicate email checks for data integrity.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card fade-in" style="animation-delay: 0.1s;">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Smart Profiles</h3>
+                <p>Maintain a rich applicant profile with CV upload and automatic parsing for streamlined applications.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card fade-in" style="animation-delay: 0.2s;">
+                <div class="feature-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h3>Job Applications</h3>
+                <p>Apply to curated job postings with instant feedback on screening questions and requirements.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card fade-in" style="animation-delay: 0.3s;">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Admin Dashboard</h3>
+                <p>Triage applications, manage bulk actions with audit trails, and view anonymized EE metrics.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Benefits -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-users me-2"></i>For Applicants</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Quick Registration:</strong> Create your account in minutes with ID validation
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>CV Upload & Parsing:</strong> Automatic extraction of your profile information
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Track Applications:</strong> Monitor your application status in real-time
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Document Management:</strong> Upload and manage all required documentation
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Privacy Protected:</strong> Your Employment Equity data is handled with care
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-shield-alt me-2"></i>For Administrators</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Application Management:</strong> Review and filter applications efficiently
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Bulk Actions:</strong> Process multiple applications with comprehensive audit trails
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>EE Compliance:</strong> View anonymized Employment Equity metrics
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Job Posting:</strong> Create and manage job listings with screening questions
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Reporting & KPIs:</strong> Track recruitment metrics and performance indicators
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="card bg-primary text-white text-center mb-5">
+        <div class="card-body py-5">
+            <h2 class="display-6 fw-bold mb-3">Ready to Get Started?</h2>
+            <p class="lead mb-4">Join South Africa's modern public sector recruitment platform today</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a class="btn btn-light btn-lg px-5" asp-controller="Account" asp-action="Register">
+                    <i class="fas fa-user-plus me-2"></i>Register as Applicant
+                </a>
+                <a class="btn btn-outline-light btn-lg px-5" asp-controller="Admin" asp-action="Login">
+                    <i class="fas fa-shield-alt me-2"></i>Admin Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Notice -->
+    <div class="alert alert-info">
+        <h5 class="alert-heading">
+            <i class="fas fa-info-circle me-2"></i>POPIA & EEA Compliant
+        </h5>
+        <p class="mb-0">
+            This platform adheres to the Protection of Personal Information Act (POPIA) and Employment Equity Act (EEA)
+            requirements, ensuring your data is handled securely and responsibly.
+        </p>
+    </div>
+</div>

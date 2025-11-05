@@ -1,0 +1,1210 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+
+    var yesNoOptions = new List<SelectListItem>
+    {
+        new("Yes", "true"),
+        new("No", "false")
+    };
+
+    var ethnicityOptions = new List<SelectListItem>
+    {
+        new("African", "African"),
+        new("White", "White"),
+        new("Coloured", "Coloured"),
+        new("Indian", "Indian"),
+        new("Other", "Other")
+    };
+
+    var genderOptions = new List<SelectListItem>
+    {
+        new("Male", "Male"),
+        new("Female", "Female"),
+        new("Other", "Other")
+    };
+
+    var languageOptions = new List<SelectListItem>
+    {
+        new("English", "English"),
+        new("Zulu", "Zulu"),
+        new("Afrikaans", "Afrikaans"),
+        new("Northern Sotho", "Northern Sotho"),
+        new("Setswana", "Setswana"),
+        new("Sesotho", "Sesotho"),
+        new("Tsonga", "Tsonga"),
+        new("Swati", "Swati"),
+        new("Venda", "Venda"),
+        new("Ndebele", "Ndebele"),
+        new("Xhosa", "Xhosa")
+    };
+
+    var proficiencyOptions = new List<SelectListItem>
+    {
+        new("Good", "Good"),
+        new("Fair", "Fair"),
+        new("Poor", "Poor")
+    };
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/css/z83.css" />
+    <style>
+        .profile-wizard {
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 24px;
+            box-shadow: 0 40px 80px -50px rgba(17, 24, 39, 0.45);
+            padding: 2.5rem;
+        }
+
+        .wizard-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .wizard-header h1 {
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+            margin-bottom: 0.35rem;
+        }
+
+        .wizard-header p {
+            color: rgba(71, 85, 105, 0.8);
+            max-width: 720px;
+        }
+
+        .wizard-steps {
+            border-right: 1px dashed rgba(180, 83, 9, 0.25);
+            padding-right: 1.5rem;
+        }
+
+        .wizard-step-trigger {
+            border-radius: 18px;
+            border: 1px solid transparent;
+            padding: 0.95rem 1rem;
+            background: transparent;
+            color: var(--secondary-color);
+            transition: var(--transition);
+            width: 100%;
+            text-align: left;
+            position: relative;
+        }
+
+        .wizard-step-trigger .step-index {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            background: rgba(249, 115, 22, 0.12);
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+
+        .wizard-step-trigger.active,
+        .wizard-step-trigger:hover {
+            border-color: rgba(249, 115, 22, 0.4);
+            background: rgba(249, 115, 22, 0.08);
+            color: var(--primary-dark);
+            transform: translateX(3px);
+        }
+
+        .wizard-step {
+            display: none;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        .wizard-step-card {
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .wizard-step-card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.75rem;
+            color: var(--secondary-color);
+        }
+
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2.5rem;
+        }
+
+        .wizard-actions .btn {
+            min-width: 160px;
+        }
+
+        .input-grouped label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(71, 85, 105, 0.85);
+        }
+
+        .wizard-divider {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.35), transparent);
+            margin: 2rem 0;
+        }
+
+        .subsection-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            color: var(--secondary-color);
+        }
+
+        .chip-label {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(15, 118, 110, 0.08);
+            color: #0f766e;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            margin-right: 0.5rem;
+        }
+
+        canvas#signature-pad {
+            border: 1px dashed rgba(148, 81, 24, 0.35);
+            border-radius: 16px;
+            background: rgba(249, 115, 22, 0.08);
+        }
+
+        .yesno-row .form-select,
+        .yesno-row .form-control {
+            border-radius: 12px;
+        }
+
+        .yesno-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(71, 85, 105, 0.85);
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(148, 81, 24, 0.85);
+        }
+
+        @@media (max-width: 991.98px) {
+            .wizard-steps {
+                border-right: none;
+                border-bottom: 1px dashed rgba(180, 83, 9, 0.25);
+                padding-right: 0;
+                padding-bottom: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="container-xxl py-5">
+    <div class="profile-wizard">
+        <div class="wizard-header text-center text-md-start">
+            <h1>Personal Profile</h1>
+            <p>Complete the nine sections below to keep your application dossier current. You can move freely between sections using the navigation panel or the Next/Previous buttons.</p>
+        </div>
+
+        <form asp-action="Profile2" method="post" enctype="multipart/form-data" id="profile-wizard-form" autocomplete="off">
+            @Html.AntiForgeryToken()
+            <div class="row g-5">
+                <div class="col-lg-3">
+                    <div class="wizard-steps d-flex flex-column gap-2">
+                        <button type="button" class="wizard-step-trigger active" data-target="step-1">
+                            <span class="step-index">1</span> A. Advertised Post
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-2">
+                            <span class="step-index">2</span> Personal Information
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-3">
+                            <span class="step-index">3</span> Contact Details
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-4">
+                            <span class="step-index">4</span> Language Proficiency
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-5">
+                            <span class="step-index">5</span> Formal Education
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-6">
+                            <span class="step-index">6</span> Work Experience
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-7">
+                            <span class="step-index">7</span> References
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-8">
+                            <span class="step-index">8</span> Declaration & Signature
+                        </button>
+                        <button type="button" class="wizard-step-trigger" data-target="step-9">
+                            <span class="step-index">9</span> CV & Documents
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-9">
+                    <!-- Step 1 -->
+                    <div class="wizard-step active" id="step-1">
+                        <div class="wizard-step-card">
+                            <h2>A. The Advertised Post</h2>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label asp-for="ReferenceNumber" class="form-label">Reference number (as stated in the advert)</label>
+                                    <input asp-for="ReferenceNumber" class="form-control" placeholder="e.g. DT 01/2025" />
+                                    <span asp-validation-for="ReferenceNumber" class="text-danger small"></span>
+                                    <div id="job_list"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="DepartmentName" class="form-label">Department</label>
+                                    <input asp-for="DepartmentName" class="form-control" placeholder="Department" value="DEPARTMENT OF TOURISM" readonly />
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="PositionName" class="form-label">Position Name</label>
+                                    <input asp-for="PositionName" class="form-control" placeholder="Will populate when reference is selected" readonly />
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="AvailabilityNotice" class="form-label">Availability</label>
+                                    <input asp-for="AvailabilityNotice" class="form-control" placeholder="e.g. 1 Month" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="AvailabilityDate" class="form-label">Availability Date</label>
+                                    <div class="input-group" id="availability-date">
+                                        <input asp-for="AvailabilityDate" class="form-control" type="date" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <span></span>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-2">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="wizard-step" id="step-2">
+                        <div class="wizard-step-card">
+                            <h2>Personal Information</h2>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label asp-for="LastName" class="form-label">Surname</label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="FirstName" class="form-label">Full Names</label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
+                                    <div class="input-group" id="date_of_birth">
+                                        <input asp-for="DateOfBirth" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="SaIdNumber" class="form-label">Identity Number</label>
+                                    <input asp-for="SaIdNumber" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="PassportNumber" class="form-label">Passport Number</label>
+                                    <input asp-for="PassportNumber" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Ethnicity</label>
+                                    <select asp-for="EquityEthnicity" asp-items="ethnicityOptions" class="form-select">
+                                        <option value="">Select</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Gender</label>
+                                    <select asp-for="EquityGender" asp-items="genderOptions" class="form-select">
+                                        <option value="">Select</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Disability (Yes/No)</label>
+                                            <select asp-for="HasDisability" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="DisabilityDetails" class="form-label detail-label">Disability Details</label>
+                                            <textarea asp-for="DisabilityDetails" class="form-control" rows="2" placeholder="Provide relevant details"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">South African Citizen</label>
+                                            <select asp-for="IsSouthAfrican" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="Nationality" class="form-label detail-label">Nationality / Details</label>
+                                            <input asp-for="Nationality" class="form-control" placeholder="If not South African, specify nationality" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Valid Work Permit</label>
+                                            <select asp-for="HasWorkPermit" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="WorkPermitDetails" class="form-label detail-label">Work Permit Details</label>
+                                            <textarea asp-for="WorkPermitDetails" class="form-control" rows="2" placeholder="Provide permit reference and validity"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Criminal Offence</label>
+                                            <select asp-for="HasCriminalRecord" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="CriminalRecordDetails" class="form-label detail-label">Criminal Offence Details</label>
+                                            <textarea asp-for="CriminalRecordDetails" class="form-control" rows="2" placeholder="List offence(s), jurisdiction and year"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Pending Criminal Case</label>
+                                            <select asp-for="HasPendingCase" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="PendingCaseDetails" class="form-label detail-label">Pending Case Details</label>
+                                            <textarea asp-for="PendingCaseDetails" class="form-control" rows="2" placeholder="Provide case number and current status"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Dismissed for Misconduct</label>
+                                            <select asp-for="DismissedForMisconduct" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="DismissedDetails" class="form-label detail-label">Dismissal Details</label>
+                                            <textarea asp-for="DismissedDetails" class="form-control" rows="2" placeholder="Include department and year"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Pending Disciplinary Case</label>
+                                            <select asp-for="PendingDisciplinaryCase" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="PendingDisciplinaryDetails" class="form-label detail-label">Disciplinary Details</label>
+                                            <textarea asp-for="PendingDisciplinaryDetails" class="form-control" rows="2" placeholder="Summarise the case"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Resigned Pending Disciplinary</label>
+                                            <select asp-for="ResignedPendingDisciplinary" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="ResignedPendingDisciplinaryDetails" class="form-label detail-label">Resignation Details</label>
+                                            <textarea asp-for="ResignedPendingDisciplinaryDetails" class="form-control" rows="2" placeholder="Outline the circumstances"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Discharged for Ill-Health</label>
+                                            <select asp-for="DischargedForIllHealth" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="DischargedDetails" class="form-label detail-label">Discharge Details</label>
+                                            <textarea asp-for="DischargedDetails" class="form-control" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Conducting Business with the State</label>
+                                            <select asp-for="BusinessWithState" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label asp-for="BusinessDetails" class="form-label detail-label">Business Details</label>
+                                            <textarea asp-for="BusinessDetails" class="form-control" rows="2" placeholder="Company name, registration number"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3 align-items-end yesno-row">
+                                        <div class="col-md-4">
+                                            <label class="form-label yesno-label">Will Relinquish Business Interests</label>
+                                            <select asp-for="WillRelinquishBusiness" asp-items="yesNoOptions" class="form-select"></select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label detail-label">Relinquishment Plan</label>
+                                            <textarea class="form-control" rows="2" name="WillRelinquishBusinessPlan" placeholder="Explain how you will relinquish these interests if appointed (for panel review)"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label asp-for="PublicSectorYears" class="form-label">Public sector experience (years)</label>
+                                    <input asp-for="PublicSectorYears" class="form-control" type="number" min="0" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="PrivateSectorYears" class="form-label">Private sector experience (years)</label>
+                                    <input asp-for="PrivateSectorYears" class="form-control" type="number" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Any condition preventing re-appointment?</label>
+                                    <select asp-for="ReappointmentCondition" asp-items="yesNoOptions" class="form-select"></select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ReappointmentDepartment" class="form-label">Department</label>
+                                    <input asp-for="ReappointmentDepartment" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ReappointmentConditionDetails" class="form-label">Condition details</label>
+                                    <input asp-for="ReappointmentConditionDetails" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <label asp-for="ProfessionalInstitution" class="form-label">Professional institution</label>
+                                    <input asp-for="ProfessionalInstitution" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ProfessionalRegistrationNumber" class="form-label">Registration number</label>
+                                    <input asp-for="ProfessionalRegistrationNumber" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ProfessionalRegistrationDate" class="form-label">Registration date</label>
+                                    <div class="input-group" id="profession_reg_date">
+                                        <input asp-for="ProfessionalRegistrationDate" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-1">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-3">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="wizard-step" id="step-3">
+                        <div class="wizard-step-card">
+                            <h2>Contact Details</h2>
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <label asp-for="PreferredLanguage" class="form-label">Preferred language</label>
+                                    <input asp-for="PreferredLanguage" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ContactEmail" class="form-label">Email</label>
+                                    <input asp-for="ContactEmail" class="form-control" />
+                                    <span asp-validation-for="ContactEmail" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="PhoneNumber" class="form-label">Contact number</label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Location" class="form-label">Physical address</label>
+                                    <textarea asp-for="Location" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-2">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-4">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="wizard-step" id="step-4">
+                        <div class="wizard-step-card">
+                            <h2>Language Proficiency</h2>
+                            <input type="hidden" id="language_count" name="language_count" value="@(Model.Languages.Count > 0 ? Model.Languages.Count - 1 : 0)" />
+                            <div id="language-sections">
+                                @if (Model.Languages.Count == 0)
+                                {
+                                    Model.Languages.Add(new LanguageProficiencyInput());
+                                }
+
+                                @for (var idx = 0; idx < Model.Languages.Count; idx++)
+                                {
+                                    <div class="language-section mb-4" id="language_section_@idx">
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Language</label>
+                                                <select name="Languages[@idx].LanguageName" id="language_name[@idx]" class="form-select">
+                                                    @foreach (var lang in languageOptions)
+                                                    {
+                                                        if (Model.Languages.Count > idx && Model.Languages[idx]?.LanguageName == lang.Value)
+                                                        {
+                                                            <option value="@lang.Value" selected>@lang.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@lang.Value">@lang.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Speak</label>
+                                                <select name="Languages[@idx].SpeakProficiency" id="language_speak_proficiency[@idx]" class="form-select">
+                                                    @foreach (var prof in proficiencyOptions)
+                                                    {
+                                                        if (Model.Languages.Count > idx && Model.Languages[idx]?.SpeakProficiency == prof.Value)
+                                                        {
+                                                            <option value="@prof.Value" selected>@prof.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@prof.Value">@prof.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Read & Write</label>
+                                                <select name="Languages[@idx].ReadWriteProficiency" id="language_rw_proficiency[@idx]" class="form-select">
+                                                    @foreach (var prof in proficiencyOptions)
+                                                    {
+                                                        if (Model.Languages.Count > idx && Model.Languages[idx]?.ReadWriteProficiency == prof.Value)
+                                                        {
+                                                            <option value="@prof.Value" selected>@prof.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@prof.Value">@prof.Text</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-outline-primary" onclick="AddLanguageSection()">
+                                    <i class="fas fa-plus me-2"></i>Add Language
+                                </button>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-3">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-5">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="wizard-step" id="step-5">
+                        <div class="wizard-step-card">
+                            <h2>Formal Education</h2>
+                            <input type="hidden" id="qualification_count" name="qualification_count" value="@(Model.Qualifications.Count > 0 ? Model.Qualifications.Count - 1 : 0)" />
+                            <div id="qualification-sections">
+                                @if (Model.Qualifications.Count == 0)
+                                {
+                                    Model.Qualifications.Add(new QualificationInput());
+                                }
+
+                                @for (var idx = 0; idx < Model.Qualifications.Count; idx++)
+                                {
+                                    <div class="qualification-section mb-4" id="qualification_section_@idx">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Institution</label>
+                                                <input name="Qualifications[@idx].InstitutionName" class="form-control" value="@(Model.Qualifications[idx]?.InstitutionName)" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Qualification</label>
+                                                <input name="Qualifications[@idx].QualificationName" class="form-control" value="@(Model.Qualifications[idx]?.QualificationName)" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Student Number</label>
+                                                <input name="Qualifications[@idx].StudentNumber" class="form-control" value="@(Model.Qualifications[idx]?.StudentNumber)" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Year Obtained</label>
+                                                <div class="input-group" id="year_obtained_@idx">
+                                                    <input name="Qualifications[@idx].YearObtained" id="year_obtained_txt_@idx" class="form-control" value="@(Model.Qualifications[idx]?.YearObtained)" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Status</label>
+                                                <input name="Qualifications[@idx].Status" class="form-control" value="@(Model.Qualifications[idx]?.Status)" />
+                                            </div>
+                                        </div>
+                                        <hr class="my-4" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-outline-primary" onclick="AddQualificationSection()">
+                                    <i class="fas fa-plus me-2"></i>Add Qualification
+                                </button>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-4">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-6">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div class="wizard-step" id="step-6">
+                        <div class="wizard-step-card">
+                            <h2>Work Experience</h2>
+                            <input type="hidden" id="position_count" name="position_count" value="@(Model.WorkExperience.Count > 0 ? Model.WorkExperience.Count - 1 : 0)" />
+                            <div id="work-experience-sections">
+                                @if (Model.WorkExperience.Count == 0)
+                                {
+                                    Model.WorkExperience.Add(new WorkExperienceInput());
+                                }
+
+                                @for (var idx = 0; idx < Model.WorkExperience.Count; idx++)
+                                {
+                                    <div class="position-section mb-4" id="position_section_@idx">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Employer</label>
+                                                <input name="WorkExperience[@idx].EmployerName" class="form-control" value="@(Model.WorkExperience[idx]?.EmployerName)" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Position Held</label>
+                                                <input name="WorkExperience[@idx].PositionHeld" class="form-control" value="@(Model.WorkExperience[idx]?.PositionHeld)" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">From</label>
+                                                <div class="input-group" id="post_from_date_@idx">
+                                                    <input name="WorkExperience[@idx].FromDate" id="post_from_date_txt_@idx" class="form-control" value="@(Model.WorkExperience[idx]?.FromDate?.ToString("yyyy-MM-dd"))" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">To</label>
+                                                <div class="input-group" id="post_to_date_@idx">
+                                                    <input name="WorkExperience[@idx].ToDate" id="post_to_date_txt_@idx" class="form-control" value="@(Model.WorkExperience[idx]?.ToDate?.ToString("yyyy-MM-dd"))" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Employment Status</label>
+                                                <input name="WorkExperience[@idx].Status" class="form-control" value="@(Model.WorkExperience[idx]?.Status)" />
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Reason for Leaving</label>
+                                                <textarea name="WorkExperience[@idx].ReasonForLeaving" class="form-control" rows="2">@Model.WorkExperience[idx]?.ReasonForLeaving</textarea>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-outline-primary" onclick="AddWorkExperienceSection()">
+                                    <i class="fas fa-plus me-2"></i>Add Experience
+                                </button>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-5">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-7">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 7 -->
+                    <div class="wizard-step" id="step-7">
+                        <div class="wizard-step-card">
+                            <h2>References</h2>
+                            <input type="hidden" id="reference_count" name="reference_count" value="@(Model.References.Count > 0 ? Model.References.Count - 1 : 0)" />
+                            <div id="reference-sections">
+                                @if (Model.References.Count == 0)
+                                {
+                                    Model.References.Add(new ReferenceInput());
+                                }
+
+                                @for (var idx = 0; idx < Model.References.Count; idx++)
+                                {
+                                    <div class="reference-section mb-4" id="reference_section_@idx">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Name</label>
+                                                <input name="References[@idx].Name" class="form-control" value="@(Model.References[idx]?.Name)" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Relationship</label>
+                                                <input name="References[@idx].Relationship" class="form-control" value="@(Model.References[idx]?.Relationship)" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Contact Number</label>
+                                                <input name="References[@idx].ContactNumber" class="form-control" value="@(Model.References[idx]?.ContactNumber)" />
+                                            </div>
+                                        </div>
+                                        <hr class="my-4" />
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="text-end">
+                                <button type="button" class="btn btn-outline-primary" onclick="AddReferenceSection()">
+                                    <i class="fas fa-plus me-2"></i>Add Reference
+                                </button>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-6">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-8">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 8 -->
+                    <div class="wizard-step" id="step-8">
+                        <div class="wizard-step-card">
+                            <h2>Declaration & Signature</h2>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" asp-for="DeclarationAccepted" type="checkbox" id="declaration-check" />
+                                        <label class="form-check-label" for="declaration-check">
+                                            I declare that all information provided is complete and correct.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="DeclarationDate" class="form-label">Declaration Date</label>
+                                    <div class="input-group" id="declaration-date">
+                                        <input asp-for="DeclarationDate" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="SignatureData" class="form-label">Signature</label>
+                                    <div class="position-relative">
+                                        <canvas id="signature-pad" class="w-100" height="170"></canvas>
+                                        <input type="hidden" asp-for="SignatureData" id="signature-data" />
+                                        <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 mt-2 me-2" onclick="ClearSignature()">
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">Use your mouse or touch screen to sign above.</small>
+                                </div>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-7">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn btn-primary-gradient wizard-next" data-next="step-9">
+                                    Next <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 9 -->
+                    <div class="wizard-step" id="step-9">
+                        <div class="wizard-step-card">
+                            <h2>CV & Supporting Documents</h2>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="cv_file">Upload CV</label>
+                                    <input type="file" class="form-control" name="CvFile" id="cv_file" accept=".pdf,.doc,.docx,.rtf" />
+                                    @if (Model.ExistingCv != null)
+                                    {
+                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingCv.FileName</strong></small>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="id_file">Identity Document</label>
+                                    <input type="file" class="form-control" name="IdDocumentFile" id="id_file" accept=".pdf,.jpg,.jpeg,.png" />
+                                    @if (Model.ExistingIdDocument != null)
+                                    {
+                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingIdDocument.FileName</strong></small>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="qualification_file">Qualification Certificates</label>
+                                    <input type="file" class="form-control" name="QualificationDocumentFile" id="qualification_file" accept=".pdf,.jpg,.jpeg,.png" />
+                                    @if (Model.ExistingQualificationDocument != null)
+                                    {
+                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingQualificationDocument.FileName</strong></small>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="dl_file">Driver's Licence</label>
+                                    <input type="file" class="form-control" name="DriversLicenseDocumentFile" id="dl_file" accept=".pdf,.jpg,.jpeg,.png" />
+                                    @if (Model.ExistingDriversLicenseDocument != null)
+                                    {
+                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingDriversLicenseDocument.FileName</strong></small>
+                                    }
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="reference_files">Additional References / Supporting Documents</label>
+                                    <input type="file" class="form-control" name="AdditionalDocumentFile" id="reference_files" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                                    @if (Model.ExistingAdditionalDocument != null)
+                                    {
+                                        <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingAdditionalDocument.FileName</strong></small>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-outline-secondary wizard-prev" data-prev="step-8">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="submit" id="save_application" class="btn btn-primary-gradient">
+                                    <i class="fas fa-floppy-disk me-2"></i>Save Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@@6.9.4/dist/plugins/fa-five.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.min.js"></script>
+    <script type="text/javascript">
+        var signaturePad;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const stepTriggers = document.querySelectorAll(".wizard-step-trigger");
+            const steps = document.querySelectorAll(".wizard-step");
+
+            stepTriggers.forEach(trigger => {
+                trigger.addEventListener("click", () => {
+                    const target = trigger.getAttribute("data-target");
+                    activateStep(target);
+                });
+            });
+
+            document.querySelectorAll(".wizard-next").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    activateStep(btn.dataset.next);
+                });
+            });
+
+            document.querySelectorAll(".wizard-prev").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    activateStep(btn.dataset.prev);
+                });
+            });
+
+            function activateStep(targetId) {
+                stepTriggers.forEach(t => t.classList.toggle("active", t.dataset.target === targetId));
+                steps.forEach(step => step.classList.toggle("active", step.id === targetId));
+                document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+
+            signaturePad = new SignaturePad(document.getElementById('signature-pad'));
+            tempusDominus.extend(window.tempusDominus.plugins.fa_five.load);
+
+            const dateOfBirth = new tempusDominus.TempusDominus(document.getElementById('date_of_birth'), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            const professionRegDate = new tempusDominus.TempusDominus(document.getElementById('profession_reg_date'), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            const declarationDate = new tempusDominus.TempusDominus(document.getElementById('declaration-date'), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            var qualCount = parseInt($('#qualification_count').val() ?? 0);
+            for (var i = 0; i <= qualCount; i++) {
+                if (document.getElementById('year_obtained_' + i)) {
+                    initializeYearPicker(i);
+                }
+            }
+
+            var posCount = parseInt($('#position_count').val() ?? 0);
+            for (var p = 0; p <= posCount; p++) {
+                if (document.getElementById('post_from_date_' + p)) {
+                    initializeWorkExperiencePickers(p);
+                }
+            }
+        });
+
+        function initializeYearPicker(index) {
+            new tempusDominus.TempusDominus(document.getElementById('year_obtained_' + index), {
+                localization: { format: 'yyyy' },
+                display: {
+                    viewMode: 'years',
+                    components: {
+                        calendar: true, date: false, month: false, year: true, decades: true,
+                        clock: false, hours: false, minutes: false, seconds: false
+                    },
+                    icons: window.tempusDominus.plugins.fa_five.faFiveIcons
+                }
+            });
+        }
+
+        function initializeWorkExperiencePickers(index) {
+            new tempusDominus.TempusDominus(document.getElementById('post_from_date_' + index), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+
+            new tempusDominus.TempusDominus(document.getElementById('post_to_date_' + index), {
+                localization: { format: 'yyyy-MM-dd' },
+                display: { icons: window.tempusDominus.plugins.fa_five.faFiveIcons }
+            });
+        }
+
+        function AddLanguageSection() {
+            var count = parseInt($('#language_count').val() ?? 0) + 1;
+            $('#language_count').val(count);
+            var html = `
+                <div class="language-section mb-4" id="language_section_${count}">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Language</label>
+                            <select name="Languages[${count}].LanguageName" id="language_name[${count}]" class="form-select">
+                                <option value="English">English</option>
+                                <option value="Zulu">Zulu</option>
+                                <option value="Afrikaans">Afrikaans</option>
+                                <option value="Northern Sotho">Northern Sotho</option>
+                                <option value="Setswana">Setswana</option>
+                                <option value="Sesotho">Sesotho</option>
+                                <option value="Tsonga">Tsonga</option>
+                                <option value="Swati">Swati</option>
+                                <option value="Venda">Venda</option>
+                                <option value="Ndebele">Ndebele</option>
+                                <option value="Xhosa">Xhosa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Speak</label>
+                            <select name="Languages[${count}].SpeakProficiency" id="language_speak_proficiency[${count}]" class="form-select">
+                                <option>Good</option>
+                                <option>Fair</option>
+                                <option>Poor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Read & Write</label>
+                            <select name="Languages[${count}].ReadWriteProficiency" id="language_rw_proficiency[${count}]" class="form-select">
+                                <option>Good</option>
+                                <option>Fair</option>
+                                <option>Poor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                </div>`;
+            $('#language-sections').append(html);
+        }
+
+        function AddQualificationSection() {
+            var count = parseInt($('#qualification_count').val() ?? 0) + 1;
+            $('#qualification_count').val(count);
+            var html = `
+                <div class="qualification-section mb-4" id="qualification_section_${count}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Institution</label>
+                            <input name="Qualifications[${count}].InstitutionName" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Qualification</label>
+                            <input name="Qualifications[${count}].QualificationName" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Student Number</label>
+                            <input name="Qualifications[${count}].StudentNumber" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Year Obtained</label>
+                            <div class="input-group" id="year_obtained_${count}">
+                                <input name="Qualifications[${count}].YearObtained" id="year_obtained_txt_${count}" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Status</label>
+                            <input name="Qualifications[${count}].Status" class="form-control" />
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                </div>`;
+            $('#qualification-sections').append(html);
+            initializeYearPicker(count);
+        }
+
+        function AddWorkExperienceSection() {
+            var count = parseInt($('#position_count').val() ?? 0) + 1;
+            $('#position_count').val(count);
+            var html = `
+                <div class="position-section mb-4" id="position_section_${count}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Employer</label>
+                            <input name="WorkExperience[${count}].EmployerName" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Position Held</label>
+                            <input name="WorkExperience[${count}].PositionHeld" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">From</label>
+                            <div class="input-group" id="post_from_date_${count}">
+                                <input name="WorkExperience[${count}].FromDate" id="post_from_date_txt_${count}" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">To</label>
+                            <div class="input-group" id="post_to_date_${count}">
+                                <input name="WorkExperience[${count}].ToDate" id="post_to_date_txt_${count}" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Employment Status</label>
+                            <input name="WorkExperience[${count}].Status" class="form-control" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Reason for Leaving</label>
+                            <textarea name="WorkExperience[${count}].ReasonForLeaving" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                </div>`;
+            $('#work-experience-sections').append(html);
+            initializeWorkExperiencePickers(count);
+        }
+
+        function AddReferenceSection() {
+            var count = parseInt($('#reference_count').val() ?? 0) + 1;
+            $('#reference_count').val(count);
+            var html = `
+                <div class="reference-section mb-4" id="reference_section_${count}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Name</label>
+                            <input name="References[${count}].Name" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Relationship</label>
+                            <input name="References[${count}].Relationship" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Contact Number</label>
+                            <input name="References[${count}].ContactNumber" class="form-control" />
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                </div>`;
+            $('#reference-sections').append(html);
+        }
+
+        function ClearSignature() {
+            signaturePad.clear();
+            document.getElementById('signature-data').value = '';
+        }
+
+        document.getElementById('profile-wizard-form').addEventListener('submit', function () {
+            if (!signaturePad.isEmpty()) {
+                document.getElementById('signature-data').value = signaturePad.toDataURL();
+            }
+        });
+    </script>
+}

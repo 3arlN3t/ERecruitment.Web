@@ -1,0 +1,19 @@
+@{
+    Layout = "~/Views/Shared/Emails/_BaseEmailLayout.cshtml";
+}
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <tr>
+        <td>
+            <h1>Application withdrawn</h1>
+            <p>We have recorded your withdrawal for the role: <strong>@Model.JobTitle</strong>.</p>
+            @if (!string.IsNullOrWhiteSpace(Model.Reason))
+            {
+                <p><strong>Reason provided:</strong> @Model.Reason</p>
+            }
+            <p>You can apply again in the future if the role is available.</p>
+        </td>
+    </tr>
+</table>
+
+

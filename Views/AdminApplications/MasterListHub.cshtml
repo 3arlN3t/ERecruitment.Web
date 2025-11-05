@@ -1,0 +1,68 @@
+@model ERecruitment.Web.Controllers.AdminApplicationsController.MasterListHubViewModel
+@{
+    ViewData["Title"] ??= "MasterList Hub";
+}
+
+<div class="container masterlist-hub mt-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="masterlist-title mb-1">MasterList Hub</h1>
+            <p class="text-muted mb-0">Choose a posting to review demographics and export intelligence.</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Index">
+            <i class="fas fa-arrow-left me-2"></i>Back to Applications
+        </a>
+    </div>
+
+    @if (!Model.Jobs.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5 text-muted">
+                <i class="fas fa-inbox fa-2x mb-3"></i>
+                <div>No job postings found. Create a post to start reviewing applications.</div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var job in Model.Jobs)
+            {
+                <div class="col-xl-4 col-md-6">
+                    <div class="masterlist-hub-card h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="text-muted text-uppercase small">Post</div>
+                                <h2 class="h5 fw-semibold mb-1">@job.Title</h2>
+                                <div class="text-muted small">Ref: @(!string.IsNullOrWhiteSpace(job.ReferenceNumber) ? job.ReferenceNumber : "Not set")</div>
+                            </div>
+                            <span class="badge bg-light text-dark border">@job.PostNumber</span>
+                        </div>
+                        <div class="text-muted small mb-3">
+                            <i class="fas fa-location-dot me-1"></i>@job.Centre
+                        </div>
+                        <div class="masterlist-hub-stats mb-3">
+                            <div><span class="label">Total</span><span class="value">@job.Total</span></div>
+                            <div><span class="label">Submitted</span><span class="value">@job.Submitted</span></div>
+                            <div><span class="label">Shortlisted</span><span class="value">@job.Shortlisted</span></div>
+                            <div><span class="label">Offers</span><span class="value">@job.Offer</span></div>
+                        </div>
+                        <div class="masterlist-hub-stats muted mb-3">
+                            <div><span class="label">Not Suitable</span><span class="value">@job.NotSuitable</span></div>
+                            <div><span class="label">Draft</span><span class="value">@job.Draft</span></div>
+                            <div><span class="label">Withdrawn</span><span class="value">@job.Withdrawn</span></div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a class="btn btn-primary-gradient flex-fill" asp-action="MasterList" asp-route-jobId="@job.JobId">
+                                <i class="fas fa-chart-simple me-2"></i>Open MasterList
+                            </a>
+                            <a class="btn btn-outline-primary flex-fill" asp-action="MasterList" asp-route-jobId="@job.JobId" asp-route-scope="shortlisted">
+                                <i class="fas fa-user-check me-2"></i>Shortlist View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

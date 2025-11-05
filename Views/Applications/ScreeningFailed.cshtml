@@ -1,0 +1,33 @@
+@model ERecruitment.Web.Models.JobPosting
+@{
+    ViewData["Title"] = "Application Unsuccessful";
+}
+
+<div class="container text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <i class="fas fa-times-circle fa-4x text-danger mb-4"></i>
+                    <h1 class="display-5 fw-bold">Application Unsuccessful</h1>
+                    <p class="lead text-muted">For the position of: <strong>@Model.Title</strong></p>
+                    <hr />
+                    <p class="mt-4">
+                        Unfortunately, based on your response to a mandatory screening question, you do not meet the minimum requirements for this position.
+                    </p>
+                    <p>
+                        Your application for this role cannot be progressed further. We thank you for your interest and encourage you to browse other open positions that may be a better fit.
+                    </p>
+                    <div class="mt-5">
+                        <a asp-controller="Applicant" asp-action="Dashboard" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary btn-lg">
+                            <i class="fas fa-briefcase me-2"></i> Browse Other Jobs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

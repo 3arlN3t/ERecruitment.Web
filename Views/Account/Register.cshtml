@@ -1,0 +1,134 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="container">
+    <div class="auth-container" style="max-width: 600px;">
+        <div class="auth-card fade-in">
+            <div class="auth-header">
+                <div class="text-center mb-3">
+                    <div class="feature-icon mx-auto" style="width: 70px; height: 70px;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                </div>
+                <h1>Create Your Account</h1>
+                <p>Join South Africa's modern recruitment platform</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <!-- Account Information -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-user-circle me-2"></i>Account Information
+                    </h5>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>Email Address
+                        </label>
+                        <input asp-for="Email" class="form-control form-control-sm" placeholder="your.email@example.com" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                        <input asp-for="Password" class="form-control form-control-sm" placeholder="Minimum 8 characters" autocomplete="new-password" />
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>Minimum 8 characters with at least one digit and lowercase letter
+                        </small>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Confirm Password
+                        </label>
+                        <input asp-for="ConfirmPassword" class="form-control form-control-sm" placeholder="Re-enter your password" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- South African ID -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-id-card me-2"></i>Identity Verification
+                    </h5>
+
+                    <div class="mb-3">
+                        <label asp-for="SaIdNumber" class="form-label">
+                            <i class="fas fa-id-card me-2"></i>South African ID Number
+                        </label>
+                        <input asp-for="SaIdNumber" class="form-control form-control-sm" placeholder="0000000000000" autocomplete="off" />
+                        <small class="form-text text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>We validate the checksum to prevent data capture errors
+                        </small>
+                        <span asp-validation-for="SaIdNumber" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Employment Equity (Optional) -->
+                <div class="mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-balance-scale me-2"></i>Employment Equity (Optional)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check mb-3">
+                                <input asp-for="EquityConsent" class="form-check-input" type="checkbox" />
+                                <label asp-for="EquityConsent" class="form-check-label fw-bold">
+                                    I consent to provide Employment Equity information
+                                </label>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="EquityEthnicity" class="form-label">Ethnicity</label>
+                                    <input asp-for="EquityEthnicity" class="form-control form-control-sm" placeholder="e.g., African" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="EquityGender" class="form-label">Gender</label>
+                                    <input asp-for="EquityGender" class="form-control form-control-sm" placeholder="e.g., Male" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="EquityDisability" class="form-label">Disability</label>
+                                    <input asp-for="EquityDisability" class="form-control form-control-sm" placeholder="e.g., None" />
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3 mb-0">
+                                <small>
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    If you leave consent unchecked, we will proceed without storing any EE data. Your information is handled according to POPIA and EEA requirements.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100 mb-3" type="submit">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </button>
+
+                <div class="text-center">
+                    <p class="text-muted mb-2">Already have an account?</p>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
