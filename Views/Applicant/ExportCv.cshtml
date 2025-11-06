@@ -300,14 +300,6 @@
         /* Page Header */
         .page-header {
             display: none;
-            position: fixed;
-            top: 10mm;
-            left: 20mm;
-            right: 20mm;
-            padding-bottom: 5mm;
-            border-bottom: 1px solid #1e3a8a;
-            font-size: 10pt;
-            font-weight: normal;
         }
 
         .header-left {
@@ -325,13 +317,13 @@
             text-align: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 3px double #1e3a8a;
+            border-bottom: 3px double #ea580c;
         }
 
         .applicant-name {
             font-size: 26pt;
             font-weight: 700;
-            color: #1e3a8a;
+            color: #ea580c;
             margin: 0 0 8px 0;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -368,14 +360,14 @@
             font-size: 18pt;
             font-weight: 700;
             letter-spacing: 3px;
-            color: #1e3a8a;
+            color: #ea580c;
             margin: 0;
         }
 
         .title-underline {
             width: 80px;
             height: 3px;
-            background: #1e3a8a;
+            background: #ea580c;
             margin: 8px auto 0;
         }
 
@@ -393,7 +385,7 @@
         .section-title {
             font-size: 13pt;
             font-weight: 700;
-            color: #1e3a8a;
+            color: #ea580c;
             letter-spacing: 1.5px;
             margin: 0 0 8px 0;
             text-transform: uppercase;
@@ -401,7 +393,7 @@
 
         .section-divider {
             height: 2px;
-            background: linear-gradient(to right, #1e3a8a 0%, #3b82f6 50%, #e5e7eb 100%);
+            background: linear-gradient(to right, #ea580c 0%, #fb923c 50%, #e5e7eb 100%);
             margin-bottom: 15px;
         }
 
@@ -456,7 +448,7 @@
         .position-title {
             font-weight: 700;
             font-size: 11pt;
-            color: #1e3a8a;
+            color: #ea580c;
         }
 
         .period {
@@ -495,7 +487,7 @@
         .qualification-name {
             font-weight: 700;
             font-size: 11pt;
-            color: #1e3a8a;
+            color: #ea580c;
         }
 
         .year-obtained {
@@ -530,7 +522,7 @@
             text-align: left;
             font-weight: 700;
             font-size: 10pt;
-            color: #1e3a8a;
+            color: #ea580c;
         }
 
         .languages-table tbody td {
@@ -558,7 +550,7 @@
             text-align: left;
             font-weight: 700;
             font-size: 10pt;
-            color: #1e3a8a;
+            color: #ea580c;
         }
 
         .references-table tbody td {
@@ -655,8 +647,13 @@
                 display: none !important;
             }
 
+            /* Hide page header to prevent overlap */
+            .page-header {
+                display: none !important;
+            }
+
             /* Show print elements */
-            .page-header, .page-footer {
+            .page-footer {
                 display: block !important;
             }
 
@@ -702,24 +699,28 @@
 
             /* Ensure colors print correctly */
             .section-title {
-                color: #1e3a8a !important;
+                color: #ea580c !important;
             }
 
             .applicant-name {
-                color: #1e3a8a !important;
+                color: #ea580c !important;
             }
 
             .section-divider {
-                background: #1e3a8a !important;
+                background: #ea580c !important;
                 height: 2px !important;
             }
 
             .letterhead {
-                border-bottom-color: #1e3a8a !important;
+                border-bottom-color: #ea580c !important;
             }
 
-            .page-header {
-                border-bottom-color: #1e3a8a !important;
+            .position-title, .qualification-name {
+                color: #ea580c !important;
+            }
+
+            .languages-table thead th, .references-table thead th {
+                color: #ea580c !important;
             }
 
             /* Ensure table borders print */
