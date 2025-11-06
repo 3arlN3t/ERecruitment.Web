@@ -25,6 +25,8 @@ public class ProfileViewModel
     [DataType(DataType.Date)]
     public DateTime? AvailabilityDate { get; set; }
 
+    public List<JobPostingOption> OpenJobPostings { get; set; } = new();
+
     // Personal Information
     [Display(Name = "Surname")]
     public string? LastName { get; set; }
@@ -185,6 +187,15 @@ public class ProfileViewModel
     // Legacy support
     public bool EquityConsent { get; set; }
     public string? EquityDisability { get; set; }
+}
+
+public class JobPostingOption
+{
+    public Guid Id { get; set; }
+    public string ReferenceNumber { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Department { get; set; } = string.Empty;
+    public bool ReferenceGenerated { get; set; }
 }
 
 public class LanguageProficiencyInput

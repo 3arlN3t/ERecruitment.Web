@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Json
 @model ProfileViewModel
 @{
     ViewData["Title"] = "My Profile";
@@ -45,6 +46,13 @@
         new("Good", "Good"),
         new("Fair", "Fair"),
         new("Poor", "Poor")
+    };
+
+    var availabilityOptions = new List<SelectListItem>
+    {
+        new("1 Week", "1 Week"),
+        new("2 Weeks", "2 Weeks"),
+        new("1 Month", "1 Month")
     };
 }
 
@@ -302,7 +310,16 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label asp-for="ReferenceNumber" class="form-label">Reference number (as stated in the advert)</label>
-                                    <input asp-for="ReferenceNumber" class="form-control" placeholder="e.g. DT 01/2025" />
+                                    <input asp-for="ReferenceNumber" class="form-control" list="open-job-references" placeholder="e.g. DT 01/2025" autocomplete="off" />
+                                    <datalist id="open-job-references">
+                                        @foreach (var job in Model.OpenJobPostings)
+                                        {
+                                            var label = job.ReferenceGenerated
+                                                ? $"{job.Title} (Generated test reference)"
+                                                : job.Title;
+                                            <option value="@job.ReferenceNumber">@label</option>
+                                        }
+                                    </datalist>
                                     <span asp-validation-for="ReferenceNumber" class="text-danger small"></span>
                                     <div id="job_list"></div>
                                 </div>
@@ -311,18 +328,14 @@
                                     <input asp-for="DepartmentName" class="form-control" placeholder="Department" value="DEPARTMENT OF TOURISM" readonly />
                                 </div>
                                 <div class="col-md-6">
-                                    <label asp-for="PositionName" class="form-label">Position Name</label>
+                                    <label asp-for="PositionName" class="form-label">Position for which you are applying for</label>
                                     <input asp-for="PositionName" class="form-control" placeholder="Will populate when reference is selected" readonly />
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label asp-for="AvailabilityNotice" class="form-label">Availability</label>
-                                    <input asp-for="AvailabilityNotice" class="form-control" placeholder="e.g. 1 Month" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label asp-for="AvailabilityDate" class="form-label">Availability Date</label>
-                                    <div class="input-group" id="availability-date">
-                                        <input asp-for="AvailabilityDate" class="form-control" type="date" />
-                                    </div>
+                                    <select asp-for="AvailabilityNotice" class="form-select" asp-items="availabilityOptions">
+                                        <option value="">Select availability</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -1036,6 +1049,121 @@
         var signaturePad;
 
         document.addEventListener("DOMContentLoaded", function () {
+            const referenceInput = document.getElementById("ReferenceNumber");
+            const positionInput = document.getElementById("PositionName");
+            const departmentInput = document.getElementById("DepartmentName");
+            const departmentOriginalValue = departmentInput ? departmentInput.value : "";
+            const jobFeedback = document.getElementById("job_list");
+            const openJobs = @Html.Raw(JsonSerializer.Serialize(Model.OpenJobPostings ?? new List<JobPostingOption>()));
+            const availableJobs = Array.isArray(openJobs) ? openJobs : [];
+
+            function normalizeReference(value) {
+                const text = value == null ? "" : value;
+                return text.toString().trim().toLowerCase();
+            }
+
+            function findJobByReference(refValue) {
+                const target = normalizeReference(refValue);
+                if (!target) {
+                    return null;
+                }
+                return availableJobs.find(job => normalizeReference(job.ReferenceNumber) === target) || null;
+            }
+
+            function setJobFeedback(job, hasInput) {
+                if (!jobFeedback) {
+                    return;
+                }
+
+                if (availableJobs.length === 0) {
+                    jobFeedback.className = "small text-muted";
+                    jobFeedback.textContent = "No open job postings are available at the moment.";
+                    return;
+                }
+
+                if (job) {
+                    const isGenerated = !!job.ReferenceGenerated;
+                    const title = job && job.Title ? job.Title : "Position available";
+                    jobFeedback.className = "small text-success";
+                    jobFeedback.textContent = isGenerated
+                        ? `Open position: ${title} (generated reference for testing)`
+                        : `Open position: ${title}`;
+                    return;
+                }
+
+                if (hasInput) {
+                    jobFeedback.className = "small text-danger";
+                    jobFeedback.textContent = "Reference number not found in current open postings.";
+                }
+                else {
+                    jobFeedback.className = "small text-muted";
+                    jobFeedback.textContent = "Select a reference number from the open job postings.";
+                }
+            }
+
+            function applyJobSelection(job, hasInput) {
+                if (positionInput) {
+                    positionInput.value = job && job.Title ? job.Title : "";
+                }
+
+                if (departmentInput) {
+                    if (job && job.Department) {
+                        departmentInput.value = job.Department;
+                    } else {
+                        departmentInput.value = departmentOriginalValue;
+                    }
+                }
+
+                setJobFeedback(job, hasInput);
+            }
+
+            if (referenceInput) {
+                const syncSelection = () => {
+                    const currentValue = referenceInput.value;
+                    const hasInput = normalizeReference(currentValue).length > 0;
+                    const job = findJobByReference(currentValue);
+                    applyJobSelection(job, hasInput);
+                };
+
+                referenceInput.addEventListener("input", () => {
+                    const currentValue = referenceInput.value;
+                    const hasInput = normalizeReference(currentValue).length > 0;
+                    const job = findJobByReference(currentValue);
+                    applyJobSelection(job, hasInput);
+                });
+
+                referenceInput.addEventListener("change", () => {
+                    const currentValue = referenceInput.value;
+                    const job = findJobByReference(currentValue);
+                    if (!job && normalizeReference(currentValue).length > 0) {
+                        referenceInput.value = "";
+                    }
+                    syncSelection();
+                });
+
+                referenceInput.addEventListener("blur", () => {
+                    const currentValue = referenceInput.value;
+                    const job = findJobByReference(currentValue);
+                    if (!job && normalizeReference(currentValue).length > 0) {
+                        referenceInput.value = "";
+                    }
+                    syncSelection();
+                });
+
+                const initialValue = referenceInput.value;
+                const initialJob = findJobByReference(initialValue);
+                if (!initialJob && normalizeReference(initialValue).length > 0) {
+                    referenceInput.value = "";
+                    applyJobSelection(null, false);
+                }
+                else {
+                    applyJobSelection(initialJob, normalizeReference(initialValue).length > 0);
+                }
+            }
+            else {
+                applyJobSelection(null, false);
+            }
+
             const stepTriggers = document.querySelectorAll(".wizard-step-trigger");
             const steps = document.querySelectorAll(".wizard-step");
 
@@ -1061,7 +1189,7 @@
             function activateStep(targetId) {
                 stepTriggers.forEach(t => t.classList.toggle("active", t.dataset.target === targetId));
                 steps.forEach(step => step.classList.toggle("active", step.id === targetId));
-                document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
 
             signaturePad = new SignaturePad(document.getElementById('signature-pad'));

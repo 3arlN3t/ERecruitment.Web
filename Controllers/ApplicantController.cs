@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ERecruitment.Web.Models;
 using ERecruitment.Web.Services;
 using ERecruitment.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +65,7 @@ public class ApplicantController : Controller
             }
 
             var model = BuildProfileViewModel(applicant);
+            await PopulateOpenJobOptionsAsync(model);
             return View("Profile2", model);
         }
         catch (Exception ex)
@@ -86,6 +91,7 @@ public class ApplicantController : Controller
         if (!ModelState.IsValid)
         {
             PopulateExistingDocuments(model, applicant);
+            await PopulateOpenJobOptionsAsync(model);
             return View("Profile2", model);
         }
 
@@ -94,6 +100,7 @@ public class ApplicantController : Controller
         {
             PopulateExistingDocuments(model, applicant);
             ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Unable to save profile.");
+            await PopulateOpenJobOptionsAsync(model);
             return View("Profile2", model);
         }
 
@@ -264,6 +271,93 @@ public class ApplicantController : Controller
        model.ExistingQualificationDocument = applicant.Profile.QualificationDocument;
        model.ExistingDriversLicenseDocument = applicant.Profile.DriversLicenseDocument;
        model.ExistingAdditionalDocument = applicant.Profile.AdditionalDocument;
+    }
+
+    private async Task PopulateOpenJobOptionsAsync(ProfileViewModel model)
+    {
+        var openJobs = await _workflowService.GetAllJobPostingsAsync();
+        var referenceTracker = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var options = new List<JobPostingOption>();
+
+        foreach (var job in openJobs.Where(j => j.IsAcceptingApplications))
+        {
+            var (reference, generated) = ResolveReference(job, referenceTracker);
+            if (string.IsNullOrWhiteSpace(reference))
+            {
+                continue;
+            }
+
+            options.Add(new JobPostingOption
+            {
+                Id = job.Id,
+                ReferenceNumber = reference,
+                Title = job.Title ?? string.Empty,
+                Department = job.Department ?? string.Empty,
+                ReferenceGenerated = generated
+            });
+        }
+
+        model.OpenJobPostings = options
+            .OrderBy(option => option.ReferenceNumber, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static (string Reference, bool Generated) ResolveReference(JobPosting job, HashSet<string> referenceTracker)
+    {
+        if (job is null)
+        {
+            return (string.Empty, false);
+        }
+
+        var baseReference = string.IsNullOrWhiteSpace(job.ReferenceNumber)
+            ? BuildTestingReference(job)
+            : job.ReferenceNumber.Trim();
+
+        if (string.IsNullOrWhiteSpace(baseReference))
+        {
+            return (string.Empty, false);
+        }
+
+        var uniqueReference = baseReference;
+        var counter = 1;
+        while (!referenceTracker.Add(uniqueReference))
+        {
+            counter++;
+            uniqueReference = $"{baseReference}-{counter}";
+        }
+
+        return (uniqueReference, string.IsNullOrWhiteSpace(job.ReferenceNumber));
+    }
+
+    private static string BuildTestingReference(JobPosting job)
+    {
+        if (!string.IsNullOrWhiteSpace(job.PostNumber))
+        {
+            return $"TEST-{Sanitize(job.PostNumber)}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(job.Title))
+        {
+            var words = job.Title.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var acronym = string.Concat(words.Take(3).Select(w => char.ToUpperInvariant(w[0])));
+            if (!string.IsNullOrWhiteSpace(acronym))
+            {
+                return $"TEST-{acronym}-{job.Id.ToString("N")[..4].ToUpperInvariant()}";
+            }
+        }
+
+        return $"TEST-{job.Id.ToString("N")[..6].ToUpperInvariant()}";
+    }
+
+    private static string Sanitize(string value)
+    {
+        var filtered = value.Where(char.IsLetterOrDigit).ToArray();
+        if (filtered.Length == 0)
+        {
+            return "REF";
+        }
+
+        return new string(filtered).ToUpperInvariant();
     }
 
     [HttpGet]
