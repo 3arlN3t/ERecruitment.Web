@@ -187,15 +187,15 @@
                 <table class="table table-borderless align-middle masterlist-table">
                     <thead>
                         <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">Name</th>
-                            <th scope="col"><span title="Race/Ethnicity">DLR</span></th>
-                            <th scope="col"><span title="Age">A</span></th>
-                            <th scope="col"><span title="Gender">G</span></th>
-                            <th scope="col"><span title="Disability">D</span></th>
-                            <th scope="col">Quals</th>
-                            <th scope="col">Exp</th>
-                            <th scope="col">Cmts</th>
+                            <th scope="col" class="text-center">NO</th>
+                            <th scope="col">NAME</th>
+                            <th scope="col" class="text-center"><span title="Race/Ethnicity">RACE</span></th>
+                            <th scope="col" class="text-center"><span title="Age">AGE</span></th>
+                            <th scope="col" class="text-center"><span title="Gender">GENDER</span></th>
+                            <th scope="col" class="text-center"><span title="Disability Status">DISABILITY</span></th>
+                            <th scope="col">QUALIFICATIONS</th>
+                            <th scope="col">EXPERIENCE</th>
+                            <th scope="col" class="masterlist-comments-header">INTERVIEW PROMPTS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -213,19 +213,28 @@
                             foreach (var applicant in Model.Applicants)
                             {
                                 <tr>
-                                    <td class="fw-semibold text-muted">@applicant.Index</td>
+                                    <td class="fw-semibold text-muted text-center">@applicant.Index</td>
                                     <td>
                                         <div class="fw-semibold">@applicant.ApplicantName</div>
                                         <div class="small text-muted">@applicant.ApplicantEmail</div>
                                         <div class="small text-muted"><i class="fas fa-clock me-1"></i>@applicant.DlrDisplay</div>
                                     </td>
-                                    <td><span class="badge bg-light text-dark border">@applicant.Race</span></td>
-                                    <td>@applicant.AgeDisplay</td>
-                                    <td>@applicant.GenderDisplay</td>
-                                    <td>
+                                    <td class="text-center"><span class="badge bg-light text-dark border">@applicant.Race</span></td>
+                                    <td class="text-center">@applicant.AgeDisplay</td>
+                                    <td class="text-center">@applicant.GenderDisplay</td>
+                                    <td class="text-center">
                                         @if (!string.IsNullOrWhiteSpace(applicant.DisabilityDisplay))
                                         {
-                                            <span class="masterlist-pill">@applicant.DisabilityDisplay</span>
+                                            @if (applicant.DisabilityDisplay.Length > 15)
+                                            {
+                                                <span class="masterlist-pill masterlist-disability-pill" data-bs-toggle="tooltip" data-bs-placement="top" title="@applicant.DisabilityDisplay">
+                                                    @(applicant.DisabilityDisplay.Substring(0, 12))...
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="masterlist-pill masterlist-disability-pill">@applicant.DisabilityDisplay</span>
+                                            }
                                         }
                                         else
                                         {
@@ -239,7 +248,11 @@
                                         <div class="masterlist-exp">@applicant.ExperienceSummary</div>
                                         <span class="badge rounded-pill masterlist-status-badge masterlist-status-@applicant.Status.ToString().ToLowerInvariant()">@applicant.Status</span>
                                     </td>
-                                    <td class="masterlist-comment">@applicant.Comments</td>
+                                    <td class="masterlist-comment-cell">
+                                        <div class="masterlist-comment" data-bs-toggle="tooltip" data-bs-placement="left" title="@applicant.Comments">
+                                            @applicant.Comments
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         }
@@ -251,9 +264,21 @@
                 <div class="mt-1"><i class="fas fa-circle-info text-primary"></i></div>
                 <div>
                     <strong>Legend</strong>
-                    <div class="small text-muted">DLR = Race/Ethnicity • Timeline within the Name column shows submission activity • A = Age • G = Gender • D = Disability flag • Quals = Highest qualifications • Exp = Experience summary • Cmts = Suggested panel prompts</div>
+                    <div class="small text-muted">The timeline within the Name column shows submission date • Hover over truncated text to see full details • Interview Prompts are suggested questions based on applicant responses • Click on badges for more information</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Initialize Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
+}

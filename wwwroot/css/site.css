@@ -367,6 +367,13 @@ body {
     font-weight: 700;
     color: var(--secondary-color);
     border-bottom: none;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.masterlist-table td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
 }
 
 .masterlist-table tbody tr {
@@ -380,14 +387,31 @@ body {
 }
 
 .masterlist-qual,
-.masterlist-exp,
-.masterlist-comment {
+.masterlist-exp {
     font-size: 0.9rem;
     color: var(--secondary-color);
 }
 
+.masterlist-comment-cell {
+    max-width: 320px;
+    min-width: 250px;
+}
+
 .masterlist-comment {
-    max-width: 260px;
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    cursor: help;
+}
+
+.masterlist-comments-header {
+    min-width: 200px;
 }
 
 .masterlist-pill {
@@ -400,6 +424,14 @@ body {
     background: rgba(249, 115, 22, 0.15);
     border: 1px solid rgba(249, 115, 22, 0.35);
     color: var(--primary-dark);
+}
+
+.masterlist-disability-pill {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: help;
 }
 
 .masterlist-status-badge {
