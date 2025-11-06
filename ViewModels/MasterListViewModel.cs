@@ -25,6 +25,7 @@ public record MasterListRowViewModel(
     string AgeDisplay,
     string GenderDisplay,
     string DisabilityDisplay,
+    string DisabilityDetails,
     string QualificationSummary,
     string ExperienceSummary,
     string Comments,

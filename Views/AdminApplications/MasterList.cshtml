@@ -187,15 +187,15 @@
                 <table class="table table-borderless align-middle masterlist-table">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center">NO</th>
+                            <th scope="col" class="text-center">#</th>
                             <th scope="col">NAME</th>
-                            <th scope="col" class="text-center"><span title="Race/Ethnicity">RACE</span></th>
-                            <th scope="col" class="text-center"><span title="Age">AGE</span></th>
-                            <th scope="col" class="text-center"><span title="Gender">GENDER</span></th>
-                            <th scope="col" class="text-center"><span title="Disability Status">DISABILITY</span></th>
+                            <th scope="col" class="text-center"><span title="Race: A=African, W=White, I=Indian, C=Coloured, ND=Not Declared">R</span></th>
+                            <th scope="col" class="text-center"><span title="Age">A</span></th>
+                            <th scope="col" class="text-center"><span title="Gender: F=Female, M=Male, ND=Not Declared">G</span></th>
+                            <th scope="col" class="text-center"><span title="Disability: Y=Yes, N=No, ND=Not Declared">D</span></th>
                             <th scope="col">QUALIFICATIONS</th>
                             <th scope="col">EXPERIENCE</th>
-                            <th scope="col" class="masterlist-comments-header">INTERVIEW PROMPTS</th>
+                            <th scope="col" class="text-center">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -222,25 +222,7 @@
                                     <td class="text-center"><span class="badge bg-light text-dark border">@applicant.Race</span></td>
                                     <td class="text-center">@applicant.AgeDisplay</td>
                                     <td class="text-center">@applicant.GenderDisplay</td>
-                                    <td class="text-center">
-                                        @if (!string.IsNullOrWhiteSpace(applicant.DisabilityDisplay))
-                                        {
-                                            @if (applicant.DisabilityDisplay.Length > 15)
-                                            {
-                                                <span class="masterlist-pill masterlist-disability-pill" data-bs-toggle="tooltip" data-bs-placement="top" title="@applicant.DisabilityDisplay">
-                                                    @(applicant.DisabilityDisplay.Substring(0, 12))...
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span class="masterlist-pill masterlist-disability-pill">@applicant.DisabilityDisplay</span>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">—</span>
-                                        }
-                                    </td>
+                                    <td class="text-center">@applicant.DisabilityDisplay</td>
                                     <td>
                                         <div class="masterlist-qual">@applicant.QualificationSummary</div>
                                     </td>
@@ -248,10 +230,19 @@
                                         <div class="masterlist-exp">@applicant.ExperienceSummary</div>
                                         <span class="badge rounded-pill masterlist-status-badge masterlist-status-@applicant.Status.ToString().ToLowerInvariant()">@applicant.Status</span>
                                     </td>
-                                    <td class="masterlist-comment-cell">
-                                        <div class="masterlist-comment" data-bs-toggle="tooltip" data-bs-placement="left" title="@applicant.Comments">
-                                            @applicant.Comments
-                                        </div>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-primary masterlist-view-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#applicantDetailsModal"
+                                                data-applicant-name="@applicant.ApplicantName"
+                                                data-applicant-email="@applicant.ApplicantEmail"
+                                                data-disability="@applicant.DisabilityDetails"
+                                                data-qualifications="@applicant.QualificationSummary"
+                                                data-experience="@applicant.ExperienceSummary"
+                                                data-comments="@applicant.Comments"
+                                                data-status="@applicant.Status">
+                                            <i class="fas fa-eye me-1"></i>Details
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -264,8 +255,63 @@
                 <div class="mt-1"><i class="fas fa-circle-info text-primary"></i></div>
                 <div>
                     <strong>Legend</strong>
-                    <div class="small text-muted">The timeline within the Name column shows submission date • Hover over truncated text to see full details • Interview Prompts are suggested questions based on applicant responses • Click on badges for more information</div>
+                    <div class="small text-muted mb-2">
+                        <strong>Column Abbreviations:</strong> R = Race (A=African, W=White, I=Indian, C=Coloured, ND=Not Declared) • A = Age • G = Gender (F=Female, M=Male, ND=Not Declared) • D = Disability (Y=Yes, N=No, ND=Not Declared)
+                    </div>
+                    <div class="small text-muted">
+                        The timeline within the Name column shows submission date • Click "Details" button to view full disability information, interview prompts, and complete applicant details
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Applicant Details Modal -->
+<div class="modal fade" id="applicantDetailsModal" tabindex="-1" aria-labelledby="applicantDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <div>
+                    <h5 class="modal-title" id="applicantDetailsModalLabel">Applicant Details</h5>
+                    <p class="text-muted small mb-0" id="modalApplicantEmail"></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="applicant-details-content">
+                    <!-- Status Badge -->
+                    <div class="mb-4">
+                        <span class="badge rounded-pill masterlist-status-badge" id="modalStatus"></span>
+                    </div>
+
+                    <!-- Disability Information -->
+                    <div class="detail-section mb-4">
+                        <h6 class="detail-section-title"><i class="fas fa-universal-access me-2"></i>Disability Status</h6>
+                        <div class="detail-section-content" id="modalDisability"></div>
+                    </div>
+
+                    <!-- Qualifications -->
+                    <div class="detail-section mb-4">
+                        <h6 class="detail-section-title"><i class="fas fa-graduation-cap me-2"></i>Qualifications</h6>
+                        <div class="detail-section-content" id="modalQualifications"></div>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="detail-section mb-4">
+                        <h6 class="detail-section-title"><i class="fas fa-briefcase me-2"></i>Experience</h6>
+                        <div class="detail-section-content" id="modalExperience"></div>
+                    </div>
+
+                    <!-- Interview Prompts -->
+                    <div class="detail-section">
+                        <h6 class="detail-section-title"><i class="fas fa-comments me-2"></i>Interview Prompts</h6>
+                        <div class="detail-section-content interview-prompts" id="modalComments"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -278,7 +324,49 @@
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
+            });
+
+            // Handle modal population
+            var applicantDetailsModal = document.getElementById('applicantDetailsModal');
+            applicantDetailsModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+
+                // Get data from button attributes
+                var applicantName = button.getAttribute('data-applicant-name');
+                var applicantEmail = button.getAttribute('data-applicant-email');
+                var disability = button.getAttribute('data-disability');
+                var qualifications = button.getAttribute('data-qualifications');
+                var experience = button.getAttribute('data-experience');
+                var comments = button.getAttribute('data-comments');
+                var status = button.getAttribute('data-status');
+
+                // Update modal content
+                document.getElementById('applicantDetailsModalLabel').textContent = applicantName;
+                document.getElementById('modalApplicantEmail').textContent = applicantEmail;
+                document.getElementById('modalDisability').textContent = disability || '—';
+                document.getElementById('modalQualifications').textContent = qualifications;
+                document.getElementById('modalExperience').textContent = experience;
+
+                // Format interview prompts (split by |)
+                var commentsEl = document.getElementById('modalComments');
+                if (comments && comments.trim()) {
+                    var prompts = comments.split('|').map(p => p.trim()).filter(p => p);
+                    if (prompts.length > 0) {
+                        commentsEl.innerHTML = '<ul class="interview-prompts-list">' +
+                            prompts.map(p => '<li>' + p + '</li>').join('') +
+                            '</ul>';
+                    } else {
+                        commentsEl.textContent = comments;
+                    }
+                } else {
+                    commentsEl.textContent = 'No interview prompts available.';
+                }
+
+                // Update status badge
+                var statusBadge = document.getElementById('modalStatus');
+                statusBadge.textContent = status;
+                statusBadge.className = 'badge rounded-pill masterlist-status-badge masterlist-status-' + status.toLowerCase();
+            });
         });
     </script>
 }

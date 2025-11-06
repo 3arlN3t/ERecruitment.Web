@@ -358,7 +358,7 @@ body {
 }
 
 .masterlist-table {
-    min-width: 1200px;
+    min-width: 910px;
     table-layout: fixed;
 }
 
@@ -373,74 +373,74 @@ body {
     font-weight: 700;
     color: var(--secondary-color);
     border-bottom: none;
-    padding: 1rem 0.75rem;
+    padding: 1rem 0.5rem;
     vertical-align: middle;
 }
 
 .masterlist-table td {
-    padding: 0.85rem 0.65rem;
+    padding: 0.85rem 0.5rem;
     vertical-align: middle;
 }
 
 /* Column width optimization */
 .masterlist-table th:nth-child(1),
 .masterlist-table td:nth-child(1) {
-    width: 50px;
-    max-width: 50px;
+    width: 40px;
+    max-width: 40px;
 }
 
 .masterlist-table th:nth-child(2),
 .masterlist-table td:nth-child(2) {
-    width: 180px;
-    max-width: 180px;
+    width: 170px;
+    max-width: 170px;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .masterlist-table th:nth-child(3),
 .masterlist-table td:nth-child(3) {
-    width: 90px;
-    max-width: 90px;
+    width: 40px;
+    max-width: 40px;
 }
 
 .masterlist-table th:nth-child(4),
 .masterlist-table td:nth-child(4) {
-    width: 60px;
-    max-width: 60px;
+    width: 40px;
+    max-width: 40px;
 }
 
 .masterlist-table th:nth-child(5),
 .masterlist-table td:nth-child(5) {
-    width: 80px;
-    max-width: 80px;
+    width: 40px;
+    max-width: 40px;
 }
 
 .masterlist-table th:nth-child(6),
 .masterlist-table td:nth-child(6) {
-    width: 140px;
-    max-width: 140px;
+    width: 40px;
+    max-width: 40px;
 }
 
 .masterlist-table th:nth-child(7),
 .masterlist-table td:nth-child(7) {
-    width: 200px;
-    max-width: 200px;
+    width: 210px;
+    max-width: 210px;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .masterlist-table th:nth-child(8),
 .masterlist-table td:nth-child(8) {
-    width: 150px;
-    max-width: 150px;
+    width: 170px;
+    max-width: 170px;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .masterlist-table th:nth-child(9),
 .masterlist-table td:nth-child(9) {
-    width: 280px;
-    min-width: 250px;
+    width: 100px;
+    max-width: 100px;
 }
 
 .masterlist-table tbody tr {
@@ -461,21 +461,81 @@ body {
     word-wrap: break-word;
 }
 
-.masterlist-comment-cell {
-    overflow: hidden;
+/* View Details Button */
+.masterlist-view-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 
-.masterlist-comment {
-    font-size: 0.875rem;
+.masterlist-view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(249, 115, 22, 0.2);
+}
+
+/* Modal Styling */
+.modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    border-bottom: 2px solid rgba(249, 115, 22, 0.15);
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.applicant-details-content {
+    font-size: 0.95rem;
+}
+
+.detail-section {
+    padding: 1.25rem;
+    background: rgba(249, 115, 22, 0.04);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+.detail-section-title {
+    font-weight: 700;
     color: var(--secondary-color);
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    word-wrap: break-word;
-    cursor: help;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detail-section-content {
+    color: #374151;
+    line-height: 1.6;
+}
+
+.interview-prompts {
+    background: rgba(59, 130, 246, 0.05);
+    border-left-color: #3b82f6;
+}
+
+.interview-prompts-list {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.interview-prompts-list li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+    color: #1f2937;
+}
+
+.interview-prompts-list li:last-child {
+    margin-bottom: 0;
 }
 
 .masterlist-pill {
@@ -747,7 +807,12 @@ body {
     }
 
     .masterlist-table {
-        min-width: 900px;
+        min-width: 800px;
+    }
+
+    .masterlist-view-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
     }
 
     .masterlist-hub-stats {

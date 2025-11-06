@@ -104,9 +104,38 @@ public class AdminApplicationsController : Controller
                 var timeline = entry.SubmittedAtUtc ?? entry.CreatedAtUtc;
                 var dlrDisplay = timeline.ToLocalTime().ToString("dd MMM yyyy");
                 var ageDisplay = entry.Age.HasValue ? entry.Age.Value.ToString() : "—";
-                var gender = string.IsNullOrWhiteSpace(entry.Gender) ? "Not declared" : entry.Gender;
-                var race = entry.Race ?? "Not declared";
+
+                // Abbreviate gender: F=Female, M=Male, ND=Not Declared
+                var gender = string.IsNullOrWhiteSpace(entry.Gender)
+                    ? "ND"
+                    : entry.Gender.Trim().Equals("Female", StringComparison.OrdinalIgnoreCase)
+                        ? "F"
+                        : entry.Gender.Trim().Equals("Male", StringComparison.OrdinalIgnoreCase)
+                            ? "M"
+                            : "ND";
+
+                // Abbreviate race: A=African, W=White, I=Indian, C=Coloured, ND=Not Declared
+                var race = entry.Race == null
+                    ? "ND"
+                    : entry.Race.Trim().Equals("African", StringComparison.OrdinalIgnoreCase)
+                        ? "A"
+                        : entry.Race.Trim().Equals("White", StringComparison.OrdinalIgnoreCase)
+                            ? "W"
+                            : entry.Race.Trim().Equals("Indian", StringComparison.OrdinalIgnoreCase)
+                                ? "I"
+                                : entry.Race.Trim().Equals("Coloured", StringComparison.OrdinalIgnoreCase)
+                                    ? "C"
+                                    : "ND";
+
+                // Abbreviate disability: Y=Yes, N=No, ND=Not Declared (full details for modal only)
                 var disability = entry.HasDisability
+                    ? "Y"
+                    : string.IsNullOrWhiteSpace(entry.DisabilityNarrative)
+                        ? "N"
+                        : "ND";
+
+                // Full disability details for modal
+                var disabilityDetails = entry.HasDisability
                     ? string.IsNullOrWhiteSpace(entry.DisabilityNarrative)
                         ? "Yes"
                         : $"Yes ({entry.DisabilityNarrative})"
@@ -121,6 +150,7 @@ public class AdminApplicationsController : Controller
                     ageDisplay,
                     gender,
                     disability,
+                    disabilityDetails,
                     entry.QualificationSummary,
                     entry.ExperienceSummary,
                     entry.Comments,
