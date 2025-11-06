@@ -230,8 +230,6 @@ public class AdministrationService : IAdministrationService
             JobApplicationId = application.Id
         };
 
-        application.AuditTrail.Add(statusAudit);
-
         await _repository.UpdateJobApplicationAsync(application, cancellationToken);
         await _repository.AddAuditEntryAsync(statusAudit, cancellationToken);
 
@@ -258,8 +256,6 @@ public class AdministrationService : IAdministrationService
                 JobApplicationId = application.Id
             };
 
-            application.AuditTrail.Add(emailAudit);
-            await _repository.UpdateJobApplicationAsync(application, cancellationToken);
             await _repository.AddAuditEntryAsync(emailAudit, cancellationToken);
         }
 

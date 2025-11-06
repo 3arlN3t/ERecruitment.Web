@@ -51,6 +51,13 @@
                                 <div class="text-muted small">Current Status</div>
                                 <span class="badge bg-secondary">@currentStatusLabel</span>
                             </div>
+                            @if (!string.IsNullOrWhiteSpace(Model.RejectionReason))
+                            {
+                                <div class="mb-3">
+                                    <div class="text-muted small">Rejection Reason</div>
+                                    <div class="fw-semibold">@Model.RejectionReason</div>
+                                </div>
+                            }
                             <div>
                                 <div class="text-muted small">Submitted</div>
                                 <div class="fw-semibold">@submittedDisplay</div>
