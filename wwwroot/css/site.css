@@ -352,8 +352,14 @@ body {
 
 .masterlist-table-wrapper {
     border-radius: 20px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.masterlist-table {
+    min-width: 1200px;
+    table-layout: fixed;
 }
 
 .masterlist-table thead {
@@ -372,8 +378,69 @@ body {
 }
 
 .masterlist-table td {
-    padding: 1rem 0.75rem;
+    padding: 0.85rem 0.65rem;
     vertical-align: middle;
+}
+
+/* Column width optimization */
+.masterlist-table th:nth-child(1),
+.masterlist-table td:nth-child(1) {
+    width: 50px;
+    max-width: 50px;
+}
+
+.masterlist-table th:nth-child(2),
+.masterlist-table td:nth-child(2) {
+    width: 180px;
+    max-width: 180px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.masterlist-table th:nth-child(3),
+.masterlist-table td:nth-child(3) {
+    width: 90px;
+    max-width: 90px;
+}
+
+.masterlist-table th:nth-child(4),
+.masterlist-table td:nth-child(4) {
+    width: 60px;
+    max-width: 60px;
+}
+
+.masterlist-table th:nth-child(5),
+.masterlist-table td:nth-child(5) {
+    width: 80px;
+    max-width: 80px;
+}
+
+.masterlist-table th:nth-child(6),
+.masterlist-table td:nth-child(6) {
+    width: 140px;
+    max-width: 140px;
+}
+
+.masterlist-table th:nth-child(7),
+.masterlist-table td:nth-child(7) {
+    width: 200px;
+    max-width: 200px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.masterlist-table th:nth-child(8),
+.masterlist-table td:nth-child(8) {
+    width: 150px;
+    max-width: 150px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.masterlist-table th:nth-child(9),
+.masterlist-table td:nth-child(9) {
+    width: 280px;
+    min-width: 250px;
 }
 
 .masterlist-table tbody tr {
@@ -388,19 +455,20 @@ body {
 
 .masterlist-qual,
 .masterlist-exp {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--secondary-color);
+    line-height: 1.4;
+    word-wrap: break-word;
 }
 
 .masterlist-comment-cell {
-    max-width: 320px;
-    min-width: 250px;
+    overflow: hidden;
 }
 
 .masterlist-comment {
     font-size: 0.875rem;
     color: var(--secondary-color);
-    line-height: 1.5;
+    line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -408,10 +476,6 @@ body {
     -webkit-box-orient: vertical;
     word-wrap: break-word;
     cursor: help;
-}
-
-.masterlist-comments-header {
-    min-width: 200px;
 }
 
 .masterlist-pill {
@@ -427,11 +491,13 @@ body {
 }
 
 .masterlist-disability-pill {
-    max-width: 150px;
+    max-width: 130px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: help;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
 }
 
 .masterlist-status-badge {
@@ -680,8 +746,8 @@ body {
         font-size: 0.65rem;
     }
 
-    .masterlist-comment {
-        max-width: 100%;
+    .masterlist-table {
+        min-width: 900px;
     }
 
     .masterlist-hub-stats {
