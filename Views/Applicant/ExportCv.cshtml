@@ -231,7 +231,7 @@
         </section>
 
         <!-- Declarations Section -->
-        <section class="cv-section page-break-before">
+        <section class="cv-section">
             <h3 class="section-title">DECLARATIONS</h3>
             <div class="section-divider"></div>
             <table class="declarations-table">
@@ -315,8 +315,8 @@
         /* Letterhead */
         .letterhead {
             text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
             border-bottom: 3px double #ea580c;
         }
 
@@ -324,7 +324,7 @@
             font-size: 26pt;
             font-weight: 700;
             color: #ea580c;
-            margin: 0 0 8px 0;
+            margin: 0 0 6px 0;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
@@ -332,14 +332,14 @@
         .id-number {
             font-size: 11pt;
             color: #374151;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 500;
         }
 
         .contact-bar {
             font-size: 10pt;
             color: #4b5563;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .contact-item {
@@ -353,7 +353,7 @@
         /* Document Title */
         .document-title {
             text-align: center;
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .document-title h2 {
@@ -378,8 +378,7 @@
 
         /* Section Styles */
         .cv-section {
-            margin-bottom: 25px;
-            page-break-inside: avoid;
+            margin-bottom: 20px;
         }
 
         .section-title {
@@ -624,11 +623,6 @@
             margin: 10px 0;
         }
 
-        /* Page Break Control */
-        .page-break-before {
-            page-break-before: always;
-        }
-
         /* Print Styles */
         @@media print {
             @@page {
@@ -669,32 +663,32 @@
                 content: counter(page);
             }
 
-            /* Ensure sections don't break awkwardly */
-            .cv-section {
-                page-break-inside: avoid;
-            }
-
-            .experience-item, .education-item {
-                page-break-inside: avoid;
-            }
-
             /* Adjust letterhead for first page only */
             .letterhead {
                 margin-bottom: 20px;
             }
 
-            /* Ensure tables don't break */
-            table {
+            /* Prevent awkward breaks within items */
+            .experience-item, .education-item {
                 page-break-inside: avoid;
             }
 
-            tr {
+            /* Prevent table rows from breaking */
+            .languages-table tr, .references-table tr, .declarations-table tr {
                 page-break-inside: avoid;
             }
 
             /* Better spacing for print */
             .cv-section {
-                margin-bottom: 20px;
+                margin-bottom: 18px;
+            }
+
+            .section-title {
+                page-break-after: avoid;
+            }
+
+            .section-divider {
+                page-break-after: avoid;
             }
 
             /* Ensure colors print correctly */
