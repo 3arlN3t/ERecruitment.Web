@@ -259,7 +259,7 @@
             <p>Complete the nine sections below to keep your application dossier current. You can move freely between sections using the navigation panel or the Next/Previous buttons.</p>
         </div>
 
-        <form asp-action="Profile2" method="post" enctype="multipart/form-data" id="profile-wizard-form" autocomplete="off">
+        <form asp-action="Profile" method="post" enctype="multipart/form-data" id="profile-wizard-form" autocomplete="off">
             @Html.AntiForgeryToken()
             <div class="row g-5">
                 <div class="col-lg-3">
@@ -994,6 +994,17 @@
                                     {
                                         <small class="text-muted d-block mt-1">Current: <strong>@Model.ExistingAdditionalDocument.FileName</strong></small>
                                     }
+                                </div>
+                                <div class="col-12">
+                                    <div class="alert alert-info d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+                                        <div>
+                                            <i class="fas fa-file-alt me-2"></i>
+                                            Preview your CV using the information captured in this profile. You can print or save it as a PDF before submitting applications.
+                                        </div>
+                                        <a class="btn btn-outline-primary btn-sm mt-2 mt-md-0" asp-action="ExportCv">
+                                            <i class="fas fa-eye me-1"></i>Preview CV
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 

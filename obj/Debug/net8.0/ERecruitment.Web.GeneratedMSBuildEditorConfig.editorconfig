@@ -66,8 +66,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBwbGljYW50L0Rhc2hib2FyZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/ole/Documents/ERecruitment.Web/Views/Applicant/Profile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBwbGljYW50L1Byb2ZpbGUuY3NodG1s
+[/home/ole/Documents/ERecruitment.Web/Views/Applicant/ExportCv.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBwbGljYW50L0V4cG9ydEN2LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/ole/Documents/ERecruitment.Web/Views/Applicant/OldProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBwbGljYW50L09sZFByb2ZpbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/ole/Documents/ERecruitment.Web/Views/Applicant/Profile2.cshtml]

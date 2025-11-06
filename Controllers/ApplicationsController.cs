@@ -314,6 +314,6 @@ public class ApplicationsController : Controller
 
         TempData["Flash"] = $"Please complete your profile before applying. Missing information: {missingDescription}.";
         TempData["FlashType"] = "warning";
-        return RedirectToAction("Profile2", "Applicant");
+        return RedirectToAction("Profile", "Applicant");
     }
 }

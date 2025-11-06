@@ -61,7 +61,7 @@ public class ApplicantController : Controller
             }
 
             var model = BuildProfileViewModel(applicant);
-            return View(model);
+            return View("Profile2", model);
         }
         catch (Exception ex)
         {
@@ -86,7 +86,7 @@ public class ApplicantController : Controller
         if (!ModelState.IsValid)
         {
             PopulateExistingDocuments(model, applicant);
-            return View(model);
+            return View("Profile2", model);
         }
 
         var result = await _applicantService.UpdateProfileAsync(applicant, model);
@@ -94,7 +94,7 @@ public class ApplicantController : Controller
         {
             PopulateExistingDocuments(model, applicant);
             ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Unable to save profile.");
-            return View(model);
+            return View("Profile2", model);
         }
 
         if (model.CvFile is not null)
@@ -111,55 +111,16 @@ public class ApplicantController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Profile2()
+    public IActionResult Profile2()
     {
-        var applicant = await RequireApplicantAsync();
-        if (applicant is null)
-        {
-            return RedirectToAction("Login", "Account");
-        }
-
-        var model = BuildProfileViewModel(applicant);
-        return View("Profile2", model);
+        return RedirectToAction(nameof(Profile));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Profile2(ProfileViewModel model)
+    public IActionResult Profile2(ProfileViewModel model)
     {
-        var applicant = await RequireApplicantAsync();
-        if (applicant is null)
-        {
-            return RedirectToAction("Login", "Account");
-        }
-
-        EnsureCollectionDefaults(model);
-        if (!ModelState.IsValid)
-        {
-            PopulateExistingDocuments(model, applicant);
-            return View("Profile2", model);
-        }
-
-        var result = await _applicantService.UpdateProfileAsync(applicant, model);
-        if (!result.Success)
-        {
-            PopulateExistingDocuments(model, applicant);
-            ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Unable to save profile.");
-            return View("Profile2", model);
-        }
-
-        if (model.CvFile is not null)
-        {
-            TempData["Flash"] = applicant.Profile.Cv?.ParsedSuccessfully == true
-                ? "Profile updated. We parsed your CV and highlighted new skills."
-                : "Profile updated. Your CV requires manual review but is queued for recruiters.";
-        }
-        else
-        {
-            TempData["Flash"] = "Profile updated.";
-        }
-
-        return RedirectToAction(nameof(Profile2));
+        return RedirectToAction(nameof(Profile));
     }
 
     private async Task<Models.Applicant?> RequireApplicantAsync()
@@ -299,9 +260,22 @@ public class ApplicantController : Controller
     private void PopulateExistingDocuments(ProfileViewModel model, Models.Applicant applicant)
     {
         model.ExistingCv = applicant.Profile.Cv;
-        model.ExistingIdDocument = applicant.Profile.IdDocument;
-        model.ExistingQualificationDocument = applicant.Profile.QualificationDocument;
-        model.ExistingDriversLicenseDocument = applicant.Profile.DriversLicenseDocument;
-        model.ExistingAdditionalDocument = applicant.Profile.AdditionalDocument;
+       model.ExistingIdDocument = applicant.Profile.IdDocument;
+       model.ExistingQualificationDocument = applicant.Profile.QualificationDocument;
+       model.ExistingDriversLicenseDocument = applicant.Profile.DriversLicenseDocument;
+       model.ExistingAdditionalDocument = applicant.Profile.AdditionalDocument;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExportCv()
+    {
+        var applicant = await RequireApplicantAsync();
+        if (applicant is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var model = BuildProfileViewModel(applicant);
+        return View(model);
     }
 }
