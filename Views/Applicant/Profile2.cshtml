@@ -189,23 +189,55 @@
             background: rgba(249, 115, 22, 0.08);
         }
 
-        .yesno-row .form-select,
-        .yesno-row .form-control {
+        .yesno-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .yesno-item {
+            display: grid;
+            grid-template-columns: minmax(260px, 1.15fr) minmax(140px, auto) minmax(300px, 1fr);
+            column-gap: 1.5rem;
+            row-gap: 0.5rem;
+            align-items: end;
+        }
+
+        .yesno-item .form-select,
+        .yesno-item .form-control,
+        .yesno-item textarea {
             border-radius: 12px;
         }
 
-        .yesno-label {
-            font-size: 0.8rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: rgba(71, 85, 105, 0.85);
+        .yesno-question {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .detail-label {
-            font-size: 0.75rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: rgba(148, 81, 24, 0.85);
+        .yesno-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .yesno-detail-grid {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        @@media (max-width: 1199.98px) {
+            .yesno-item {
+                grid-template-columns: minmax(220px, 1fr) minmax(120px, auto) minmax(260px, 1fr);
+            }
+        }
+
+        @@media (max-width: 991.98px) {
+            .yesno-item {
+                grid-template-columns: 1fr;
+                align-items: stretch;
+            }
         }
 
         @@media (max-width: 991.98px) {
@@ -350,43 +382,18 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Disability (Yes/No)</label>
-                                            <select asp-for="HasDisability" asp-items="yesNoOptions" class="form-select"></select>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="DisabilityDetails" class="form-label detail-label">Disability Details</label>
-                                            <textarea asp-for="DisabilityDetails" class="form-control" rows="2" placeholder="Provide relevant details"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="wizard-divider"></div>
-
-                            <div class="row g-4">
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">South African Citizen</label>
-                                            <select asp-for="IsSouthAfrican" asp-items="yesNoOptions" class="form-select"></select>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="Nationality" class="form-label detail-label">Nationality / Details</label>
-                                            <input asp-for="Nationality" class="form-control" placeholder="If not South African, specify nationality" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Valid Work Permit</label>
-                                            <select asp-for="HasWorkPermit" asp-items="yesNoOptions" class="form-select"></select>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="WorkPermitDetails" class="form-label detail-label">Work Permit Details</label>
-                                            <textarea asp-for="WorkPermitDetails" class="form-control" rows="2" placeholder="Provide permit reference and validity"></textarea>
+                                    <div class="yesno-section">
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="HasDisability" class="form-label yesno-label">Disability (Yes/No)</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="HasDisability" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="DisabilityDetails" class="form-label detail-label">Disability Details</label> -->
+                                                <input asp-for="DisabilityDetails" class="form-control" placeholder="Provide relevant details" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -396,26 +403,30 @@
 
                             <div class="row g-4">
                                 <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Criminal Offence</label>
-                                            <select asp-for="HasCriminalRecord" asp-items="yesNoOptions" class="form-select"></select>
+                                    <div class="yesno-section">
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="IsSouthAfrican" class="form-label yesno-label">Are you a South African citizen?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="IsSouthAfrican" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="Nationality" class="form-label detail-label">Nationality / Details</label> -->
+                                                <input asp-for="Nationality" class="form-control" placeholder="If not South African, specify nationality" />
+                                            </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="CriminalRecordDetails" class="form-label detail-label">Criminal Offence Details</label>
-                                            <textarea asp-for="CriminalRecordDetails" class="form-control" rows="2" placeholder="List offence(s), jurisdiction and year"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Pending Criminal Case</label>
-                                            <select asp-for="HasPendingCase" asp-items="yesNoOptions" class="form-select"></select>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="PendingCaseDetails" class="form-label detail-label">Pending Case Details</label>
-                                            <textarea asp-for="PendingCaseDetails" class="form-control" rows="2" placeholder="Provide case number and current status"></textarea>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="HasWorkPermit" class="form-label yesno-label">Do you have a valid work permit? (only if non-South African)</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="HasWorkPermit" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="WorkPermitDetails" class="form-label detail-label">Work Permit Details</label> -->
+                                                <input asp-for="WorkPermitDetails" class="form-control" placeholder="Provide permit reference and validity" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -425,74 +436,111 @@
 
                             <div class="row g-4">
                                 <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Dismissed for Misconduct</label>
-                                            <select asp-for="DismissedForMisconduct" asp-items="yesNoOptions" class="form-select"></select>
+                                    <div class="yesno-section">
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="HasCriminalRecord" class="form-label yesno-label">Have you been convicted or found guilty of a criminal offence (including an admission of guilt)?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="HasCriminalRecord" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="CriminalRecordDetails" class="form-label detail-label">Criminal Offence Details</label> -->
+                                                <input asp-for="CriminalRecordDetails" class="form-control" placeholder="List offence(s), jurisdiction and year" />
+                                            </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="DismissedDetails" class="form-label detail-label">Dismissal Details</label>
-                                            <textarea asp-for="DismissedDetails" class="form-control" rows="2" placeholder="Include department and year"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Pending Disciplinary Case</label>
-                                            <select asp-for="PendingDisciplinaryCase" asp-items="yesNoOptions" class="form-select"></select>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="PendingDisciplinaryDetails" class="form-label detail-label">Disciplinary Details</label>
-                                            <textarea asp-for="PendingDisciplinaryDetails" class="form-control" rows="2" placeholder="Summarise the case"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Resigned Pending Disciplinary</label>
-                                            <select asp-for="ResignedPendingDisciplinary" asp-items="yesNoOptions" class="form-select"></select>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="ResignedPendingDisciplinaryDetails" class="form-label detail-label">Resignation Details</label>
-                                            <textarea asp-for="ResignedPendingDisciplinaryDetails" class="form-control" rows="2" placeholder="Outline the circumstances"></textarea>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="HasPendingCase" class="form-label yesno-label">Do you have any pending criminal case against you?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="HasPendingCase" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="PendingCaseDetails" class="form-label detail-label">Pending Case Details</label> -->
+                                                <input asp-for="PendingCaseDetails" class="form-control" placeholder="Provide case number and current status" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="wizard-divider"></div>
+
+                            <div class="row g-4">
                                 <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Discharged for Ill-Health</label>
-                                            <select asp-for="DischargedForIllHealth" asp-items="yesNoOptions" class="form-select"></select>
+                                    <div class="yesno-section">
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="DismissedForMisconduct" class="form-label yesno-label">Have you ever been dismissed for misconduct from the Public Service?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="DismissedForMisconduct" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="DismissedDetails" class="form-label detail-label">Dismissal Details</label> -->
+                                                <input asp-for="DismissedDetails" class="form-control" placeholder="Include department and year" />
+                                            </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="DischargedDetails" class="form-label detail-label">Discharge Details</label>
-                                            <textarea asp-for="DischargedDetails" class="form-control" rows="2"></textarea>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="PendingDisciplinaryCase" class="form-label yesno-label">Do you have any pending disciplinary case against you?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="PendingDisciplinaryCase" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="PendingDisciplinaryDetails" class="form-label detail-label">Disciplinary Details</label> -->
+                                                <input asp-for="PendingDisciplinaryDetails" class="form-control" placeholder="Summarise the case" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Conducting Business with the State</label>
-                                            <select asp-for="BusinessWithState" asp-items="yesNoOptions" class="form-select"></select>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="ResignedPendingDisciplinary" class="form-label yesno-label">Have you resigned from a recent job pending any disciplinary proceeding against you?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="ResignedPendingDisciplinary" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="ResignedPendingDisciplinaryDetails" class="form-label detail-label">Resignation Details</label> -->
+                                                <input asp-for="ResignedPendingDisciplinaryDetails" class="form-control" placeholder="Outline the circumstances" />
+                                            </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <label asp-for="BusinessDetails" class="form-label detail-label">Business Details</label>
-                                            <textarea asp-for="BusinessDetails" class="form-control" rows="2" placeholder="Company name, registration number"></textarea>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="DischargedForIllHealth" class="form-label yesno-label">Have you been discharged or retired from the Public Service on grounds of Ill-health or on condition that you cannot be re-employed?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="DischargedForIllHealth" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="DischargedDetails" class="form-label detail-label">Discharge Details</label> -->
+                                                <input asp-for="DischargedDetails" class="form-control" placeholder="Include department and year" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3 align-items-end yesno-row">
-                                        <div class="col-md-4">
-                                            <label class="form-label yesno-label">Will Relinquish Business Interests</label>
-                                            <select asp-for="WillRelinquishBusiness" asp-items="yesNoOptions" class="form-select"></select>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="BusinessWithState" class="form-label yesno-label">Are you conducting business with the State or are you a Director of a Public or Private company conducting business with the State?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="BusinessWithState" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label asp-for="BusinessDetails" class="form-label detail-label">Business Details</label> -->
+                                                <input asp-for="BusinessDetails" class="form-control" placeholder="Company name, registration number" />
+                                            </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <label class="form-label detail-label">Relinquishment Plan</label>
-                                            <textarea class="form-control" rows="2" name="WillRelinquishBusinessPlan" placeholder="Explain how you will relinquish these interests if appointed (for panel review)"></textarea>
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="WillRelinquishBusiness" class="form-label yesno-label">In the event that you are employed in the Public Service, will you immediately relinquish such business interests?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="WillRelinquishBusiness" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <!-- <label class="form-label detail-label" for="WillRelinquishBusinessPlan">Relinquishment plan</label> -->
+                                                <input asp-for="WillRelinquishBusinessPlan" class="form-control" placeholder="Explain how you will relinquish these interests if appointed (for panel review)" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -509,17 +557,29 @@
                                     <label asp-for="PrivateSectorYears" class="form-label">Private sector experience (years)</label>
                                     <input asp-for="PrivateSectorYears" class="form-control" type="number" min="0" />
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Any condition preventing re-appointment?</label>
-                                    <select asp-for="ReappointmentCondition" asp-items="yesNoOptions" class="form-select"></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label asp-for="ReappointmentDepartment" class="form-label">Department</label>
-                                    <input asp-for="ReappointmentDepartment" class="form-control" />
-                                </div>
-                                <div class="col-md-4">
-                                    <label asp-for="ReappointmentConditionDetails" class="form-label">Condition details</label>
-                                    <input asp-for="ReappointmentConditionDetails" class="form-control" />
+                                <div class="col-12">
+                                    <div class="yesno-section">
+                                        <div class="yesno-item">
+                                            <div class="yesno-question">
+                                                <label asp-for="ReappointmentCondition" class="form-label yesno-label">Any condition preventing re-appointment?</label>
+                                            </div>
+                                            <div class="yesno-control">
+                                                <select asp-for="ReappointmentCondition" asp-items="yesNoOptions" class="form-select"></select>
+                                            </div>
+                                            <div class="yesno-detail">
+                                                <div class="yesno-detail-grid">
+                                                    <div>
+                                                        <label asp-for="ReappointmentDepartment" class="form-label detail-label">Department</label>
+                                                        <input asp-for="ReappointmentDepartment" class="form-control" />
+                                                    </div>
+                                                    <div>
+                                                        <label asp-for="ReappointmentConditionDetails" class="form-label detail-label">Condition Details</label>
+                                                        <input asp-for="ReappointmentConditionDetails" class="form-control" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
