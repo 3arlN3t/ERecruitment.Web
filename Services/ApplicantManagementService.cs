@@ -31,8 +31,15 @@ public class ApplicantManagementService : IApplicantManagementService
         RegisterViewModel model,
         CancellationToken cancellationToken = default)
     {
-        // Validate SA ID
-        if (!SaIdValidator.IsValid(model.SaIdNumber))
+        var saIdProvided = !string.IsNullOrWhiteSpace(model.SaIdNumber);
+        var passportProvided = !string.IsNullOrWhiteSpace(model.PassportNumber);
+
+        if (!saIdProvided && !passportProvided)
+        {
+            return new RegistrationResult(false, "Please provide either a valid South African ID number or a passport number.");
+        }
+
+        if (saIdProvided && !SaIdValidator.IsValid(model.SaIdNumber!))
         {
             return new RegistrationResult(false, "The South African ID number entered is invalid.");
         }
@@ -51,7 +58,15 @@ public class ApplicantManagementService : IApplicantManagementService
             PasswordHash = PasswordHasher.HashPassword(model.Password)
         };
 
-        applicant.Profile.SaIdNumber = model.SaIdNumber;
+        var profile = applicant.Profile;
+        profile.FirstName = model.FirstName?.Trim();
+        profile.LastName = model.LastName?.Trim();
+        profile.SaIdNumber = model.SaIdNumber?.Trim();
+        profile.PassportNumber = model.PassportNumber?.Trim();
+        profile.PhoneNumber = model.PhoneNumber?.Trim();
+        profile.Location = model.ResidentialAddress?.Trim();
+        profile.ContactEmail = model.Email.Trim();
+
         applicant.EquityDeclaration = BuildEquityDeclaration(
             model.EquityConsent,
             model.EquityEthnicity,
@@ -64,7 +79,7 @@ public class ApplicantManagementService : IApplicantManagementService
         await _repository.AddAuditEntryAsync(new AuditEntry
         {
             Actor = applicant.Email,
-            Action = "Registered new account with validated SA ID"
+            Action = "Registered new applicant account"
         }, cancellationToken);
 
         return new RegistrationResult(true, null, applicant);

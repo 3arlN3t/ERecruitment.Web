@@ -1,5 +1,6 @@
 using ERecruitment.Web.Services;
 using ERecruitment.Web.ViewModels;
+using ERecruitment.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,12 @@ public class ApplicationsController : Controller
             return RedirectToAction("Dashboard", "Applicant");
         }
 
+        var guard = EnsureProfileReadyForApplications(applicant);
+        if (guard is not null)
+        {
+            return guard;
+        }
+
         var flow = await _workflowService.StartApplicationAsync(applicant.Id, id);
         if (!flow.Success)
         {
@@ -66,6 +73,12 @@ public class ApplicationsController : Controller
         if (job is null)
         {
             return RedirectToAction("Dashboard", "Applicant");
+        }
+
+        var guard = EnsureProfileReadyForApplications(applicant);
+        if (guard is not null)
+        {
+            return guard;
         }
 
         var questions = job.KillerQuestions;
@@ -100,6 +113,12 @@ public class ApplicationsController : Controller
         if (applicant is null)
         {
             return RedirectToAction("Login", "Account");
+        }
+
+        var guardPost = EnsureProfileReadyForApplications(applicant);
+        if (guardPost is not null)
+        {
+            return guardPost;
         }
 
         if (!ModelState.IsValid)
@@ -193,6 +212,12 @@ public class ApplicationsController : Controller
             return RedirectToAction("Login", "Account");
         }
 
+        var guardPost = EnsureProfileReadyForApplications(applicant);
+        if (guardPost is not null)
+        {
+            return guardPost;
+        }
+
         var result = await _workflowService.SubmitScreenedApplicationAsync(applicant.Id, applicant.Email, id);
         if (result.Success)
         {
@@ -215,6 +240,12 @@ public class ApplicationsController : Controller
         if (applicant is null)
         {
             return RedirectToAction("Login", "Account");
+        }
+
+        var guardPost = EnsureProfileReadyForApplications(applicant);
+        if (guardPost is not null)
+        {
+            return guardPost;
         }
 
         var result = await _workflowService.SubmitDirectApplicationAsync(applicant.Id, applicant.Email, id);
@@ -266,5 +297,23 @@ public class ApplicationsController : Controller
             Events = application.AuditTrail.OrderByDescending(e => e.TimestampUtc).ToList()
         };
         return View(vm);
+}
+
+    private IActionResult? EnsureProfileReadyForApplications(Models.Applicant applicant)
+    {
+        var profile = applicant.Profile ?? new Models.ApplicantProfile();
+        if (profile.MeetsMinimumRequirements())
+        {
+            return null;
+        }
+
+        var missingFields = profile.GetMissingCriticalFields();
+        var missingDescription = missingFields.Any()
+            ? string.Join(", ", missingFields)
+            : "the required profile information";
+
+        TempData["Flash"] = $"Please complete your profile before applying. Missing information: {missingDescription}.";
+        TempData["FlashType"] = "warning";
+        return RedirectToAction("Profile2", "Applicant");
     }
 }

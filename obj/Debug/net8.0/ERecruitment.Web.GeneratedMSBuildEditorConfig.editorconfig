@@ -30,6 +30,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/ole/Documents/ERecruitment.Web/Views/Account/RegisterConfirmation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3RlckNvbmZpcm1hdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/ole/Documents/ERecruitment.Web/Views/Account/ResetPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZXNldFBhc3N3b3JkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -40,6 +44,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/home/ole/Documents/ERecruitment.Web/Views/Admin/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/ole/Documents/ERecruitment.Web/Views/AdminApplications/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW5BcHBsaWNhdGlvbnMvRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/ole/Documents/ERecruitment.Web/Views/AdminApplications/Index.cshtml]

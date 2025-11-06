@@ -104,6 +104,7 @@
                                 <th><i class="fas fa-info-circle me-2"></i>Status</th>
                                 <th><i class="fas fa-calendar me-2"></i>Submitted Date</th>
                                 <th><i class="fas fa-comment me-2"></i>Outcome/Notes</th>
+                                <th><i class="fas fa-cog me-2"></i>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -161,6 +162,11 @@
                                         {
                                             <span class="text-muted">—</span>
                                         }
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-primary" asp-controller="AdminApplications" asp-action="Edit" asp-route-id="@app.Id">
+                                            <i class="fas fa-user-cog me-1"></i>Manage
+                                        </a>
                                     </td>
                                 </tr>
                             }

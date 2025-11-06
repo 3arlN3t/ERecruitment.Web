@@ -33,7 +33,32 @@
         </div>
     </div>
 
-    @if (Model.Jobs.Any())
+@if (Model.IsApplicant && !Model.ProfileReadyForApplications)
+{
+    <div class="alert alert-warning border-0 shadow-sm mb-4">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-exclamation-triangle fa-lg me-3 mt-1"></i>
+            <div>
+                <h5 class="alert-heading mb-2">Complete your profile to apply for vacancies</h5>
+                <p class="mb-2">We need a few more details before you can submit applications. Please update your profile with the information below:</p>
+                @if (Model.MissingProfileFields.Any())
+                {
+                    <ul class="mb-2">
+                        @foreach (var field in Model.MissingProfileFields)
+                        {
+                            <li>@field</li>
+                        }
+                    </ul>
+                }
+                <a class="btn btn-outline-primary btn-sm" asp-controller="Applicant" asp-action="Profile2">
+                    <i class="fas fa-user-edit me-2"></i>Update Profile
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.Jobs.Any())
     {
         <!-- Job Statistics -->
         <div class="row g-3 mb-4">
@@ -78,12 +103,34 @@
                 var isRejected = existingApplication?.Status == ApplicationStatus.Rejected;
                 var isWithdrawn = existingApplication?.Status == ApplicationStatus.Withdrawn;
                 var isExpired = job.IsExpired;
+                var isActive = job.IsActive;
+                var isClosed = !job.IsActive;
                 var isNotAcceptingApps = !job.IsAcceptingApplications;
                 <div class="col-md-6 col-lg-4">
-                    <div class="job-card fade-in" style="@(hasApplied ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (isExpired && !Model.IsAdmin ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (isExpired ? "opacity: 0.7; background-color: #f8f9fa; border: 1px solid #dee2e6;" : "")))">
-                        @if (hasApplied)
-                        {
-                            <div class="position-absolute top-0 end-0 m-2">
+                    <div class="job-card fade-in" style="@(hasApplied ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (!isActive && !Model.IsAdmin ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (!isActive ? "opacity: 0.7; background-color: #f8f9fa; border: 1px solid #dee2e6;" : (isExpired && !Model.IsAdmin ? "opacity: 0.6; background-color: #f8f9fa; border: 1px solid #dee2e6; pointer-events: none;" : (isExpired ? "opacity: 0.7; background-color: #f8f9fa; border: 1px solid #dee2e6;" : "")))))">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                @if (isClosed)
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-lock me-1"></i>Closed
+                                    </span>
+                                }
+                                else if (isExpired)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-hourglass-end me-1"></i>Expired
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Active
+                                    </span>
+                                }
+                            </div>
+                            @if (hasApplied)
+                            {
                                 @if (isSubmitted)
                                 {
                                     <span class="badge bg-info">
@@ -114,17 +161,14 @@
                                         <i class="fas fa-check me-1"></i>Applied
                                     </span>
                                 }
-                            </div>
-                        }
-                        else if (isExpired)
-                        {
-                            <div class="position-absolute top-0 end-0 m-2">
+                            }
+                            else if (isExpired)
+                            {
                                 <span class="badge bg-dark">
                                     <i class="fas fa-times-circle me-1"></i>Closed
                                 </span>
-                            </div>
-                        }
-
+                            }
+                        </div>
                         <h3 class="@(hasApplied || isExpired ? "text-muted" : "")">@job.Title</h3>
 
                         <div class="job-meta">
@@ -155,10 +199,13 @@
                                             <i class="fas fa-check-circle me-1"></i>View Application Status
                                         </a>
                                     }
-                                    else if (isExpired)
+                                    else if (isExpired || isClosed)
                                     {
-                                        <button class="btn btn-secondary btn-sm flex-grow-1" disabled title="This position closed on @job.ClosingDate?.ToString("dd MMM yyyy")">
-                                            <i class="fas fa-times-circle me-1"></i>Position Closed
+                                        var tooltip = isClosed
+                                            ? "This position has been closed by administrators"
+                                            : $"This position closed on {job.ClosingDate?.ToString("dd MMM yyyy")}";
+                                        <button class="btn btn-secondary btn-sm flex-grow-1" disabled title="@tooltip">
+                                            <i class="fas fa-times-circle me-1"></i>Not Available
                                         </button>
                                     }
                                     else if (isDraft)
@@ -166,6 +213,12 @@
                                         <a asp-controller="Applications" asp-action="Job" asp-route-id="@job.Id" class="btn btn-warning btn-sm flex-grow-1">
                                             <i class="fas fa-pencil-alt me-1"></i>Continue Draft
                                         </a>
+                                    }
+                                    else if (!Model.ProfileReadyForApplications)
+                                    {
+                                        <button class="btn btn-outline-secondary btn-sm flex-grow-1" type="button" disabled title="Complete your profile to apply">
+                                            <i class="fas fa-user-cog me-1"></i>Complete Profile to Apply
+                                        </button>
                                     }
                                     else
                                     {
@@ -189,11 +242,20 @@
                                     <a asp-action="Edit" asp-route-id="@job.Id" class="btn btn-outline-secondary btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    @if (isExpired)
+                                    @if (isClosed || isExpired)
                                     {
                                         <button type="button" class="btn btn-outline-success btn-sm" title="Reopen Position" style="cursor: pointer;" onclick="reopenJob('@job.Id'); return false;">
                                             <i class="fas fa-sync-alt me-1"></i>Reopen
                                         </button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Close" asp-route-id="@job.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-warning btn-sm" title="Close Position" onclick="return confirm('Are you sure you want to close this position? Applicants will no longer be able to apply.');">
+                                                <i class="fas fa-lock me-1"></i>Close
+                                            </button>
+                                        </form>
                                     }
                                     <a asp-action="Delete" asp-route-id="@job.Id" class="btn btn-outline-danger btn-sm" title="Delete">
                                         <i class="fas fa-trash-alt"></i>

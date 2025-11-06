@@ -4,6 +4,14 @@
 }
 
 <div class="container mt-4">
+    @if (TempData["Flash"] is string flashMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@flashMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <!-- Page Header -->
     <div class="dashboard-header mb-4">
         <div class="row align-items-center">
@@ -158,16 +166,8 @@
                                         }
                                     </td>
                                     <td>
-                                        @*
-                                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@a.Id" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-*@
-                                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@a.Id" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@a.Id" title="Delete">
-                                            <i class="fas fa-trash"></i>
+                                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@a.Id">
+                                            <i class="fas fa-user-cog me-1"></i>Manage
                                         </a>
                                     </td>
                                 </tr>

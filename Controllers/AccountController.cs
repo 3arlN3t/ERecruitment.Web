@@ -3,10 +3,14 @@ using ERecruitment.Web.ViewModels;
 using ERecruitment.Web.Models;
 using ERecruitment.Web.Data;
 using ERecruitment.Web.Notifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace ERecruitment.Web.Controllers;
 
@@ -50,15 +54,23 @@ public class AccountController : Controller
             return View(model);
         }
 
+        model.Email = model.Email.Trim();
+        model.FirstName = model.FirstName?.Trim() ?? string.Empty;
+        model.LastName = model.LastName?.Trim() ?? string.Empty;
+        model.PhoneNumber = model.PhoneNumber?.Trim() ?? string.Empty;
+        model.ResidentialAddress = model.ResidentialAddress?.Trim() ?? string.Empty;
+        model.SaIdNumber = model.SaIdNumber?.Trim();
+        model.PassportNumber = model.PassportNumber?.Trim();
+
         // Create Identity user
-        var existingUser = await _userManager.FindByEmailAsync(model.Email.Trim());
+        var existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser is not null)
         {
             ModelState.AddModelError(string.Empty, "An account with this email already exists.");
             return View(model);
         }
 
-        var identityUser = new IdentityUser { UserName = model.Email.Trim(), Email = model.Email.Trim(), EmailConfirmed = true };
+        var identityUser = new IdentityUser { UserName = model.Email, Email = model.Email, EmailConfirmed = false };
         var identityResult = await _userManager.CreateAsync(identityUser, model.Password);
         if (!identityResult.Succeeded)
         {
@@ -72,14 +84,37 @@ public class AccountController : Controller
         var result = await _applicantService.RegisterApplicantAsync(model);
         if (!result.Success)
         {
+            await _userManager.DeleteAsync(identityUser);
             ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Unable to register at this time.");
             return View(model);
         }
 
-        await _currentApplicant.SetAsync(result.Applicant!.Id);
-        await _signInManager.SignInAsync(identityUser, isPersistent: false);
-        TempData["Flash"] = "Account created successfully. Welcome to the eRecruitment portal.";
-        return RedirectToAction("Dashboard", "Applicant");
+        try
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var callbackUrl = Url.Action(
+                nameof(ConfirmEmail),
+                "Account",
+                new { userId = identityUser.Id, token = encodedToken },
+                Request.Scheme);
+
+            var message = $"""
+                <p>Hi {HtmlEncoder.Default.Encode(model.FirstName)},</p>
+                <p>Thank you for registering on the Department of Tourism eRecruitment portal.</p>
+                <p>Please confirm your email address by <a href="{HtmlEncoder.Default.Encode(callbackUrl!)}">clicking this link</a>.</p>
+                <p>If you did not create this account, please ignore this message.</p>
+                """;
+
+            await _emailSender.SendAsync(model.Email, "Confirm your eRecruitment account", message);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to send confirmation email: {ex}");
+        }
+
+        TempData["Flash"] = "Account created successfully. Please check your email to confirm your account before signing in.";
+        return RedirectToAction(nameof(RegisterConfirmation));
     }
 
     [HttpGet]
@@ -101,6 +136,12 @@ public class AccountController : Controller
         if (identityUser is null)
         {
             ModelState.AddModelError(string.Empty, "Invalid email or password.");
+            return View(model);
+        }
+
+        if (!identityUser.EmailConfirmed)
+        {
+            ModelState.AddModelError(string.Empty, "Please confirm your email before signing in. Check your inbox for the verification link.");
             return View(model);
         }
 
@@ -132,17 +173,21 @@ public class AccountController : Controller
         var applicant = await _applicantService.FindApplicantByEmailAsync(model.Email.Trim());
         if (applicant is null)
         {
-            // Bridge: if Identity user exists but domain profile doesn't, create minimal profile
             var reg = await _applicantService.RegisterApplicantAsync(new RegisterViewModel
             {
                 Email = model.Email.Trim(),
                 Password = model.Password,
                 ConfirmPassword = model.Password,
-                SaIdNumber = "0000000000000"
+                FirstName = "Incomplete",
+                LastName = "Profile",
+                SaIdNumber = string.Empty,
+                PassportNumber = "PENDING",
+                PhoneNumber = "0000000000",
+                ResidentialAddress = "Update required"
             });
-            if (reg.Success)
+            if (reg.Success && reg.Applicant is not null)
             {
-                await _currentApplicant.SetAsync(reg.Applicant!.Id);
+                await _currentApplicant.SetAsync(reg.Applicant.Id);
             }
         }
         else
@@ -298,5 +343,41 @@ public class AccountController : Controller
 
         TempData["Flash"] = "Your password has been reset successfully. Please sign in with your new password.";
         return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult RegisterConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+        {
+            TempData["Flash"] = "Invalid email confirmation link.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            TempData["Flash"] = "Unable to locate the account for confirmation.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+        var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+        if (!result.Succeeded)
+        {
+            TempData["Flash"] = "We could not confirm your email address. Please request a new confirmation link.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        TempData["Flash"] = "Email confirmed successfully. You can now sign in.";
+        return RedirectToAction(nameof(Login));
     }
 }

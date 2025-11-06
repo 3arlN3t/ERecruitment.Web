@@ -4,6 +4,7 @@ using ERecruitment.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ERecruitment.Web.Utilities;
 
 namespace ERecruitment.Web.Controllers;
 
@@ -55,6 +56,13 @@ public class JobsController : Controller
             var applicant = await _currentApplicant.GetAsync();
             if (applicant is not null)
             {
+                var profile = applicant.Profile ?? new ApplicantProfile();
+                viewModel.ProfileReadyForApplications = profile.MeetsMinimumRequirements();
+                if (!viewModel.ProfileReadyForApplications)
+                {
+                    viewModel.MissingProfileFields = profile.GetMissingCriticalFields();
+                }
+
                 _logger.LogInformation("Applicant ID: {applicantId}", applicant.Id);
                 viewModel.ApplicantApplications = await _workflowService.GetApplicantApplicationsAsync(applicant.Id);
                 _logger.LogInformation("Applicant has {count} applications", viewModel.ApplicantApplications.Count);
@@ -252,6 +260,30 @@ public class JobsController : Controller
         return View(job);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Close(Guid id)
+    {
+        var job = await _repo.GetJobPostingAsync(id);
+        if (job is null)
+        {
+            return NotFound();
+        }
+
+        if (!job.IsActive)
+        {
+            TempData["Flash"] = $"Position '{job.Title}' is already closed.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        job.IsActive = false;
+        job.DateLastModified = DateTime.UtcNow;
+        await _repo.UpdateJobPostingAsync(job);
+
+        TempData["Flash"] = $"Position '{job.Title}' has been closed. Applicants can no longer submit new applications.";
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpGet]
     public async Task<IActionResult> Applications(Guid id, int page = 1, int pageSize = 25)
     {
@@ -340,5 +372,3 @@ public class JobsController : Controller
         return RedirectToAction(nameof(Index));
     }
 }
-
-

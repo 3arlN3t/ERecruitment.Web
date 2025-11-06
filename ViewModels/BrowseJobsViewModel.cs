@@ -8,4 +8,6 @@ public class BrowseJobsViewModel
     public IReadOnlyCollection<JobApplication> ApplicantApplications { get; set; } = Array.Empty<JobApplication>();
     public bool IsApplicant { get; set; }
     public bool IsAdmin { get; set; }
+    public bool ProfileReadyForApplications { get; set; }
+    public IReadOnlyCollection<string> MissingProfileFields { get; set; } = Array.Empty<string>();
 }

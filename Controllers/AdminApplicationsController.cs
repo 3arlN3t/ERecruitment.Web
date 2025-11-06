@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using ERecruitment.Web.Models;
@@ -7,6 +8,7 @@ using ERecruitment.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ERecruitment.Web.Controllers;
 
@@ -14,6 +16,7 @@ namespace ERecruitment.Web.Controllers;
 public class AdminApplicationsController : Controller
 {
     private readonly IRecruitmentRepository _repo;
+    private readonly IAdministrationService _adminService;
 
     private static readonly MasterListFilterDefinition[] MasterListFilters =
     {
@@ -26,9 +29,10 @@ public class AdminApplicationsController : Controller
         new("withdrawn", "Withdrawn", "Applications withdrawn by applicants", ApplicationStatus.Withdrawn)
     };
 
-    public AdminApplicationsController(IRecruitmentRepository repo)
+    public AdminApplicationsController(IRecruitmentRepository repo, IAdministrationService adminService)
     {
         _repo = repo;
+        _adminService = adminService;
     }
 
     [HttpGet]
@@ -207,6 +211,74 @@ public class AdminApplicationsController : Controller
         return File(bytes, "text/csv", $"applications_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        var application = await _repo.FindJobApplicationByIdAsync(id);
+        if (application is null)
+        {
+            return NotFound();
+        }
+
+        var applicant = await _repo.FindApplicantByIdAsync(application.ApplicantId);
+        if (applicant is null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = BuildStatusViewModel(application, applicant);
+        viewModel.ReturnUrl = GetSafeReturnUrl(Request.Headers["Referer"], Url.Action(nameof(Index))) ?? Url.Action(nameof(Index));
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(AdminApplicationStatusUpdateViewModel model)
+    {
+        if (model.NewStatus == ApplicationStatus.Rejected && string.IsNullOrWhiteSpace(model.RejectionReason))
+        {
+            ModelState.AddModelError(nameof(model.RejectionReason), "Please provide a rejection reason when rejecting an application.");
+        }
+
+        if (model.SendEmail && (string.IsNullOrWhiteSpace(model.EmailSubject) || string.IsNullOrWhiteSpace(model.EmailBody)))
+        {
+            ModelState.AddModelError(nameof(model.EmailSubject), "Email subject and body are required when sending a notification.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await PopulateStatusViewModelAsync(model);
+            return View(model);
+        }
+
+        var actor = User?.Identity?.Name ?? "admin";
+        var result = await _adminService.UpdateApplicationStatusAsync(
+            model.ApplicationId,
+            model.NewStatus,
+            actor,
+            model.Note,
+            model.RejectionReason,
+            model.SendEmail,
+            model.EmailSubject,
+            model.EmailBody,
+            HttpContext.RequestAborted);
+
+        if (!result.Success)
+        {
+            ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Unable to update application status.");
+            await PopulateStatusViewModelAsync(model);
+            return View(model);
+        }
+
+        var statusLabel = MapStatusLabel(model.NewStatus);
+        TempData["Flash"] = result.EmailSent
+            ? $"Application status updated to {statusLabel} and notification sent to the applicant."
+            : $"Application status updated to {statusLabel}.";
+
+        var redirectUrl = GetSafeReturnUrl(model.ReturnUrl, Url.Action(nameof(Index))) ?? Url.Action(nameof(Index));
+        return Redirect(redirectUrl!);
+    }
+
     private static string Escape(string value)
     {
         if (value.Contains(',') || value.Contains('"'))
@@ -234,6 +306,106 @@ public class AdminApplicationsController : Controller
                 f.Status,
                 string.Equals(f.Code, selectedCode, StringComparison.OrdinalIgnoreCase)))
             .ToList();
+    }
+
+    private AdminApplicationStatusUpdateViewModel BuildStatusViewModel(JobApplication application, Applicant applicant)
+    {
+        var viewModel = new AdminApplicationStatusUpdateViewModel
+        {
+            ApplicationId = application.Id,
+            ApplicantEmail = applicant.Email,
+            ApplicantName = applicant.Profile?.FirstName ?? applicant.Email,
+            JobTitle = application.JobTitle,
+            CurrentStatus = application.Status,
+            NewStatus = application.Status,
+            RejectionReason = application.RejectionReason,
+            StatusOptions = BuildStatusOptions(application.Status),
+            SubmittedAtUtc = application.SubmittedAtUtc,
+            AuditTrail = application.AuditTrail
+                .OrderByDescending(a => a.TimestampUtc)
+                .ToList(),
+            EmailSubject = $"Application update: {application.JobTitle}",
+            EmailBody = $"Dear {{applicantName}},\\n\\nWe would like to update you that your application for {application.JobTitle} is now '{{{{status}}}}'.\\n\\nKind regards,\\nRecruitment Team"
+        };
+
+        return viewModel;
+    }
+
+    private async Task PopulateStatusViewModelAsync(AdminApplicationStatusUpdateViewModel model)
+    {
+        var application = await _repo.FindJobApplicationByIdAsync(model.ApplicationId);
+        if (application is null)
+        {
+            return;
+        }
+
+        var applicant = await _repo.FindApplicantByIdAsync(application.ApplicantId);
+        if (applicant is null)
+        {
+            return;
+        }
+
+        model.ApplicantEmail = applicant.Email;
+        model.ApplicantName = applicant.Profile?.FirstName ?? applicant.Email;
+        model.JobTitle = application.JobTitle;
+        model.CurrentStatus = application.Status;
+        model.StatusOptions = BuildStatusOptions(model.NewStatus);
+        model.SubmittedAtUtc = application.SubmittedAtUtc;
+        model.AuditTrail = application.AuditTrail
+            .OrderByDescending(a => a.TimestampUtc)
+            .ToList();
+
+        if (model.NewStatus == ApplicationStatus.Rejected && string.IsNullOrWhiteSpace(model.RejectionReason))
+        {
+            model.RejectionReason = application.RejectionReason;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.EmailSubject))
+        {
+            model.EmailSubject = $"Application update: {application.JobTitle}";
+        }
+
+        if (string.IsNullOrWhiteSpace(model.EmailBody))
+        {
+            model.EmailBody = $"Dear {{applicantName}},\\n\\nWe would like to update you that your application for {application.JobTitle} is now '{{{{status}}}}'.\\n\\nKind regards,\\nRecruitment Team";
+        }
+    }
+
+    private static IEnumerable<SelectListItem> BuildStatusOptions(ApplicationStatus selected)
+    {
+        var options = new[]
+        {
+            ApplicationStatus.Submitted,
+            ApplicationStatus.Interview,
+            ApplicationStatus.Offer,
+            ApplicationStatus.Rejected,
+            ApplicationStatus.Withdrawn
+        };
+
+        return options.Select(status => new SelectListItem
+        {
+            Text = MapStatusLabel(status),
+            Value = status.ToString(),
+            Selected = status == selected
+        }).ToList();
+    }
+
+    private static string? GetSafeReturnUrl(string? candidate, string? fallback)
+    {
+        if (!string.IsNullOrWhiteSpace(candidate) && Uri.TryCreate(candidate, UriKind.RelativeOrAbsolute, out var uri))
+        {
+            if (!uri.IsAbsoluteUri)
+            {
+                return candidate;
+            }
+
+            if (string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase))
+            {
+                return uri.PathAndQuery;
+            }
+        }
+
+        return fallback;
     }
 
     private static string Sanitize(string? value)

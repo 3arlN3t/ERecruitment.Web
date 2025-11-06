@@ -1,0 +1,184 @@
+@model ERecruitment.Web.ViewModels.AdminApplicationStatusUpdateViewModel
+@using ERecruitment.Web.Models
+@{
+    ViewData["Title"] = "Manage Application";
+
+    string RenderStatusLabel(ApplicationStatus status) => status switch
+    {
+        ApplicationStatus.Draft => "Draft",
+        ApplicationStatus.Submitted => "Submitted",
+        ApplicationStatus.Interview => "Shortlisted / Interview",
+        ApplicationStatus.Offer => "Offer",
+        ApplicationStatus.Rejected => "Rejected",
+        ApplicationStatus.Withdrawn => "Withdrawn",
+        _ => status.ToString()
+    };
+
+    var currentStatusLabel = RenderStatusLabel(Model.CurrentStatus);
+    var submittedDisplay = Model.SubmittedAtUtc?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "—";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <div class="dashboard-header mb-4">
+                <h1 class="display-6 fw-bold">
+                    <i class="fas fa-user-cog me-2 text-primary"></i>Manage Application
+                </h1>
+                <p class="text-muted mb-0">
+                    Update status, capture internal notes, and communicate with the applicant.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Application Summary</h5>
+                            <div class="mb-3">
+                                <div class="text-muted small">Applicant</div>
+                                <div class="fw-semibold">@Model.ApplicantEmail</div>
+                                @if (!string.IsNullOrWhiteSpace(Model.ApplicantName) && !string.Equals(Model.ApplicantName, Model.ApplicantEmail, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="text-muted">@Model.ApplicantName</div>
+                                }
+                            </div>
+                            <div class="mb-3">
+                                <div class="text-muted small">Position</div>
+                                <div class="fw-semibold">@Model.JobTitle</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="text-muted small">Current Status</div>
+                                <span class="badge bg-secondary">@currentStatusLabel</span>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Submitted</div>
+                                <div class="fw-semibold">@submittedDisplay</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.AuditTrail.Any())
+                    {
+                        <div class="card shadow-sm border-0 mt-4">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="timeline list-unstyled mb-0">
+                                    @foreach (var entry in Model.AuditTrail.Take(6))
+                                    {
+                                        <li class="mb-3">
+                                            <div class="small text-muted">@entry.TimestampUtc.ToLocalTime():dd MMM yyyy HH:mm</div>
+                                            <div class="fw-semibold">@entry.Actor</div>
+                                            <div>@entry.Action</div>
+                                        </li>
+                                    }
+                                </ul>
+                                @if (Model.AuditTrail.Count > 6)
+                                {
+                                    <div class="text-muted small">Older entries are available in the audit log.</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Update Application</h5>
+
+                            <form asp-action="Edit" method="post" novalidate>
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" asp-for="ApplicationId" />
+                                <input type="hidden" asp-for="ReturnUrl" />
+
+                                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                                <div class="mb-3">
+                                    <label asp-for="NewStatus" class="form-label fw-semibold"></label>
+                                    <select asp-for="NewStatus" class="form-select" asp-items="Model.StatusOptions" id="status-select"></select>
+                                    <span asp-validation-for="NewStatus" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Note" class="form-label fw-semibold"></label>
+                                    <textarea asp-for="Note" class="form-control" rows="3" placeholder="Internal note for recruitment team"></textarea>
+                                    <span asp-validation-for="Note" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3" id="rejection-reason-group">
+                                    <label asp-for="RejectionReason" class="form-label fw-semibold"></label>
+                                    <textarea asp-for="RejectionReason" class="form-control" rows="3" placeholder="Provide feedback explaining the rejection"></textarea>
+                                    <span asp-validation-for="RejectionReason" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" role="switch" asp-for="SendEmail" id="send-email-toggle" />
+                                    <label class="form-check-label fw-semibold" asp-for="SendEmail"></label>
+                                </div>
+
+                                <div id="email-fields" class="border rounded-3 p-3 bg-light mb-3">
+                                    <div class="mb-3">
+                                        <label asp-for="EmailSubject" class="form-label fw-semibold"></label>
+                                        <input asp-for="EmailSubject" class="form-control" />
+                                        <span asp-validation-for="EmailSubject" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label asp-for="EmailBody" class="form-label fw-semibold"></label>
+                                        <textarea asp-for="EmailBody" class="form-control" rows="6"></textarea>
+                                        <span asp-validation-for="EmailBody" class="text-danger"></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">
+                                        Use <code>{{status}}</code> to insert the selected status into the message automatically.
+                                    </p>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-4">
+                                    <a class="btn btn-outline-secondary" href="@(Model.ReturnUrl ?? Url.Action("Index"))">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-primary-gradient">
+                                        <i class="fas fa-save me-1"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const statusSelect = document.getElementById('status-select');
+        const rejectionGroup = document.getElementById('rejection-reason-group');
+        const sendEmailToggle = document.getElementById('send-email-toggle');
+        const emailFields = document.getElementById('email-fields');
+
+        function toggleRejectionReason() {
+            if (!statusSelect || !rejectionGroup) return;
+            const isRejected = statusSelect.value === 'Rejected';
+            rejectionGroup.style.display = isRejected ? 'block' : 'none';
+        }
+
+        function toggleEmailFields() {
+            if (!sendEmailToggle || !emailFields) return;
+            emailFields.style.display = sendEmailToggle.checked ? 'block' : 'none';
+        }
+
+        if (statusSelect) {
+            statusSelect.addEventListener('change', toggleRejectionReason);
+        }
+
+        if (sendEmailToggle) {
+            sendEmailToggle.addEventListener('change', toggleEmailFields);
+        }
+
+        toggleRejectionReason();
+        toggleEmailFields();
+    </script>
+}

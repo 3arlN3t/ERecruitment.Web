@@ -32,3 +32,10 @@ public record JobApplicationListItem(
     ApplicationStatus Status,
     DateTime? SubmittedAtUtc,
     string? RejectionReason);
+
+public record ApplicationStatusUpdateResult(
+    bool Success,
+    string? ErrorMessage,
+    ApplicationStatus PreviousStatus,
+    ApplicationStatus CurrentStatus,
+    bool EmailSent);
