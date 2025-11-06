@@ -358,7 +358,7 @@ body {
 }
 
 .masterlist-table {
-    min-width: 910px;
+    min-width: 970px;
     table-layout: fixed;
 }
 
@@ -373,12 +373,12 @@ body {
     font-weight: 700;
     color: var(--secondary-color);
     border-bottom: none;
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.4rem;
     vertical-align: middle;
 }
 
 .masterlist-table td {
-    padding: 0.85rem 0.5rem;
+    padding: 0.85rem 0.4rem;
     vertical-align: middle;
 }
 
@@ -405,8 +405,9 @@ body {
 
 .masterlist-table th:nth-child(4),
 .masterlist-table td:nth-child(4) {
-    width: 40px;
-    max-width: 40px;
+    width: 50px;
+    max-width: 50px;
+    white-space: nowrap;
 }
 
 .masterlist-table th:nth-child(5),
@@ -423,24 +424,24 @@ body {
 
 .masterlist-table th:nth-child(7),
 .masterlist-table td:nth-child(7) {
-    width: 210px;
-    max-width: 210px;
+    width: 200px;
+    max-width: 200px;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .masterlist-table th:nth-child(8),
 .masterlist-table td:nth-child(8) {
-    width: 170px;
-    max-width: 170px;
+    width: 220px;
+    max-width: 220px;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .masterlist-table th:nth-child(9),
 .masterlist-table td:nth-child(9) {
-    width: 100px;
-    max-width: 100px;
+    width: 110px;
+    max-width: 110px;
 }
 
 .masterlist-table tbody tr {
