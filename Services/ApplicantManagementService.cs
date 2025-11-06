@@ -68,6 +68,7 @@ public class ApplicantManagementService : IApplicantManagementService
         profile.ContactEmail = model.Email.Trim();
 
         applicant.EquityDeclaration = BuildEquityDeclaration(
+            applicant.EquityDeclaration,
             model.EquityConsent,
             model.EquityEthnicity,
             model.EquityGender,
@@ -132,6 +133,7 @@ public class ApplicantManagementService : IApplicantManagementService
 
         // Update equity declaration (for legacy support)
         applicant.EquityDeclaration = BuildEquityDeclaration(
+            applicant.EquityDeclaration,
             model.EquityConsent,
             model.EquityEthnicity,
             model.EquityGender,
@@ -179,6 +181,7 @@ public class ApplicantManagementService : IApplicantManagementService
         profile.IsSouthAfrican = model.IsSouthAfrican;
         profile.Nationality = model.Nationality?.Trim();
         profile.HasDisability = model.HasDisability;
+        profile.DisabilityDetails = model.HasDisability ? model.DisabilityDetails?.Trim() : null;
         profile.HasWorkPermit = model.HasWorkPermit;
         profile.WorkPermitDetails = model.HasWorkPermit ? model.WorkPermitDetails?.Trim() : null;
         profile.HasCriminalRecord = model.HasCriminalRecord;
@@ -309,24 +312,31 @@ public class ApplicantManagementService : IApplicantManagementService
         };
     }
 
-    private static EquityDeclaration? BuildEquityDeclaration(
+    private static EquityDeclaration BuildEquityDeclaration(
+        EquityDeclaration? existing,
         bool consent,
         string? ethnicity,
         string? gender,
         string? disability)
     {
-        if (!consent)
-        {
-            return new EquityDeclaration { ConsentGiven = false };
-        }
+        var declaration = existing ?? new EquityDeclaration();
 
-        return new EquityDeclaration
-        {
-            ConsentGiven = true,
-            Ethnicity = string.IsNullOrWhiteSpace(ethnicity) ? null : ethnicity.Trim(),
-            Gender = string.IsNullOrWhiteSpace(gender) ? null : gender.Trim(),
-            DisabilityStatus = string.IsNullOrWhiteSpace(disability) ? null : disability.Trim()
-        };
+        var sanitizedEthnicity = string.IsNullOrWhiteSpace(ethnicity) ? null : ethnicity.Trim();
+        var sanitizedGender = string.IsNullOrWhiteSpace(gender) ? null : gender.Trim();
+        var sanitizedDisability = string.IsNullOrWhiteSpace(disability) ? null : disability.Trim();
+
+        var effectiveConsent = consent
+            || declaration.ConsentGiven
+            || sanitizedEthnicity is not null
+            || sanitizedGender is not null
+            || sanitizedDisability is not null;
+
+        declaration.ConsentGiven = effectiveConsent;
+        declaration.Ethnicity = sanitizedEthnicity;
+        declaration.Gender = sanitizedGender;
+        declaration.DisabilityStatus = sanitizedDisability;
+
+        return declaration;
     }
 }
 

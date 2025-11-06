@@ -48,7 +48,7 @@ public class ApplicationService : IApplicationService
         };
 
         applicant.Profile.SaIdNumber = model.SaIdNumber;
-        applicant.EquityDeclaration = BuildEquityDeclaration(model.EquityConsent, model.EquityEthnicity, model.EquityGender, model.EquityDisability);
+        applicant.EquityDeclaration = BuildEquityDeclaration(applicant.EquityDeclaration, model.EquityConsent, model.EquityEthnicity, model.EquityGender, model.EquityDisability);
 
         _repository.AddApplicantAsync(applicant).GetAwaiter().GetResult();
         _repository.AddAuditEntryAsync(new AuditEntry
@@ -201,7 +201,7 @@ public class ApplicationService : IApplicationService
             }).ToList();
 
         // Employment equity declaration (legacy support)
-        applicant.EquityDeclaration = BuildEquityDeclaration(model.EquityConsent, model.EquityEthnicity, model.EquityGender, model.EquityDisability);
+        applicant.EquityDeclaration = BuildEquityDeclaration(applicant.EquityDeclaration, model.EquityConsent, model.EquityEthnicity, model.EquityGender, model.EquityDisability);
 
         // Document uploads
         if (model.CvFile is not null)
@@ -639,20 +639,26 @@ public class ApplicationService : IApplicationService
             .Replace("{{jobTitle}}", application.JobTitle, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static EquityDeclaration? BuildEquityDeclaration(bool consent, string? ethnicity, string? gender, string? disability)
+    private static EquityDeclaration BuildEquityDeclaration(EquityDeclaration? existing, bool consent, string? ethnicity, string? gender, string? disability)
     {
-        if (!consent)
-        {
-            return new EquityDeclaration { ConsentGiven = false };
-        }
+        var declaration = existing ?? new EquityDeclaration();
 
-        return new EquityDeclaration
-        {
-            ConsentGiven = true,
-            Ethnicity = string.IsNullOrWhiteSpace(ethnicity) ? null : ethnicity.Trim(),
-            Gender = string.IsNullOrWhiteSpace(gender) ? null : gender.Trim(),
-            DisabilityStatus = string.IsNullOrWhiteSpace(disability) ? null : disability.Trim()
-        };
+        var sanitizedEthnicity = string.IsNullOrWhiteSpace(ethnicity) ? null : ethnicity.Trim();
+        var sanitizedGender = string.IsNullOrWhiteSpace(gender) ? null : gender.Trim();
+        var sanitizedDisability = string.IsNullOrWhiteSpace(disability) ? null : disability.Trim();
+
+        var effectiveConsent = consent
+            || declaration.ConsentGiven
+            || sanitizedEthnicity is not null
+            || sanitizedGender is not null
+            || sanitizedDisability is not null;
+
+        declaration.ConsentGiven = effectiveConsent;
+        declaration.Ethnicity = sanitizedEthnicity;
+        declaration.Gender = sanitizedGender;
+        declaration.DisabilityStatus = sanitizedDisability;
+
+        return declaration;
     }
 
     private async Task<StoredDocument> StoreDocumentAsync(IFormFile file, string documentType)

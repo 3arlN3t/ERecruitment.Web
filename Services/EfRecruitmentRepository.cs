@@ -69,16 +69,11 @@ public class EfRecruitmentRepository : IRecruitmentRepository
 
     public async Task UpdateApplicantAsync(Applicant applicant, CancellationToken cancellationToken = default)
     {
-        var trackedEntries = _db.ChangeTracker.Entries<Applicant>()
-            .Where(e => e.Entity.Id == applicant.Id)
-            .ToList();
-
-        foreach (var entry in trackedEntries)
+        var entry = _db.Entry(applicant);
+        if (entry.State == EntityState.Detached)
         {
-            entry.State = EntityState.Detached;
+            _db.Applicants.Update(applicant);
         }
-
-        _db.Applicants.Update(applicant);
 
         await _db.SaveChangesAsync(cancellationToken);
     }

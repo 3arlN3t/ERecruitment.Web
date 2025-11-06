@@ -4,182 +4,736 @@
     ViewData["Title"] = "CV Preview";
 }
 
-<div class="container py-5">
+<div class="container py-5 screen-only">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold text-uppercase">Curriculum Vitae</h1>
-            <p class="text-muted mb-0">Generated from your eRecruitment profile</p>
+            <h1 class="h3 fw-bold text-uppercase">Curriculum Vitae Preview</h1>
+            <p class="text-muted mb-0">Review before printing or saving as PDF</p>
         </div>
         <div class="d-flex gap-2">
             <a class="btn btn-outline-secondary" asp-action="Profile">
                 <i class="fas fa-arrow-left me-1"></i>Back to Profile
             </a>
             <button class="btn btn-primary" onclick="window.print()">
-                <i class="fas fa-print me-1"></i>Print / Save as PDF
+                <i class="fas fa-file-pdf me-1"></i>Export as PDF
             </button>
         </div>
     </div>
+</div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Personal Details</h2>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled mb-0">
-                            <li><strong>Name:</strong> @Model.FirstName @Model.LastName</li>
-                            <li><strong>Identity / Passport:</strong> @(string.IsNullOrWhiteSpace(Model.SaIdNumber) ? Model.PassportNumber : Model.SaIdNumber)</li>
-                            <li><strong>Date of Birth:</strong> @Model.DateOfBirth?.ToString("dd MMM yyyy")</li>
-                            <li><strong>Nationality:</strong> @(Model.IsSouthAfrican ? "South African" : Model.Nationality)</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled mb-0">
-                            <li><strong>Email:</strong> @Model.ContactEmail</li>
-                            <li><strong>Phone:</strong> @Model.PhoneNumber</li>
-                            <li><strong>Address:</strong> @Model.Location</li>
-                            <li><strong>Availability:</strong> @(string.IsNullOrWhiteSpace(Model.AvailabilityNotice) ? Model.AvailabilityDate?.ToString("dd MMM yyyy") : Model.AvailabilityNotice)</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+<div class="cv-document">
+    <!-- Page Header (repeats on each page when printing) -->
+    <div class="page-header">
+        <div class="header-left">@Model.FirstName @Model.LastName</div>
+        <div class="header-right">Curriculum Vitae</div>
+    </div>
 
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Professional Summary</h2>
-                <p class="mb-0">
-                    @if (!string.IsNullOrWhiteSpace(Model.BusinessDetails) || !string.IsNullOrWhiteSpace(Model.ReappointmentConditionDetails))
-                    {
-                        <text>@(Model.BusinessDetails ?? Model.ReappointmentConditionDetails)</text>
-                    }
-                    else
-                    {
-                        <text>Committed public service professional with experience captured throughout this profile.</text>
-                    }
-                </p>
-            </section>
+    <!-- Document Letterhead -->
+    <div class="letterhead">
+        <div class="letterhead-content">
+            <h1 class="applicant-name">@Model.FirstName @Model.LastName</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.SaIdNumber))
+            {
+                <div class="id-number">ID Number: @Model.SaIdNumber</div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.PassportNumber))
+            {
+                <div class="id-number">Passport Number: @Model.PassportNumber</div>
+            }
+            <div class="contact-bar">
+                <span class="contact-item">@Model.ContactEmail</span>
+                <span class="contact-divider">|</span>
+                <span class="contact-item">@Model.PhoneNumber</span>
+                <span class="contact-divider">|</span>
+                <span class="contact-item">@Model.Location</span>
+            </div>
+        </div>
+    </div>
 
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Work Experience</h2>
-                @if (Model.WorkExperience.Any(w => !string.IsNullOrWhiteSpace(w.EmployerName)))
+    <!-- Document Title -->
+    <div class="document-title">
+        <h2>CURRICULUM VITAE</h2>
+        <div class="title-underline"></div>
+    </div>
+
+    <!-- CV Content -->
+    <div class="cv-content">
+        <!-- Personal Details Section -->
+        <section class="cv-section">
+            <h3 class="section-title">PERSONAL DETAILS</h3>
+            <div class="section-divider"></div>
+            <table class="details-table">
+                <tr>
+                    <td class="detail-label">Full Name:</td>
+                    <td class="detail-value">@Model.FirstName @Model.LastName</td>
+                    <td class="detail-label">Date of Birth:</td>
+                    <td class="detail-value">@Model.DateOfBirth?.ToString("dd MMMM yyyy")</td>
+                </tr>
+                <tr>
+                    <td class="detail-label">Identity / Passport:</td>
+                    <td class="detail-value">@(string.IsNullOrWhiteSpace(Model.SaIdNumber) ? Model.PassportNumber : Model.SaIdNumber)</td>
+                    <td class="detail-label">Nationality:</td>
+                    <td class="detail-value">@(Model.IsSouthAfrican ? "South African" : Model.Nationality)</td>
+                </tr>
+                <tr>
+                    <td class="detail-label">Contact Email:</td>
+                    <td class="detail-value">@Model.ContactEmail</td>
+                    <td class="detail-label">Telephone:</td>
+                    <td class="detail-value">@Model.PhoneNumber</td>
+                </tr>
+                <tr>
+                    <td class="detail-label">Physical Address:</td>
+                    <td class="detail-value" colspan="3">@Model.Location</td>
+                </tr>
+                <tr>
+                    <td class="detail-label">Availability:</td>
+                    <td class="detail-value" colspan="3">@(string.IsNullOrWhiteSpace(Model.AvailabilityNotice) ? Model.AvailabilityDate?.ToString("dd MMMM yyyy") : Model.AvailabilityNotice)</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Professional Summary Section -->
+        <section class="cv-section">
+            <h3 class="section-title">PROFESSIONAL SUMMARY</h3>
+            <div class="section-divider"></div>
+            <p class="summary-text">
+                @if (!string.IsNullOrWhiteSpace(Model.BusinessDetails) || !string.IsNullOrWhiteSpace(Model.ReappointmentConditionDetails))
                 {
-                    foreach (var role in Model.WorkExperience.Where(w => !string.IsNullOrWhiteSpace(w.EmployerName)))
-                    {
-                        <div class="mb-3">
-                            <h3 class="h6 fw-bold mb-1">@role.PositionHeld <small class="text-muted">@role.EmployerName</small></h3>
-                            <div class="text-muted mb-1">@role.FromDate?.ToString("MMM yyyy") - @(role.ToDate?.ToString("MMM yyyy") ?? "Present")</div>
-                            @if (!string.IsNullOrWhiteSpace(role.Status))
-                            {
-                                <div>@role.Status</div>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(role.ReasonForLeaving))
-                            {
-                                <div class="text-muted small">Reason for leaving: @role.ReasonForLeaving</div>
-                            }
-                        </div>
-                    }
+                    <text>@(Model.BusinessDetails ?? Model.ReappointmentConditionDetails)</text>
                 }
                 else
                 {
-                    <p class="text-muted fst-italic">No work experience recorded.</p>
+                    <text>Committed public service professional with experience captured throughout this profile. Demonstrated ability to contribute effectively in governmental and organizational settings, with a strong commitment to service delivery and professional excellence.</text>
                 }
-            </section>
+            </p>
+        </section>
 
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Education</h2>
-                @if (Model.Qualifications.Any(q => !string.IsNullOrWhiteSpace(q.QualificationName)))
+        <!-- Work Experience Section -->
+        <section class="cv-section">
+            <h3 class="section-title">WORK EXPERIENCE</h3>
+            <div class="section-divider"></div>
+            @if (Model.WorkExperience.Any(w => !string.IsNullOrWhiteSpace(w.EmployerName)))
+            {
+                foreach (var role in Model.WorkExperience.Where(w => !string.IsNullOrWhiteSpace(w.EmployerName)))
                 {
-                    foreach (var qualification in Model.Qualifications.Where(q => !string.IsNullOrWhiteSpace(q.QualificationName)))
-                    {
-                        <div class="mb-3">
-                            <h3 class="h6 fw-bold mb-1">@qualification.QualificationName</h3>
-                            <div class="text-muted">@qualification.InstitutionName</div>
-                            <div>@qualification.YearObtained</div>
-                            @if (!string.IsNullOrWhiteSpace(qualification.Status))
-                            {
-                                <div>@qualification.Status</div>
-                            }
+                    <div class="experience-item">
+                        <div class="experience-header">
+                            <div class="position-title">@role.PositionHeld</div>
+                            <div class="period">@role.FromDate?.ToString("MMMM yyyy") - @(role.ToDate?.ToString("MMMM yyyy") ?? "Present")</div>
                         </div>
-                    }
+                        <div class="employer-name">@role.EmployerName</div>
+                        @if (!string.IsNullOrWhiteSpace(role.Status))
+                        {
+                            <div class="employment-status">Status: @role.Status</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(role.ReasonForLeaving))
+                        {
+                            <div class="reason-leaving">Reason for Leaving: @role.ReasonForLeaving</div>
+                        }
+                    </div>
                 }
-                else
-                {
-                    <p class="text-muted fst-italic">No qualifications recorded.</p>
-                }
-            </section>
+            }
+            else
+            {
+                <p class="no-data-text">No work experience recorded in profile.</p>
+            }
+        </section>
 
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Languages</h2>
-                @if (Model.Languages.Any(l => !string.IsNullOrWhiteSpace(l.LanguageName)))
+        <!-- Education Section -->
+        <section class="cv-section">
+            <h3 class="section-title">EDUCATION & QUALIFICATIONS</h3>
+            <div class="section-divider"></div>
+            @if (Model.Qualifications.Any(q => !string.IsNullOrWhiteSpace(q.QualificationName)))
+            {
+                foreach (var qualification in Model.Qualifications.Where(q => !string.IsNullOrWhiteSpace(q.QualificationName)))
                 {
-                    <ul class="list-unstyled mb-0">
+                    <div class="education-item">
+                        <div class="qualification-header">
+                            <div class="qualification-name">@qualification.QualificationName</div>
+                            <div class="year-obtained">@qualification.YearObtained</div>
+                        </div>
+                        <div class="institution-name">@qualification.InstitutionName</div>
+                        @if (!string.IsNullOrWhiteSpace(qualification.Status))
+                        {
+                            <div class="qualification-status">Status: @qualification.Status</div>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="no-data-text">No qualifications recorded in profile.</p>
+            }
+        </section>
+
+        <!-- Languages Section -->
+        <section class="cv-section">
+            <h3 class="section-title">LANGUAGE PROFICIENCY</h3>
+            <div class="section-divider"></div>
+            @if (Model.Languages.Any(l => !string.IsNullOrWhiteSpace(l.LanguageName)))
+            {
+                <table class="languages-table">
+                    <thead>
+                        <tr>
+                            <th>Language</th>
+                            <th>Speaking</th>
+                            <th>Reading/Writing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach (var language in Model.Languages.Where(l => !string.IsNullOrWhiteSpace(l.LanguageName)))
                         {
-                            <li>
-                                <strong>@language.LanguageName</strong>
-                                <span class="text-muted">— Speak: @language.SpeakProficiency, Read/Write: @language.ReadWriteProficiency</span>
-                            </li>
+                            <tr>
+                                <td class="language-name">@language.LanguageName</td>
+                                <td>@language.SpeakProficiency</td>
+                                <td>@language.ReadWriteProficiency</td>
+                            </tr>
                         }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted fst-italic">No language proficiency recorded.</p>
-                }
-            </section>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="no-data-text">No language proficiency recorded in profile.</p>
+            }
+        </section>
 
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">References</h2>
-                @if (Model.References.Any(r => !string.IsNullOrWhiteSpace(r.Name)))
-                {
-                    foreach (var reference in Model.References.Where(r => !string.IsNullOrWhiteSpace(r.Name)))
-                    {
-                        <div class="mb-2">
-                            <div class="fw-semibold">@reference.Name</div>
-                            <div class="text-muted small">@reference.Relationship</div>
-                            <div>@reference.ContactNumber</div>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <p class="text-muted fst-italic">No references captured. Update your profile to include referees.</p>
-                }
-            </section>
+        <!-- References Section -->
+        <section class="cv-section">
+            <h3 class="section-title">REFERENCES</h3>
+            <div class="section-divider"></div>
+            @if (Model.References.Any(r => !string.IsNullOrWhiteSpace(r.Name)))
+            {
+                <table class="references-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position/Relationship</th>
+                            <th>Contact Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reference in Model.References.Where(r => !string.IsNullOrWhiteSpace(r.Name)))
+                        {
+                            <tr>
+                                <td class="reference-name">@reference.Name</td>
+                                <td>@reference.Relationship</td>
+                                <td>@reference.ContactNumber</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="no-data-text">No references captured. Please update your profile to include referees.</p>
+            }
+        </section>
 
-            <section class="mb-4">
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Declarations</h2>
-                <ul class="list-unstyled mb-0">
-                    <li><strong>Disability:</strong> @(Model.HasDisability ? "Declared" : "No")</li>
-                    <li><strong>Criminal Record:</strong> @(Model.HasCriminalRecord ? Model.CriminalRecordDetails : "No")</li>
-                    <li><strong>Pending Case:</strong> @(Model.HasPendingCase ? Model.PendingCaseDetails : "No")</li>
-                    <li><strong>Disciplinary Actions:</strong> @(Model.PendingDisciplinaryCase ? Model.PendingDisciplinaryDetails : "No")</li>
-                </ul>
-            </section>
+        <!-- Declarations Section -->
+        <section class="cv-section page-break-before">
+            <h3 class="section-title">DECLARATIONS</h3>
+            <div class="section-divider"></div>
+            <table class="declarations-table">
+                <tr>
+                    <td class="declaration-label">Disability Status:</td>
+                    <td class="declaration-value">@(Model.HasDisability ? "Declared" : "None declared")</td>
+                </tr>
+                <tr>
+                    <td class="declaration-label">Criminal Record:</td>
+                    <td class="declaration-value">@(Model.HasCriminalRecord ? Model.CriminalRecordDetails : "None")</td>
+                </tr>
+                <tr>
+                    <td class="declaration-label">Pending Legal Case:</td>
+                    <td class="declaration-value">@(Model.HasPendingCase ? Model.PendingCaseDetails : "None")</td>
+                </tr>
+                <tr>
+                    <td class="declaration-label">Disciplinary Actions:</td>
+                    <td class="declaration-value">@(Model.PendingDisciplinaryCase ? Model.PendingDisciplinaryDetails : "None")</td>
+                </tr>
+            </table>
+        </section>
 
-            <section>
-                <h2 class="h5 text-primary text-uppercase fw-bold border-bottom pb-2">Supporting Information</h2>
-                <ul class="list-unstyled mb-0">
-                    <li><strong>Business with the State:</strong> @(Model.BusinessWithState ? Model.BusinessDetails : "None declared")</li>
-                    <li><strong>Reappointment Conditions:</strong> @(Model.ReappointmentCondition ? Model.ReappointmentConditionDetails : "None")</li>
-                    <li><strong>Professional Registration:</strong> @(string.IsNullOrWhiteSpace(Model.ProfessionalInstitution) ? "Not provided" : $"{Model.ProfessionalInstitution} ({Model.ProfessionalRegistrationNumber})")</li>
-                </ul>
-            </section>
-        </div>
+        <!-- Supporting Information Section -->
+        <section class="cv-section">
+            <h3 class="section-title">SUPPORTING INFORMATION</h3>
+            <div class="section-divider"></div>
+            <table class="declarations-table">
+                <tr>
+                    <td class="declaration-label">Business with the State:</td>
+                    <td class="declaration-value">@(Model.BusinessWithState ? Model.BusinessDetails : "None declared")</td>
+                </tr>
+                <tr>
+                    <td class="declaration-label">Reappointment Conditions:</td>
+                    <td class="declaration-value">@(Model.ReappointmentCondition ? Model.ReappointmentConditionDetails : "None")</td>
+                </tr>
+                <tr>
+                    <td class="declaration-label">Professional Registration:</td>
+                    <td class="declaration-value">@(string.IsNullOrWhiteSpace(Model.ProfessionalInstitution) ? "Not provided" : $"{Model.ProfessionalInstitution} - Registration No: {Model.ProfessionalRegistrationNumber}")</td>
+                </tr>
+            </table>
+        </section>
+    </div>
+
+    <!-- Page Footer -->
+    <div class="page-footer">
+        <div class="footer-left">Generated from eRecruitment System</div>
+        <div class="footer-center">@DateTime.Now.ToString("dd MMMM yyyy")</div>
+        <div class="footer-right">Page <span class="page-number"></span></div>
     </div>
 </div>
 
 @section Styles {
     <style>
+        /* Screen Display Styles */
+        .cv-document {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20mm;
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            line-height: 1.6;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: none;
+            position: fixed;
+            top: 10mm;
+            left: 20mm;
+            right: 20mm;
+            padding-bottom: 5mm;
+            border-bottom: 1px solid #1e3a8a;
+            font-size: 10pt;
+            font-weight: normal;
+        }
+
+        .header-left {
+            float: left;
+            font-weight: 600;
+        }
+
+        .header-right {
+            float: right;
+            font-style: italic;
+        }
+
+        /* Letterhead */
+        .letterhead {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px double #1e3a8a;
+        }
+
+        .applicant-name {
+            font-size: 26pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 0 0 8px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .id-number {
+            font-size: 11pt;
+            color: #374151;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .contact-bar {
+            font-size: 10pt;
+            color: #4b5563;
+            margin-top: 8px;
+        }
+
+        .contact-item {
+            padding: 0 8px;
+        }
+
+        .contact-divider {
+            color: #9ca3af;
+        }
+
+        /* Document Title */
+        .document-title {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .document-title h2 {
+            font-size: 18pt;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #1e3a8a;
+            margin: 0;
+        }
+
+        .title-underline {
+            width: 80px;
+            height: 3px;
+            background: #1e3a8a;
+            margin: 8px auto 0;
+        }
+
+        /* CV Content */
+        .cv-content {
+            margin-top: 20px;
+        }
+
+        /* Section Styles */
+        .cv-section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            letter-spacing: 1.5px;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(to right, #1e3a8a 0%, #3b82f6 50%, #e5e7eb 100%);
+            margin-bottom: 15px;
+        }
+
+        /* Personal Details Table */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .details-table td {
+            padding: 6px 10px;
+            vertical-align: top;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #374151;
+            width: 22%;
+            font-size: 10pt;
+        }
+
+        .detail-value {
+            color: #000;
+            width: 28%;
+            font-size: 10pt;
+        }
+
+        /* Summary Text */
+        .summary-text {
+            text-align: justify;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        /* Work Experience Items */
+        .experience-item {
+            margin-bottom: 18px;
+            padding-left: 15px;
+            border-left: 3px solid #e5e7eb;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+
+        .position-title {
+            font-weight: 700;
+            font-size: 11pt;
+            color: #1e3a8a;
+        }
+
+        .period {
+            font-size: 10pt;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .employer-name {
+            font-size: 10pt;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .employment-status, .reason-leaving {
+            font-size: 9pt;
+            color: #4b5563;
+            margin-top: 3px;
+        }
+
+        /* Education Items */
+        .education-item {
+            margin-bottom: 18px;
+            padding-left: 15px;
+            border-left: 3px solid #e5e7eb;
+        }
+
+        .qualification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+
+        .qualification-name {
+            font-weight: 700;
+            font-size: 11pt;
+            color: #1e3a8a;
+        }
+
+        .year-obtained {
+            font-size: 10pt;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .institution-name {
+            font-size: 10pt;
+            color: #374151;
+            font-style: italic;
+            margin-bottom: 4px;
+        }
+
+        .qualification-status {
+            font-size: 9pt;
+            color: #4b5563;
+        }
+
+        /* Languages Table */
+        .languages-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .languages-table thead th {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 10pt;
+            color: #1e3a8a;
+        }
+
+        .languages-table tbody td {
+            border: 1px solid #e5e7eb;
+            padding: 7px 12px;
+            font-size: 10pt;
+        }
+
+        .language-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* References Table */
+        .references-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .references-table thead th {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 10pt;
+            color: #1e3a8a;
+        }
+
+        .references-table tbody td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            font-size: 10pt;
+        }
+
+        .reference-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* Declarations Table */
+        .declarations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .declarations-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .declaration-label {
+            font-weight: 600;
+            color: #374151;
+            width: 35%;
+            font-size: 10pt;
+        }
+
+        .declaration-value {
+            color: #1f2937;
+            font-size: 10pt;
+        }
+
+        /* Page Footer */
+        .page-footer {
+            display: none;
+            position: fixed;
+            bottom: 10mm;
+            left: 20mm;
+            right: 20mm;
+            padding-top: 5mm;
+            border-top: 1px solid #d1d5db;
+            font-size: 9pt;
+            color: #6b7280;
+        }
+
+        .footer-left {
+            float: left;
+        }
+
+        .footer-center {
+            text-align: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .footer-right {
+            float: right;
+        }
+
+        /* No Data Text */
+        .no-data-text {
+            font-style: italic;
+            color: #9ca3af;
+            font-size: 10pt;
+            margin: 10px 0;
+        }
+
+        /* Page Break Control */
+        .page-break-before {
+            page-break-before: always;
+        }
+
+        /* Print Styles */
         @@media print {
+            @@page {
+                size: A4;
+                margin: 20mm 20mm 25mm 20mm;
+            }
+
             body {
                 -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: 11pt;
             }
-            .btn, nav, .dashboard-header, .breadcrumb {
+
+            /* Hide screen elements */
+            .screen-only, .btn, nav, .navbar, .dashboard-header, .breadcrumb, header, footer {
                 display: none !important;
             }
-            .card {
-                box-shadow: none !important;
-                border: none !important;
+
+            /* Show print elements */
+            .page-header, .page-footer {
+                display: block !important;
+            }
+
+            .cv-document {
+                max-width: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* Page numbering */
+            .page-number:after {
+                content: counter(page);
+            }
+
+            /* Ensure sections don't break awkwardly */
+            .cv-section {
+                page-break-inside: avoid;
+            }
+
+            .experience-item, .education-item {
+                page-break-inside: avoid;
+            }
+
+            /* Adjust letterhead for first page only */
+            .letterhead {
+                margin-bottom: 20px;
+            }
+
+            /* Ensure tables don't break */
+            table {
+                page-break-inside: avoid;
+            }
+
+            tr {
+                page-break-inside: avoid;
+            }
+
+            /* Better spacing for print */
+            .cv-section {
+                margin-bottom: 20px;
+            }
+
+            /* Ensure colors print correctly */
+            .section-title {
+                color: #1e3a8a !important;
+            }
+
+            .applicant-name {
+                color: #1e3a8a !important;
+            }
+
+            .section-divider {
+                background: #1e3a8a !important;
+                height: 2px !important;
+            }
+
+            .letterhead {
+                border-bottom-color: #1e3a8a !important;
+            }
+
+            .page-header {
+                border-bottom-color: #1e3a8a !important;
+            }
+
+            /* Ensure table borders print */
+            .languages-table, .references-table {
+                border: 1px solid #000;
+            }
+
+            .languages-table thead th, .references-table thead th {
+                background-color: #f3f4f6 !important;
+                border-color: #000 !important;
+            }
+
+            .languages-table tbody td, .references-table tbody td {
+                border-color: #000 !important;
             }
         }
     </style>
