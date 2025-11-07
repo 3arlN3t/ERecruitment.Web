@@ -231,6 +231,9 @@
                                         <span class="badge rounded-pill masterlist-status-badge masterlist-status-@applicant.Status.ToString().ToLowerInvariant()">@applicant.Status</span>
                                     </td>
                                     <td class="text-center">
+                                        <a asp-action="ViewProfile" asp-route-id="@applicant.ApplicationId" class="btn btn-sm btn-outline-success me-1" title="View Full Profile">
+                                            <i class="fas fa-user me-1"></i>Profile
+                                        </a>
                                         <button type="button" class="btn btn-sm btn-outline-primary masterlist-view-btn"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#applicantDetailsModal"
@@ -241,7 +244,7 @@
                                                 data-experience="@applicant.ExperienceSummary"
                                                 data-comments="@applicant.Comments"
                                                 data-status="@applicant.Status">
-                                            <i class="fas fa-eye me-1"></i>Details
+                                            <i class="fas fa-eye me-1"></i>Quick View
                                         </button>
                                     </td>
                                 </tr>

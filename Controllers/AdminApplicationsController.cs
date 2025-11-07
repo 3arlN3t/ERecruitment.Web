@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using ERecruitment.Web.Models;
 using ERecruitment.Web.Services;
+using ERecruitment.Web.Storage;
 using ERecruitment.Web.Utilities;
 using ERecruitment.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,7 @@ public class AdminApplicationsController : Controller
 {
     private readonly IRecruitmentRepository _repo;
     private readonly IAdministrationService _adminService;
+    private readonly ICvStorage _storage;
 
     private static readonly MasterListFilterDefinition[] MasterListFilters =
     {
@@ -29,10 +31,11 @@ public class AdminApplicationsController : Controller
         new("withdrawn", "Withdrawn", "Applications withdrawn by applicants", ApplicationStatus.Withdrawn)
     };
 
-    public AdminApplicationsController(IRecruitmentRepository repo, IAdministrationService adminService)
+    public AdminApplicationsController(IRecruitmentRepository repo, IAdministrationService adminService, ICvStorage storage)
     {
         _repo = repo;
         _adminService = adminService;
+        _storage = storage;
     }
 
     [HttpGet]
@@ -143,6 +146,7 @@ public class AdminApplicationsController : Controller
 
                 return new MasterListRowViewModel(
                     index + 1,
+                    entry.ApplicationId,
                     entry.ApplicantName,
                     entry.ApplicantEmail,
                     race,
@@ -307,6 +311,235 @@ public class AdminApplicationsController : Controller
 
         var redirectUrl = GetSafeReturnUrl(model.ReturnUrl, Url.Action(nameof(Index))) ?? Url.Action(nameof(Index));
         return Redirect(redirectUrl!);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewProfile(Guid id)
+    {
+        var applicant = await _repo.GetApplicantFullProfileAsync(id);
+        if (applicant is null)
+        {
+            return NotFound();
+        }
+
+        var application = applicant.Applications.FirstOrDefault(a => a.Id == id);
+        if (application is null)
+        {
+            return NotFound();
+        }
+
+        var profile = applicant.Profile;
+        var equity = applicant.EquityDeclaration;
+
+        var viewModel = new AdminApplicantProfileViewModel
+        {
+            // Application Context
+            ApplicationId = application.Id,
+            JobTitle = application.JobTitle,
+            ApplicationStatus = application.Status,
+            SubmittedAt = application.SubmittedAtUtc,
+            RejectionReason = application.RejectionReason,
+
+            // Applicant Basic Info
+            ApplicantId = applicant.Id,
+            Email = applicant.Email,
+            FirstName = profile.FirstName ?? string.Empty,
+            LastName = profile.LastName ?? string.Empty,
+
+            // Personal Information
+            DateOfBirth = profile.DateOfBirth,
+            PhoneNumber = profile.PhoneNumber,
+            Location = profile.Location,
+            SaIdNumber = profile.SaIdNumber,
+            PassportNumber = profile.PassportNumber,
+            IsSouthAfrican = profile.IsSouthAfrican,
+            Nationality = profile.Nationality,
+            PreferredLanguage = profile.PreferredLanguage,
+            ContactEmail = profile.ContactEmail,
+
+            // Work Permit & Disability
+            HasWorkPermit = profile.HasWorkPermit,
+            WorkPermitDetails = profile.WorkPermitDetails,
+            HasDisability = profile.HasDisability,
+            DisabilityDetails = profile.DisabilityDetails,
+
+            // Position Applied For
+            ReferenceNumber = profile.ReferenceNumber,
+            DepartmentName = profile.DepartmentName,
+            PositionName = profile.PositionName,
+            AvailabilityNotice = profile.AvailabilityNotice,
+            AvailabilityDate = profile.AvailabilityDate,
+
+            // Declarations & Background
+            HasCriminalRecord = profile.HasCriminalRecord,
+            CriminalRecordDetails = profile.CriminalRecordDetails,
+            HasPendingCase = profile.HasPendingCase,
+            PendingCaseDetails = profile.PendingCaseDetails,
+            DismissedForMisconduct = profile.DismissedForMisconduct,
+            DismissedDetails = profile.DismissedDetails,
+            PendingDisciplinaryCase = profile.PendingDisciplinaryCase,
+            PendingDisciplinaryDetails = profile.PendingDisciplinaryDetails,
+            ResignedPendingDisciplinary = profile.ResignedPendingDisciplinary,
+            ResignedPendingDisciplinaryDetails = profile.ResignedPendingDisciplinaryDetails,
+            DischargedForIllHealth = profile.DischargedForIllHealth,
+            DischargedDetails = profile.DischargedDetails,
+
+            // Business Interests
+            BusinessWithState = profile.BusinessWithState,
+            BusinessDetails = profile.BusinessDetails,
+            WillRelinquishBusiness = profile.WillRelinquishBusiness,
+
+            // Experience & Professional Registration
+            PublicSectorYears = profile.PublicSectorYears,
+            PrivateSectorYears = profile.PrivateSectorYears,
+            ReappointmentCondition = profile.ReappointmentCondition,
+            ReappointmentDepartment = profile.ReappointmentDepartment,
+            ReappointmentConditionDetails = profile.ReappointmentConditionDetails,
+            ProfessionalRegistrationDate = profile.ProfessionalRegistrationDate,
+            ProfessionalInstitution = profile.ProfessionalInstitution,
+            ProfessionalRegistrationNumber = profile.ProfessionalRegistrationNumber,
+
+            // Equity Information
+            EquityConsentGiven = equity?.ConsentGiven ?? false,
+            Ethnicity = equity?.Ethnicity,
+            Gender = equity?.Gender,
+            DisabilityStatus = equity?.DisabilityStatus,
+
+            // Collections
+            Languages = profile.Languages,
+            Qualifications = profile.Qualifications,
+            WorkExperience = profile.WorkExperience,
+            References = profile.References,
+            ScreeningAnswers = application.ScreeningAnswers,
+
+            // Documents
+            CvDocument = profile.Cv != null ? new DocumentInfo
+            {
+                FileName = profile.Cv.FileName ?? string.Empty,
+                ContentType = profile.Cv.ContentType ?? string.Empty,
+                StorageToken = profile.Cv.StorageToken ?? string.Empty,
+                ParsedSummary = profile.Cv.ParsedSummary,
+                DocumentType = "CV"
+            } : null,
+
+            IdDocument = profile.IdDocument != null ? new DocumentInfo
+            {
+                FileName = profile.IdDocument.FileName ?? string.Empty,
+                ContentType = profile.IdDocument.ContentType ?? string.Empty,
+                StorageToken = profile.IdDocument.StorageToken ?? string.Empty,
+                UploadedAtUtc = profile.IdDocument.UploadedAtUtc,
+                DocumentType = "ID Document"
+            } : null,
+
+            QualificationDocument = profile.QualificationDocument != null ? new DocumentInfo
+            {
+                FileName = profile.QualificationDocument.FileName ?? string.Empty,
+                ContentType = profile.QualificationDocument.ContentType ?? string.Empty,
+                StorageToken = profile.QualificationDocument.StorageToken ?? string.Empty,
+                UploadedAtUtc = profile.QualificationDocument.UploadedAtUtc,
+                DocumentType = "Qualification Document"
+            } : null,
+
+            DriversLicenseDocument = profile.DriversLicenseDocument != null ? new DocumentInfo
+            {
+                FileName = profile.DriversLicenseDocument.FileName ?? string.Empty,
+                ContentType = profile.DriversLicenseDocument.ContentType ?? string.Empty,
+                StorageToken = profile.DriversLicenseDocument.StorageToken ?? string.Empty,
+                UploadedAtUtc = profile.DriversLicenseDocument.UploadedAtUtc,
+                DocumentType = "Drivers License"
+            } : null,
+
+            AdditionalDocument = profile.AdditionalDocument != null ? new DocumentInfo
+            {
+                FileName = profile.AdditionalDocument.FileName ?? string.Empty,
+                ContentType = profile.AdditionalDocument.ContentType ?? string.Empty,
+                StorageToken = profile.AdditionalDocument.StorageToken ?? string.Empty,
+                UploadedAtUtc = profile.AdditionalDocument.UploadedAtUtc,
+                DocumentType = "Additional Document"
+            } : null,
+
+            // Declaration
+            DeclarationAccepted = profile.DeclarationAccepted,
+            DeclarationDate = profile.DeclarationDate,
+            SignatureData = profile.SignatureData,
+
+            // Audit Trail
+            AuditTrail = application.AuditTrail.OrderByDescending(a => a.TimestampUtc).ToList()
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DownloadDocument(Guid applicationId, string documentType)
+    {
+        var applicant = await _repo.GetApplicantFullProfileAsync(applicationId);
+        if (applicant is null)
+        {
+            return NotFound();
+        }
+
+        var profile = applicant.Profile;
+        string? storageToken = null;
+        string? fileName = null;
+        string? contentType = null;
+
+        switch (documentType.ToLowerInvariant())
+        {
+            case "cv":
+                if (profile.Cv != null)
+                {
+                    storageToken = profile.Cv.StorageToken;
+                    fileName = profile.Cv.FileName;
+                    contentType = profile.Cv.ContentType;
+                }
+                break;
+            case "id":
+                if (profile.IdDocument != null)
+                {
+                    storageToken = profile.IdDocument.StorageToken;
+                    fileName = profile.IdDocument.FileName;
+                    contentType = profile.IdDocument.ContentType;
+                }
+                break;
+            case "qualification":
+                if (profile.QualificationDocument != null)
+                {
+                    storageToken = profile.QualificationDocument.StorageToken;
+                    fileName = profile.QualificationDocument.FileName;
+                    contentType = profile.QualificationDocument.ContentType;
+                }
+                break;
+            case "drivers":
+                if (profile.DriversLicenseDocument != null)
+                {
+                    storageToken = profile.DriversLicenseDocument.StorageToken;
+                    fileName = profile.DriversLicenseDocument.FileName;
+                    contentType = profile.DriversLicenseDocument.ContentType;
+                }
+                break;
+            case "additional":
+                if (profile.AdditionalDocument != null)
+                {
+                    storageToken = profile.AdditionalDocument.StorageToken;
+                    fileName = profile.AdditionalDocument.FileName;
+                    contentType = profile.AdditionalDocument.ContentType;
+                }
+                break;
+        }
+
+        if (string.IsNullOrEmpty(storageToken) || string.IsNullOrEmpty(fileName))
+        {
+            return NotFound();
+        }
+
+        if (!_storage.Exists(storageToken))
+        {
+            return NotFound("Document file not found in storage.");
+        }
+
+        var stream = await _storage.OpenReadAsync(storageToken);
+        return File(stream, contentType ?? "application/octet-stream", fileName);
     }
 
     private static string Escape(string value)

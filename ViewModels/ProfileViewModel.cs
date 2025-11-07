@@ -113,6 +113,9 @@ public class ProfileViewModel
     [Display(Name = "If employed, will you relinquish such business interests?")]
     public bool WillRelinquishBusiness { get; set; }
 
+    [Display(Name = "Relinquishment plan")]
+    public string? WillRelinquishBusinessPlan { get; set; }
+
     [Display(Name = "Public sector experience (years)")]
     public int? PublicSectorYears { get; set; }
 

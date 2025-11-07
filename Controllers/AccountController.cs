@@ -139,12 +139,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-        if (!identityUser.EmailConfirmed)
-        {
-            ModelState.AddModelError(string.Empty, "Please confirm your email before signing in. Check your inbox for the verification link.");
-            return View(model);
-        }
-
         var signIn = await _signInManager.PasswordSignInAsync(identityUser, model.Password, isPersistent: false, lockoutOnFailure: true);
         if (!signIn.Succeeded)
         {

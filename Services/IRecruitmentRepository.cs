@@ -73,6 +73,12 @@ public interface IRecruitmentRepository
     /// Does NOT load all applicants into memory.
     /// </summary>
     Task<DashboardStatistics> GetDashboardStatisticsAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets full applicant profile with all related data for admin viewing.
+    /// Includes profile, equity declaration, applications, and all documents.
+    /// </summary>
+    Task<Applicant?> GetApplicantFullProfileAsync(Guid applicationId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

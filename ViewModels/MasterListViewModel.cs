@@ -18,6 +18,7 @@ public class MasterListViewModel
 
 public record MasterListRowViewModel(
     int Index,
+    Guid ApplicationId,
     string ApplicantName,
     string ApplicantEmail,
     string Race,

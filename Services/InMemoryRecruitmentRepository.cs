@@ -429,6 +429,21 @@ public class InMemoryRecruitmentRepository : IRecruitmentRepository
         }
     }
 
+    public Task<Applicant?> GetApplicantFullProfileAsync(Guid applicationId, CancellationToken cancellationToken = default)
+    {
+        lock (_lock)
+        {
+            var application = _jobApplications.FirstOrDefault(a => a.Id == applicationId);
+            if (application is null)
+            {
+                return Task.FromResult<Applicant?>(null);
+            }
+
+            var applicant = _applicants.FirstOrDefault(a => a.Id == application.ApplicantId);
+            return Task.FromResult(applicant);
+        }
+    }
+
     // ===== HELPER METHODS =====
 
     private string GetApplicantEmail(Guid applicantId)

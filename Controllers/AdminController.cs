@@ -35,7 +35,7 @@ public class AdminController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(AdminLoginViewModel model)
+    public IActionResult Login(AdminLoginViewModel model)
     {
         if (!ModelState.IsValid)
         {

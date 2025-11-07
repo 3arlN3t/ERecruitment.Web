@@ -62,6 +62,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW5BcHBsaWNhdGlvbnMvTWFzdGVyTGlzdEh1Yi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/ole/Documents/ERecruitment.Web/Views/AdminApplications/ViewProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW5BcHBsaWNhdGlvbnMvVmlld1Byb2ZpbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/ole/Documents/ERecruitment.Web/Views/Applicant/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBwbGljYW50L0Rhc2hib2FyZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

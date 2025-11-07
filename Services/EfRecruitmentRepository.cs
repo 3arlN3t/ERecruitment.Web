@@ -524,4 +524,32 @@ public class EfRecruitmentRepository : IRecruitmentRepository
             activeApplications,
             equityBreakdown);
     }
+
+    /// <summary>
+    /// Gets full applicant profile with all related data for admin viewing.
+    /// Includes profile, equity declaration, applications with audit trails, and all owned entities.
+    /// </summary>
+    public async Task<Applicant?> GetApplicantFullProfileAsync(Guid applicationId, CancellationToken cancellationToken = default)
+    {
+        // First get the application to find the applicant ID
+        var application = await _db.JobApplications
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == applicationId, cancellationToken);
+
+        if (application is null)
+        {
+            return null;
+        }
+
+        // Load the full applicant profile with all related data
+        return await _db.Applicants
+            .Include(a => a.Profile)
+            .Include(a => a.EquityDeclaration)
+            .Include(a => a.Applications)
+                .ThenInclude(app => app.ScreeningAnswers)
+            .Include(a => a.Applications)
+                .ThenInclude(app => app.AuditTrail)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == application.ApplicantId, cancellationToken);
+    }
 }
