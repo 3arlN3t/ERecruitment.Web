@@ -3,662 +3,893 @@
     ViewData["Title"] = $"Applicant Profile - {Model.FullName}";
     var statusClass = Model.ApplicationStatus switch
     {
-        ERecruitment.Web.Models.ApplicationStatus.Submitted => "bg-primary",
-        ERecruitment.Web.Models.ApplicationStatus.Interview => "bg-info",
+        ERecruitment.Web.Models.ApplicationStatus.Submitted => "bg-info",
+        ERecruitment.Web.Models.ApplicationStatus.Interview => "bg-success",
         ERecruitment.Web.Models.ApplicationStatus.Offer => "bg-success",
         ERecruitment.Web.Models.ApplicationStatus.Rejected => "bg-danger",
         ERecruitment.Web.Models.ApplicationStatus.Withdrawn => "bg-secondary",
         _ => "bg-warning"
     };
+
+    var statusText = Model.ApplicationStatus switch
+    {
+        ERecruitment.Web.Models.ApplicationStatus.Submitted => "Submitted",
+        ERecruitment.Web.Models.ApplicationStatus.Interview => "Shortlisted / Interview",
+        ERecruitment.Web.Models.ApplicationStatus.Offer => "Offer Extended",
+        ERecruitment.Web.Models.ApplicationStatus.Rejected => "Not Suitable",
+        ERecruitment.Web.Models.ApplicationStatus.Withdrawn => "Withdrawn",
+        _ => "Draft"
+    };
 }
 
-<div class="container-fluid mt-4">
-    <div class="row mb-3">
-        <div class="col">
-            <h2>@Model.FullName</h2>
-            <p class="text-muted">@Model.Email</p>
-        </div>
-        <div class="col-auto">
-            <a href="@Url.Action("Edit", new { id = Model.ApplicationId })" class="btn btn-primary">Update Status</a>
-            <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+<style>
+    .profile-header-card {
+        background: linear-gradient(135deg, #b45309, #f97316);
+        border-radius: 16px;
+        box-shadow: 0 16px 40px -20px rgba(17, 24, 39, 0.3);
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-stat-card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 12px 30px -12px rgba(16, 24, 40, 0.18);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-left: 4px solid #f97316;
+    }
+
+    .profile-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 35px -15px rgba(16, 24, 40, 0.25);
+    }
+
+    .profile-tabs .nav-tabs {
+        border-bottom: 2px solid rgba(249, 115, 22, 0.2);
+    }
+
+    .profile-tabs .nav-link {
+        border: none;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.875rem 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .profile-tabs .nav-link:hover {
+        background: rgba(249, 115, 22, 0.08);
+        color: #b45309;
+    }
+
+    .profile-tabs .nav-link.active {
+        background: linear-gradient(120deg, #b45309, #f97316);
+        color: #fff;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .profile-content-card {
+        border-radius: 0 0 16px 16px;
+        border: none;
+        box-shadow: 0 16px 40px -20px rgba(17, 24, 39, 0.3);
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1f1c1a;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(249, 115, 22, 0.2);
+    }
+
+    .info-table th {
+        font-weight: 600;
+        color: rgba(71, 85, 105, 0.85);
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .info-table td {
+        color: #1f1c1a;
+        padding: 0.75rem 1rem;
+    }
+
+    .info-table tr {
+        border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+    }
+
+    .data-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 30px -12px rgba(16, 24, 40, 0.18);
+    }
+
+    .data-table thead {
+        background: linear-gradient(135deg, #b45309, #f97316);
+        color: white;
+    }
+
+    .data-table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border: none;
+    }
+
+    .data-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: rgba(253, 243, 234, 0.75);
+    }
+
+    .data-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .accordion-button {
+        font-weight: 600;
+        color: #1f1c1a;
+        background: rgba(249, 115, 22, 0.05);
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: linear-gradient(120deg, #b45309, #f97316);
+        color: #fff;
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+    }
+
+    .document-item {
+        border-radius: 12px;
+        border: 2px solid rgba(249, 115, 22, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .document-item:hover {
+        border-color: rgba(249, 115, 22, 0.5);
+        background: rgba(253, 243, 234, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -10px rgba(249, 115, 22, 0.25);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .badge.bg-info {
+        background: rgba(59, 130, 246, 0.18) !important;
+        color: #1d4ed8 !important;
+    }
+
+    .badge.bg-success {
+        background: rgba(16, 185, 129, 0.18) !important;
+        color: #047857 !important;
+    }
+
+    .badge.bg-danger {
+        background: rgba(239, 68, 68, 0.18) !important;
+        color: #b91c1c !important;
+    }
+
+    .badge.bg-secondary {
+        background: rgba(148, 163, 184, 0.2) !important;
+        color: #475569 !important;
+    }
+
+    .badge.bg-warning {
+        background: rgba(250, 204, 21, 0.2) !important;
+        color: #92400e !important;
+    }
+</style>
+
+<div class="container-fluid mt-4 mb-5">
+    <!-- Header Card -->
+    <div class="card profile-header-card text-white mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1 fw-bold">@Model.FullName</h2>
+                    <p class="mb-0 opacity-75"><i class="fas fa-envelope me-2"></i>@Model.Email</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="@Url.Action("Edit", new { id = Model.ApplicationId })" class="btn btn-light">
+                        <i class="fas fa-user-cog me-2"></i>Update Status
+                    </a>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="row mb-4">
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card">
+            <div class="card profile-stat-card">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">Position Applied</h6>
-                    <p class="card-text"><strong>@Model.JobTitle</strong></p>
+                    <h6 class="text-uppercase text-muted small mb-2" style="letter-spacing: 0.08em; font-size: 0.75rem;">Position Applied</h6>
+                    <p class="mb-0 fw-bold">@Model.JobTitle</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card">
+            <div class="card profile-stat-card">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">Application Status</h6>
-                    <span class="badge @statusClass">@Model.ApplicationStatus</span>
+                    <h6 class="text-uppercase text-muted small mb-2" style="letter-spacing: 0.08em; font-size: 0.75rem;">Status</h6>
+                    <span class="badge @statusClass status-badge">@statusText</span>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card">
+            <div class="card profile-stat-card">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">Submitted</h6>
-                    <p class="card-text">@(Model.SubmittedAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "Not submitted")</p>
+                    <h6 class="text-uppercase text-muted small mb-2" style="letter-spacing: 0.08em; font-size: 0.75rem;">Submitted</h6>
+                    <p class="mb-0 fw-semibold">@(Model.SubmittedAt?.ToLocalTime().ToString("dd MMM yyyy") ?? "Not submitted")</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card">
+            <div class="card profile-stat-card">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">Age</h6>
-                    <p class="card-text">@(Model.Age?.ToString() ?? "N/A") years</p>
+                    <h6 class="text-uppercase text-muted small mb-2" style="letter-spacing: 0.08em; font-size: 0.75rem;">Age</h6>
+                    <p class="mb-0 fw-semibold">@(Model.Age?.ToString() ?? "N/A") years</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Navigation Tabs -->
-    <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">Personal Info</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="qualifications-tab" data-bs-toggle="tab" data-bs-target="#qualifications" type="button" role="tab">Qualifications</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="experience-tab" data-bs-toggle="tab" data-bs-target="#experience" type="button" role="tab">Experience</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="declarations-tab" data-bs-toggle="tab" data-bs-target="#declarations" type="button" role="tab">Declarations</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">Documents</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="screening-tab" data-bs-toggle="tab" data-bs-target="#screening" type="button" role="tab">Screening Answers</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">Audit Trail</button>
-        </li>
-    </ul>
+    <div class="profile-tabs">
+        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">
+                    <i class="fas fa-user me-2"></i>Personal
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="qualifications-tab" data-bs-toggle="tab" data-bs-target="#qualifications" type="button" role="tab">
+                    <i class="fas fa-graduation-cap me-2"></i>Qualifications
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="experience-tab" data-bs-toggle="tab" data-bs-target="#experience" type="button" role="tab">
+                    <i class="fas fa-briefcase me-2"></i>Experience
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="declarations-tab" data-bs-toggle="tab" data-bs-target="#declarations" type="button" role="tab">
+                    <i class="fas fa-clipboard-check me-2"></i>Declarations
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">
+                    <i class="fas fa-file-alt me-2"></i>Documents
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="screening-tab" data-bs-toggle="tab" data-bs-target="#screening" type="button" role="tab">
+                    <i class="fas fa-list-check me-2"></i>Screening
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">
+                    <i class="fas fa-history me-2"></i>Audit Trail
+                </button>
+            </li>
+        </ul>
 
-    <!-- Tab Content -->
-    <div class="tab-content border border-top-0 p-4" id="profileTabsContent">
+        <!-- Tab Content -->
+        <div class="tab-content profile-content-card p-4" id="profileTabsContent">
 
-        <!-- Personal Information Tab -->
-        <div class="tab-pane fade show active" id="personal" role="tabpanel">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>Contact Information</h5>
-                    <table class="table table-sm">
-                        <tr><th width="40%">Email:</th><td>@Model.ContactEmail</td></tr>
-                        <tr><th>Phone:</th><td>@Model.PhoneNumber</td></tr>
-                        <tr><th>Address:</th><td>@Model.Location</td></tr>
-                        <tr><th>Preferred Language:</th><td>@Model.PreferredLanguage</td></tr>
-                    </table>
+            <!-- Personal Information Tab -->
+            <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <h5 class="section-title">Contact Information</h5>
+                        <table class="table table-sm info-table">
+                            <tr><th width="45%">Email</th><td>@Model.ContactEmail</td></tr>
+                            <tr><th>Phone</th><td>@Model.PhoneNumber</td></tr>
+                            <tr><th>Address</th><td>@Model.Location</td></tr>
+                            <tr><th>Preferred Language</th><td>@Model.PreferredLanguage</td></tr>
+                        </table>
 
-                    <h5 class="mt-4">Identity</h5>
-                    <table class="table table-sm">
-                        <tr><th width="40%">Date of Birth:</th><td>@(Model.DateOfBirth?.ToString("dd MMM yyyy") ?? "N/A")</td></tr>
-                        <tr><th>Age:</th><td>@(Model.Age?.ToString() ?? "N/A") years</td></tr>
-                        <tr><th>SA ID Number:</th><td>@Model.SaIdNumber</td></tr>
-                        <tr><th>Passport Number:</th><td>@Model.PassportNumber</td></tr>
-                        <tr><th>South African:</th><td>@(Model.IsSouthAfrican ? "Yes" : "No")</td></tr>
-                        <tr><th>Nationality:</th><td>@Model.Nationality</td></tr>
-                    </table>
+                        <h5 class="section-title mt-4">Identity</h5>
+                        <table class="table table-sm info-table">
+                            <tr><th width="45%">Date of Birth</th><td>@(Model.DateOfBirth?.ToString("dd MMM yyyy") ?? "N/A")</td></tr>
+                            <tr><th>Age</th><td>@(Model.Age?.ToString() ?? "N/A") years</td></tr>
+                            <tr><th>SA ID Number</th><td>@Model.SaIdNumber</td></tr>
+                            <tr><th>Passport Number</th><td>@Model.PassportNumber</td></tr>
+                            <tr><th>South African</th><td><span class="badge @(Model.IsSouthAfrican ? "bg-success" : "bg-secondary") status-badge">@(Model.IsSouthAfrican ? "Yes" : "No")</span></td></tr>
+                            <tr><th>Nationality</th><td>@Model.Nationality</td></tr>
+                        </table>
 
-                    <h5 class="mt-4">Work Permit</h5>
-                    <table class="table table-sm">
-                        <tr><th width="40%">Has Work Permit:</th><td>@(Model.HasWorkPermit ? "Yes" : "No")</td></tr>
-                        @if (Model.HasWorkPermit)
+                        <h5 class="section-title mt-4">Work Permit</h5>
+                        <table class="table table-sm info-table">
+                            <tr><th width="45%">Has Work Permit</th><td><span class="badge @(Model.HasWorkPermit ? "bg-success" : "bg-secondary") status-badge">@(Model.HasWorkPermit ? "Yes" : "No")</span></td></tr>
+                            @if (Model.HasWorkPermit && !string.IsNullOrEmpty(Model.WorkPermitDetails))
+                            {
+                                <tr><th>Details</th><td>@Model.WorkPermitDetails</td></tr>
+                            }
+                        </table>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <h5 class="section-title">Equity Information</h5>
+                        <table class="table table-sm info-table">
+                            <tr><th width="45%">Consent Given</th><td><span class="badge @(Model.EquityConsentGiven ? "bg-success" : "bg-secondary") status-badge">@(Model.EquityConsentGiven ? "Yes" : "No")</span></td></tr>
+                            @if (Model.EquityConsentGiven)
+                            {
+                                <tr><th>Ethnicity</th><td>@Model.Ethnicity</td></tr>
+                                <tr><th>Gender</th><td>@Model.Gender</td></tr>
+                                <tr><th>Disability Status</th><td>@Model.DisabilityStatus</td></tr>
+                            }
+                        </table>
+
+                        <h5 class="section-title mt-4">Disability</h5>
+                        <table class="table table-sm info-table">
+                            <tr><th width="45%">Has Disability</th><td><span class="badge @(Model.HasDisability ? "bg-info" : "bg-secondary") status-badge">@(Model.HasDisability ? "Yes" : "No")</span></td></tr>
+                            @if (Model.HasDisability && !string.IsNullOrEmpty(Model.DisabilityDetails))
+                            {
+                                <tr><th>Details</th><td>@Model.DisabilityDetails</td></tr>
+                            }
+                        </table>
+
+                        <h5 class="section-title mt-4">Language Proficiency</h5>
+                        @if (Model.Languages.Any())
                         {
-                            <tr><th>Details:</th><td>@Model.WorkPermitDetails</td></tr>
+                            <div class="table-responsive">
+                                <table class="table table-sm data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Language</th>
+                                            <th>Speaking</th>
+                                            <th>Reading/Writing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var lang in Model.Languages)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold">@lang.LanguageName</td>
+                                                <td>@lang.SpeakProficiency</td>
+                                                <td>@lang.ReadWriteProficiency</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
-                    </table>
+                        else
+                        {
+                            <p class="text-muted fst-italic">No language proficiency information provided.</p>
+                        }
+                    </div>
                 </div>
+            </div>
 
-                <div class="col-md-6">
-                    <h5>Equity Information</h5>
-                    <table class="table table-sm">
-                        <tr><th width="40%">Consent Given:</th><td>@(Model.EquityConsentGiven ? "Yes" : "No")</td></tr>
-                        @if (Model.EquityConsentGiven)
-                        {
-                            <tr><th>Ethnicity:</th><td>@Model.Ethnicity</td></tr>
-                            <tr><th>Gender:</th><td>@Model.Gender</td></tr>
-                            <tr><th>Disability Status:</th><td>@Model.DisabilityStatus</td></tr>
-                        }
-                    </table>
-
-                    <h5 class="mt-4">Disability</h5>
-                    <table class="table table-sm">
-                        <tr><th width="40%">Has Disability:</th><td>@(Model.HasDisability ? "Yes" : "No")</td></tr>
-                        @if (Model.HasDisability)
-                        {
-                            <tr><th>Details:</th><td>@Model.DisabilityDetails</td></tr>
-                        }
-                    </table>
-
-                    <h5 class="mt-4">Language Proficiency</h5>
-                    @if (Model.Languages.Any())
-                    {
-                        <table class="table table-sm table-bordered">
+            <!-- Qualifications Tab -->
+            <div class="tab-pane fade" id="qualifications" role="tabpanel">
+                <h5 class="section-title">Educational Qualifications</h5>
+                @if (Model.Qualifications.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table data-table mb-4">
                             <thead>
                                 <tr>
-                                    <th>Language</th>
-                                    <th>Speaking</th>
-                                    <th>Reading/Writing</th>
+                                    <th>Institution</th>
+                                    <th>Qualification</th>
+                                    <th>Student Number</th>
+                                    <th>Year Obtained</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var lang in Model.Languages)
+                                @foreach (var qual in Model.Qualifications)
                                 {
                                     <tr>
-                                        <td>@lang.LanguageName</td>
-                                        <td>@lang.SpeakProficiency</td>
-                                        <td>@lang.ReadWriteProficiency</td>
+                                        <td class="fw-semibold">@qual.InstitutionName</td>
+                                        <td>@qual.QualificationName</td>
+                                        <td>@qual.StudentNumber</td>
+                                        <td>@qual.YearObtained</td>
+                                        <td><span class="badge bg-info status-badge">@qual.Status</span></td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No language proficiency information provided.</p>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Qualifications Tab -->
-        <div class="tab-pane fade" id="qualifications" role="tabpanel">
-            <h5>Educational Qualifications</h5>
-            @if (Model.Qualifications.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Institution</th>
-                                <th>Qualification</th>
-                                <th>Student Number</th>
-                                <th>Year Obtained</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var qual in Model.Qualifications)
-                            {
-                                <tr>
-                                    <td>@qual.InstitutionName</td>
-                                    <td>@qual.QualificationName</td>
-                                    <td>@qual.StudentNumber</td>
-                                    <td>@qual.YearObtained</td>
-                                    <td><span class="badge bg-secondary">@qual.Status</span></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted">No qualifications provided.</p>
-            }
-
-            <h5 class="mt-4">Professional Registration</h5>
-            <table class="table table-sm">
-                <tr><th width="30%">Institution:</th><td>@Model.ProfessionalInstitution</td></tr>
-                <tr><th>Registration Number:</th><td>@Model.ProfessionalRegistrationNumber</td></tr>
-                <tr><th>Registration Date:</th><td>@(Model.ProfessionalRegistrationDate?.ToString("dd MMM yyyy") ?? "N/A")</td></tr>
-            </table>
-        </div>
-
-        <!-- Experience Tab -->
-        <div class="tab-pane fade" id="experience" role="tabpanel">
-            <h5>Work Experience</h5>
-            @if (Model.WorkExperience.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Employer</th>
-                                <th>Position</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Status</th>
-                                <th>Reason for Leaving</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var exp in Model.WorkExperience)
-                            {
-                                <tr>
-                                    <td>@exp.EmployerName</td>
-                                    <td>@exp.PositionHeld</td>
-                                    <td>@(exp.FromDate?.ToString("MMM yyyy") ?? "N/A")</td>
-                                    <td>@(exp.ToDate?.ToString("MMM yyyy") ?? "Present")</td>
-                                    <td><span class="badge bg-info">@exp.Status</span></td>
-                                    <td>@exp.ReasonForLeaving</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted">No work experience provided.</p>
-            }
-
-            <h5 class="mt-4">Sector Experience</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <table class="table table-sm">
-                        <tr><th width="50%">Public Sector:</th><td>@(Model.PublicSectorYears?.ToString() ?? "0") years</td></tr>
-                        <tr><th>Private Sector:</th><td>@(Model.PrivateSectorYears?.ToString() ?? "0") years</td></tr>
-                    </table>
-                </div>
-            </div>
-
-            <h5 class="mt-4">References</h5>
-            @if (Model.References.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Relationship</th>
-                                <th>Contact Number</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var reference in Model.References)
-                            {
-                                <tr>
-                                    <td>@reference.Name</td>
-                                    <td>@reference.Relationship</td>
-                                    <td>@reference.ContactNumber</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted">No references provided.</p>
-            }
-        </div>
-
-        <!-- Declarations Tab -->
-        <div class="tab-pane fade" id="declarations" role="tabpanel">
-            <h5>Criminal Record & Legal History</h5>
-            <div class="accordion" id="declarationsAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.HasCriminalRecord ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#criminalRecord">
-                            Criminal Record: @(Model.HasCriminalRecord ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="criminalRecord" class="accordion-collapse collapse @(Model.HasCriminalRecord ? "show" : "")" data-bs-parent="#declarationsAccordion">
-                        <div class="accordion-body">
-                            @if (Model.HasCriminalRecord)
-                            {
-                                <strong>Details:</strong> @Model.CriminalRecordDetails
-                            }
-                            else
-                            {
-                                <em>No criminal record</em>
-                            }
-                        </div>
                     </div>
-                </div>
-
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.HasPendingCase ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#pendingCase">
-                            Pending Criminal Case: @(Model.HasPendingCase ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="pendingCase" class="accordion-collapse collapse @(Model.HasPendingCase ? "show" : "")" data-bs-parent="#declarationsAccordion">
-                        <div class="accordion-body">
-                            @if (Model.HasPendingCase)
-                            {
-                                <strong>Details:</strong> @Model.PendingCaseDetails
-                            }
-                            else
-                            {
-                                <em>No pending criminal case</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h5 class="mt-4">Employment History</h5>
-            <div class="accordion" id="employmentAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.DismissedForMisconduct ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#dismissed">
-                            Dismissed for Misconduct: @(Model.DismissedForMisconduct ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="dismissed" class="accordion-collapse collapse @(Model.DismissedForMisconduct ? "show" : "")" data-bs-parent="#employmentAccordion">
-                        <div class="accordion-body">
-                            @if (Model.DismissedForMisconduct)
-                            {
-                                <strong>Details:</strong> @Model.DismissedDetails
-                            }
-                            else
-                            {
-                                <em>Not dismissed for misconduct</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.PendingDisciplinaryCase ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#pendingDisciplinary">
-                            Pending Disciplinary Case: @(Model.PendingDisciplinaryCase ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="pendingDisciplinary" class="accordion-collapse collapse @(Model.PendingDisciplinaryCase ? "show" : "")" data-bs-parent="#employmentAccordion">
-                        <div class="accordion-body">
-                            @if (Model.PendingDisciplinaryCase)
-                            {
-                                <strong>Details:</strong> @Model.PendingDisciplinaryDetails
-                            }
-                            else
-                            {
-                                <em>No pending disciplinary case</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.ResignedPendingDisciplinary ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#resigned">
-                            Resigned Pending Disciplinary: @(Model.ResignedPendingDisciplinary ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="resigned" class="accordion-collapse collapse @(Model.ResignedPendingDisciplinary ? "show" : "")" data-bs-parent="#employmentAccordion">
-                        <div class="accordion-body">
-                            @if (Model.ResignedPendingDisciplinary)
-                            {
-                                <strong>Details:</strong> @Model.ResignedPendingDisciplinaryDetails
-                            }
-                            else
-                            {
-                                <em>Did not resign pending disciplinary proceedings</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.DischargedForIllHealth ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#discharged">
-                            Discharged for Ill Health: @(Model.DischargedForIllHealth ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="discharged" class="accordion-collapse collapse @(Model.DischargedForIllHealth ? "show" : "")" data-bs-parent="#employmentAccordion">
-                        <div class="accordion-body">
-                            @if (Model.DischargedForIllHealth)
-                            {
-                                <strong>Details:</strong> @Model.DischargedDetails
-                            }
-                            else
-                            {
-                                <em>Not discharged for ill health</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h5 class="mt-4">Business Interests</h5>
-            <div class="accordion" id="businessAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.BusinessWithState ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#business">
-                            Business with State: @(Model.BusinessWithState ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="business" class="accordion-collapse collapse @(Model.BusinessWithState ? "show" : "")" data-bs-parent="#businessAccordion">
-                        <div class="accordion-body">
-                            @if (Model.BusinessWithState)
-                            {
-                                <p><strong>Details:</strong> @Model.BusinessDetails</p>
-                                <p><strong>Will Relinquish:</strong> @(Model.WillRelinquishBusiness ? "Yes" : "No")</p>
-                                @if (!string.IsNullOrEmpty(Model.WillRelinquishBusinessPlan))
-                                {
-                                    <p><strong>Relinquishment Plan:</strong> @Model.WillRelinquishBusinessPlan</p>
-                                }
-                            }
-                            else
-                            {
-                                <em>No business with the state</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h5 class="mt-4">Re-appointment</h5>
-            <div class="accordion" id="reappointmentAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button @(Model.ReappointmentCondition ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#reappointment">
-                            Re-appointment Condition: @(Model.ReappointmentCondition ? "Yes" : "No")
-                        </button>
-                    </h2>
-                    <div id="reappointment" class="accordion-collapse collapse @(Model.ReappointmentCondition ? "show" : "")" data-bs-parent="#reappointmentAccordion">
-                        <div class="accordion-body">
-                            @if (Model.ReappointmentCondition)
-                            {
-                                <p><strong>Department:</strong> @Model.ReappointmentDepartment</p>
-                                <p><strong>Details:</strong> @Model.ReappointmentConditionDetails</p>
-                            }
-                            else
-                            {
-                                <em>No re-appointment conditions</em>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Documents Tab -->
-        <div class="tab-pane fade" id="documents" role="tabpanel">
-            <h5>Attached Documents</h5>
-            <div class="list-group">
-                @if (Model.CvDocument != null)
+                }
+                else
                 {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Curriculum Vitae (CV)</h6>
-                                <small class="text-muted">@Model.CvDocument.FileName</small>
+                    <p class="text-muted fst-italic">No qualifications provided.</p>
+                }
+
+                <h5 class="section-title mt-4">Professional Registration</h5>
+                <table class="table table-sm info-table">
+                    <tr><th width="35%">Institution</th><td>@Model.ProfessionalInstitution</td></tr>
+                    <tr><th>Registration Number</th><td>@Model.ProfessionalRegistrationNumber</td></tr>
+                    <tr><th>Registration Date</th><td>@(Model.ProfessionalRegistrationDate?.ToString("dd MMM yyyy") ?? "N/A")</td></tr>
+                </table>
+            </div>
+
+            <!-- Experience Tab -->
+            <div class="tab-pane fade" id="experience" role="tabpanel">
+                <h5 class="section-title">Work Experience</h5>
+                @if (Model.WorkExperience.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table data-table mb-4">
+                            <thead>
+                                <tr>
+                                    <th>Employer</th>
+                                    <th>Position</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Status</th>
+                                    <th>Reason for Leaving</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var exp in Model.WorkExperience)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@exp.EmployerName</td>
+                                        <td>@exp.PositionHeld</td>
+                                        <td>@(exp.FromDate?.ToString("MMM yyyy") ?? "N/A")</td>
+                                        <td>@(exp.ToDate?.ToString("MMM yyyy") ?? "Present")</td>
+                                        <td><span class="badge bg-info status-badge">@exp.Status</span></td>
+                                        <td>@exp.ReasonForLeaving</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted fst-italic">No work experience provided.</p>
+                }
+
+                <h5 class="section-title mt-4">Sector Experience</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm info-table">
+                            <tr><th width="50%">Public Sector</th><td class="fw-semibold">@(Model.PublicSectorYears?.ToString() ?? "0") years</td></tr>
+                            <tr><th>Private Sector</th><td class="fw-semibold">@(Model.PrivateSectorYears?.ToString() ?? "0") years</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <h5 class="section-title mt-4">References</h5>
+                @if (Model.References.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relationship</th>
+                                    <th>Contact Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var reference in Model.References)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@reference.Name</td>
+                                        <td>@reference.Relationship</td>
+                                        <td>@reference.ContactNumber</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted fst-italic">No references provided.</p>
+                }
+            </div>
+
+            <!-- Declarations Tab -->
+            <div class="tab-pane fade" id="declarations" role="tabpanel">
+                <h5 class="section-title">Criminal Record & Legal History</h5>
+                <div class="accordion mb-4" id="legalAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.HasCriminalRecord ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#criminalRecord">
+                                <i class="fas fa-shield-alt me-2"></i>Criminal Record: @(Model.HasCriminalRecord ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="criminalRecord" class="accordion-collapse collapse @(Model.HasCriminalRecord ? "show" : "")" data-bs-parent="#legalAccordion">
+                            <div class="accordion-body">
+                                @if (Model.HasCriminalRecord)
+                                {
+                                    <strong>Details:</strong> @Model.CriminalRecordDetails
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No criminal record</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.HasPendingCase ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#pendingCase">
+                                <i class="fas fa-gavel me-2"></i>Pending Criminal Case: @(Model.HasPendingCase ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="pendingCase" class="accordion-collapse collapse @(Model.HasPendingCase ? "show" : "")" data-bs-parent="#legalAccordion">
+                            <div class="accordion-body">
+                                @if (Model.HasPendingCase)
+                                {
+                                    <strong>Details:</strong> @Model.PendingCaseDetails
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No pending criminal case</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="section-title mt-4">Employment History</h5>
+                <div class="accordion mb-4" id="employmentAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.DismissedForMisconduct ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#dismissed">
+                                <i class="fas fa-user-times me-2"></i>Dismissed for Misconduct: @(Model.DismissedForMisconduct ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="dismissed" class="accordion-collapse collapse @(Model.DismissedForMisconduct ? "show" : "")" data-bs-parent="#employmentAccordion">
+                            <div class="accordion-body">
+                                @if (Model.DismissedForMisconduct)
+                                {
+                                    <strong>Details:</strong> @Model.DismissedDetails
+                                }
+                                else
+                                {
+                                    <em class="text-muted">Not dismissed for misconduct</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.PendingDisciplinaryCase ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#pendingDisciplinary">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Pending Disciplinary Case: @(Model.PendingDisciplinaryCase ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="pendingDisciplinary" class="accordion-collapse collapse @(Model.PendingDisciplinaryCase ? "show" : "")" data-bs-parent="#employmentAccordion">
+                            <div class="accordion-body">
+                                @if (Model.PendingDisciplinaryCase)
+                                {
+                                    <strong>Details:</strong> @Model.PendingDisciplinaryDetails
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No pending disciplinary case</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.ResignedPendingDisciplinary ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#resigned">
+                                <i class="fas fa-sign-out-alt me-2"></i>Resigned Pending Disciplinary: @(Model.ResignedPendingDisciplinary ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="resigned" class="accordion-collapse collapse @(Model.ResignedPendingDisciplinary ? "show" : "")" data-bs-parent="#employmentAccordion">
+                            <div class="accordion-body">
+                                @if (Model.ResignedPendingDisciplinary)
+                                {
+                                    <strong>Details:</strong> @Model.ResignedPendingDisciplinaryDetails
+                                }
+                                else
+                                {
+                                    <em class="text-muted">Did not resign pending disciplinary proceedings</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.DischargedForIllHealth ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#discharged">
+                                <i class="fas fa-medkit me-2"></i>Discharged for Ill Health: @(Model.DischargedForIllHealth ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="discharged" class="accordion-collapse collapse @(Model.DischargedForIllHealth ? "show" : "")" data-bs-parent="#employmentAccordion">
+                            <div class="accordion-body">
+                                @if (Model.DischargedForIllHealth)
+                                {
+                                    <strong>Details:</strong> @Model.DischargedDetails
+                                }
+                                else
+                                {
+                                    <em class="text-muted">Not discharged for ill health</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="section-title mt-4">Business Interests</h5>
+                <div class="accordion mb-4" id="businessAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.BusinessWithState ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#business">
+                                <i class="fas fa-building me-2"></i>Business with State: @(Model.BusinessWithState ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="business" class="accordion-collapse collapse @(Model.BusinessWithState ? "show" : "")" data-bs-parent="#businessAccordion">
+                            <div class="accordion-body">
+                                @if (Model.BusinessWithState)
+                                {
+                                    <p><strong>Details:</strong> @Model.BusinessDetails</p>
+                                    <p><strong>Will Relinquish:</strong> <span class="badge @(Model.WillRelinquishBusiness ? "bg-success" : "bg-danger") status-badge">@(Model.WillRelinquishBusiness ? "Yes" : "No")</span></p>
+                                    @if (!string.IsNullOrEmpty(Model.WillRelinquishBusinessPlan))
+                                    {
+                                        <p><strong>Relinquishment Plan:</strong> @Model.WillRelinquishBusinessPlan</p>
+                                    }
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No business with the state</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="section-title mt-4">Re-appointment</h5>
+                <div class="accordion" id="reappointmentAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(Model.ReappointmentCondition ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#reappointment">
+                                <i class="fas fa-redo me-2"></i>Re-appointment Condition: @(Model.ReappointmentCondition ? "Yes" : "No")
+                            </button>
+                        </h2>
+                        <div id="reappointment" class="accordion-collapse collapse @(Model.ReappointmentCondition ? "show" : "")" data-bs-parent="#reappointmentAccordion">
+                            <div class="accordion-body">
+                                @if (Model.ReappointmentCondition)
+                                {
+                                    <p><strong>Department:</strong> @Model.ReappointmentDepartment</p>
+                                    <p><strong>Details:</strong> @Model.ReappointmentConditionDetails</p>
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No re-appointment conditions</em>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div class="tab-pane fade" id="documents" role="tabpanel">
+                <h5 class="section-title">Attached Documents</h5>
+                <div class="row g-3">
+                    @if (Model.CvDocument != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="list-group-item document-item p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold"><i class="fas fa-file-pdf text-danger me-2"></i>Curriculum Vitae (CV)</h6>
+                                        <small class="text-muted">@Model.CvDocument.FileName</small>
+                                    </div>
+                                    <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "cv" })" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </div>
                                 @if (!string.IsNullOrEmpty(Model.CvDocument.ParsedSummary))
                                 {
-                                    <p class="mb-1 mt-2"><small><strong>Summary:</strong> @Model.CvDocument.ParsedSummary</small></p>
+                                    <div class="mt-2 p-2 rounded" style="background: rgba(249, 115, 22, 0.05);">
+                                        <small><strong>Summary:</strong> @Model.CvDocument.ParsedSummary</small>
+                                    </div>
                                 }
                             </div>
-                            <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "cv" })" class="btn btn-sm btn-primary" target="_blank">
-                                <i class="bi bi-download"></i> Download
-                            </a>
                         </div>
-                    </div>
-                }
+                    }
 
-                @if (Model.IdDocument != null)
-                {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">ID Document</h6>
-                                <small class="text-muted">@Model.IdDocument.FileName</small>
-                                @if (Model.IdDocument.UploadedAtUtc.HasValue)
-                                {
-                                    <p class="mb-0"><small>Uploaded: @Model.IdDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
-                                }
+                    @if (Model.IdDocument != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="list-group-item document-item p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold"><i class="fas fa-id-card text-primary me-2"></i>ID Document</h6>
+                                        <small class="text-muted">@Model.IdDocument.FileName</small>
+                                        @if (Model.IdDocument.UploadedAtUtc.HasValue)
+                                        {
+                                            <p class="mb-0 mt-1"><small class="text-muted"><i class="fas fa-clock me-1"></i>@Model.IdDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
+                                        }
+                                    </div>
+                                    <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "id" })" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </div>
                             </div>
-                            <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "id" })" class="btn btn-sm btn-primary" target="_blank">
-                                <i class="bi bi-download"></i> Download
-                            </a>
                         </div>
-                    </div>
-                }
+                    }
 
-                @if (Model.QualificationDocument != null)
-                {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Qualification Certificate</h6>
-                                <small class="text-muted">@Model.QualificationDocument.FileName</small>
-                                @if (Model.QualificationDocument.UploadedAtUtc.HasValue)
-                                {
-                                    <p class="mb-0"><small>Uploaded: @Model.QualificationDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
-                                }
+                    @if (Model.QualificationDocument != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="list-group-item document-item p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold"><i class="fas fa-certificate text-success me-2"></i>Qualification Certificate</h6>
+                                        <small class="text-muted">@Model.QualificationDocument.FileName</small>
+                                        @if (Model.QualificationDocument.UploadedAtUtc.HasValue)
+                                        {
+                                            <p class="mb-0 mt-1"><small class="text-muted"><i class="fas fa-clock me-1"></i>@Model.QualificationDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
+                                        }
+                                    </div>
+                                    <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "qualification" })" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </div>
                             </div>
-                            <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "qualification" })" class="btn btn-sm btn-primary" target="_blank">
-                                <i class="bi bi-download"></i> Download
-                            </a>
                         </div>
-                    </div>
-                }
+                    }
 
-                @if (Model.DriversLicenseDocument != null)
-                {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Driver's License</h6>
-                                <small class="text-muted">@Model.DriversLicenseDocument.FileName</small>
-                                @if (Model.DriversLicenseDocument.UploadedAtUtc.HasValue)
-                                {
-                                    <p class="mb-0"><small>Uploaded: @Model.DriversLicenseDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
-                                }
+                    @if (Model.DriversLicenseDocument != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="list-group-item document-item p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold"><i class="fas fa-car text-info me-2"></i>Driver's License</h6>
+                                        <small class="text-muted">@Model.DriversLicenseDocument.FileName</small>
+                                        @if (Model.DriversLicenseDocument.UploadedAtUtc.HasValue)
+                                        {
+                                            <p class="mb-0 mt-1"><small class="text-muted"><i class="fas fa-clock me-1"></i>@Model.DriversLicenseDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
+                                        }
+                                    </div>
+                                    <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "drivers" })" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </div>
                             </div>
-                            <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "drivers" })" class="btn btn-sm btn-primary" target="_blank">
-                                <i class="bi bi-download"></i> Download
-                            </a>
                         </div>
-                    </div>
-                }
+                    }
 
-                @if (Model.AdditionalDocument != null)
-                {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Additional Document</h6>
-                                <small class="text-muted">@Model.AdditionalDocument.FileName</small>
-                                @if (Model.AdditionalDocument.UploadedAtUtc.HasValue)
-                                {
-                                    <p class="mb-0"><small>Uploaded: @Model.AdditionalDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
-                                }
+                    @if (Model.AdditionalDocument != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="list-group-item document-item p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold"><i class="fas fa-file text-secondary me-2"></i>Additional Document</h6>
+                                        <small class="text-muted">@Model.AdditionalDocument.FileName</small>
+                                        @if (Model.AdditionalDocument.UploadedAtUtc.HasValue)
+                                        {
+                                            <p class="mb-0 mt-1"><small class="text-muted"><i class="fas fa-clock me-1"></i>@Model.AdditionalDocument.UploadedAtUtc.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small></p>
+                                        }
+                                    </div>
+                                    <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "additional" })" class="btn btn-sm btn-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </div>
                             </div>
-                            <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "additional" })" class="btn btn-sm btn-primary" target="_blank">
-                                <i class="bi bi-download"></i> Download
-                            </a>
                         </div>
-                    </div>
-                }
+                    }
 
-                @if (Model.CvDocument == null && Model.IdDocument == null && Model.QualificationDocument == null && Model.DriversLicenseDocument == null && Model.AdditionalDocument == null)
+                    @if (Model.CvDocument == null && Model.IdDocument == null && Model.QualificationDocument == null && Model.DriversLicenseDocument == null && Model.AdditionalDocument == null)
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>No documents attached
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.DeclarationAccepted)
                 {
-                    <div class="list-group-item">
-                        <p class="text-muted mb-0">No documents attached</p>
+                    <h5 class="section-title mt-5">Declaration</h5>
+                    <div class="card" style="border: 2px solid rgba(249, 115, 22, 0.2); border-radius: 12px;">
+                        <div class="card-body">
+                            <p><strong>Declaration Accepted:</strong> <span class="badge bg-success status-badge">Yes</span></p>
+                            <p><strong>Date:</strong> @(Model.DeclarationDate?.ToString("dd MMM yyyy") ?? "N/A")</p>
+                            @if (!string.IsNullOrEmpty(Model.SignatureData))
+                            {
+                                <p><strong>Signature:</strong></p>
+                                <img src="@Model.SignatureData" alt="Applicant Signature" class="border rounded p-2" style="max-width: 300px; background: white;" />
+                            }
+                        </div>
                     </div>
                 }
             </div>
 
-            @if (Model.DeclarationAccepted)
-            {
-                <h5 class="mt-4">Declaration</h5>
-                <div class="card">
-                    <div class="card-body">
-                        <p><strong>Declaration Accepted:</strong> Yes</p>
-                        <p><strong>Date:</strong> @(Model.DeclarationDate?.ToString("dd MMM yyyy") ?? "N/A")</p>
-                        @if (!string.IsNullOrEmpty(Model.SignatureData))
-                        {
-                            <p><strong>Signature:</strong></p>
-                            <img src="@Model.SignatureData" alt="Applicant Signature" class="border" style="max-width: 300px;" />
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Screening Answers Tab -->
-        <div class="tab-pane fade" id="screening" role="tabpanel">
-            <h5>Screening Questions & Answers</h5>
-            @if (Model.ScreeningAnswers.Any())
-            {
-                @foreach (var answer in Model.ScreeningAnswers.OrderBy(a => a.Order))
+            <!-- Screening Answers Tab -->
+            <div class="tab-pane fade" id="screening" role="tabpanel">
+                <h5 class="section-title">Screening Questions & Answers</h5>
+                @if (Model.ScreeningAnswers.Any())
                 {
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Q@(answer.Order + 1):</strong> @answer.Question
-                            @if (answer.MeetsRequirement.HasValue)
-                            {
-                                <span class="badge @(answer.MeetsRequirement.Value ? "bg-success" : "bg-danger") float-end">
-                                    @(answer.MeetsRequirement.Value ? "Meets Requirement" : "Does Not Meet Requirement")
-                                </span>
-                            }
+                    @foreach (var answer in Model.ScreeningAnswers.OrderBy(a => a.Order))
+                    {
+                        <div class="card mb-3" style="border-left: 4px solid #f97316; border-radius: 12px; box-shadow: 0 12px 30px -12px rgba(16, 24, 40, 0.18);">
+                            <div class="card-header" style="background: rgba(249, 115, 22, 0.08); border-bottom: 1px solid rgba(249, 115, 22, 0.2);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong><i class="fas fa-question-circle me-2 text-primary"></i>Q@(answer.Order + 1): @answer.Question</strong>
+                                    @if (answer.MeetsRequirement.HasValue)
+                                    {
+                                        <span class="badge @(answer.MeetsRequirement.Value ? "bg-success" : "bg-danger") status-badge">
+                                            @(answer.MeetsRequirement.Value ? "Meets Requirement" : "Does Not Meet")
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">@answer.Answer</p>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p class="mb-0">@answer.Answer</p>
-                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted fst-italic">No screening questions were answered.</p>
+                }
+            </div>
+
+            <!-- Audit Trail Tab -->
+            <div class="tab-pane fade" id="audit" role="tabpanel">
+                <h5 class="section-title">Application Audit Trail</h5>
+                @if (Model.AuditTrail.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table data-table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar-alt me-2"></i>Date/Time</th>
+                                    <th><i class="fas fa-user me-2"></i>Actor</th>
+                                    <th><i class="fas fa-clipboard-list me-2"></i>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var entry in Model.AuditTrail)
+                                {
+                                    <tr>
+                                        <td>@entry.TimestampUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm:ss")</td>
+                                        <td class="fw-semibold">@entry.Actor</td>
+                                        <td>@entry.Action</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 }
-            }
-            else
-            {
-                <p class="text-muted">No screening questions were answered.</p>
-            }
-        </div>
-
-        <!-- Audit Trail Tab -->
-        <div class="tab-pane fade" id="audit" role="tabpanel">
-            <h5>Application Audit Trail</h5>
-            @if (Model.AuditTrail.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Date/Time</th>
-                                <th>Actor</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var entry in Model.AuditTrail)
-                            {
-                                <tr>
-                                    <td>@entry.TimestampUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm:ss")</td>
-                                    <td>@entry.Actor</td>
-                                    <td>@entry.Action</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted">No audit trail available.</p>
-            }
+                else
+                {
+                    <p class="text-muted fst-italic">No audit trail available.</p>
+                }
+            </div>
         </div>
     </div>
 </div>
