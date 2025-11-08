@@ -1,0 +1,1079 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ERecruitment.Web</name>
+    </assembly>
+    <members>
+        <member name="T:ERecruitment.Web.Constants">
+            <summary>
+            Application-wide constants for magic strings, session keys, configuration keys, and default values.
+            Centralizes string literals to improve maintainability and prevent typos.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.SessionKeys">
+            <summary>
+            Session key constants for storing user state
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.SessionKeys.ApplicantId">
+            <summary>
+            Session key for storing the current applicant's ID
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.SessionKeys.AdminAccessGranted">
+            <summary>
+            Session key for admin access granted flag
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.CookieNames">
+            <summary>
+            Cookie name constants
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.CookieNames.Session">
+            <summary>
+            Session cookie name
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.CookieNames.Authentication">
+            <summary>
+            Authentication cookie name
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Configuration">
+            <summary>
+            Configuration section and key constants
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.Configuration.AdminAccessCode">
+            <summary>
+            Configuration key for admin access code
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.Configuration.AdminAccessCodePath">
+            <summary>
+            Alternative configuration path for admin access code
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.Configuration.SmtpHost">
+            <summary>
+            SMTP host configuration key
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.Configuration.DefaultConnection">
+            <summary>
+            Default connection string name
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.Configuration.AuditSection">
+            <summary>
+            Audit configuration section
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Roles">
+            <summary>
+            Identity role name constants
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.Roles.Admin">
+            <summary>
+            Admin role name
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.DefaultEmails">
+            <summary>
+            Default email addresses used in the system
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultEmails.AdminEmail">
+            <summary>
+            Default admin email address (used for seeding)
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.DefaultPasswords">
+            <summary>
+            Default passwords for seeding (DEVELOPMENT ONLY)
+            WARNING: These should only be used in development environments
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultPasswords.AdminPassword">
+            <summary>
+            Default admin password for development seeding
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultPasswords.TestUserPassword">
+            <summary>
+            Default test user password for development seeding
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.DefaultProfile">
+            <summary>
+            Default profile values
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultProfile.IncompleteFirstName">
+            <summary>
+            Default first name for incomplete profiles
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultProfile.IncompleteLastName">
+            <summary>
+            Default last name for incomplete profiles
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultProfile.PendingPassportNumber">
+            <summary>
+            Default passport number for profiles requiring updates
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultProfile.DefaultPhoneNumber">
+            <summary>
+            Default phone number for profiles requiring updates
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.DefaultProfile.DefaultResidentialAddress">
+            <summary>
+            Default residential address for profiles requiring updates
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.TempDataKeys">
+            <summary>
+            Flash message and TempData keys
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.TempDataKeys.Flash">
+            <summary>
+            Key for flash messages in TempData
+            </summary>
+        </member>
+        <member name="F:ERecruitment.Web.Constants.TempDataKeys.FlashType">
+            <summary>
+            Key for flash message type in TempData (success, error, warning, info)
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.TestData">
+            <summary>
+            Test data constants (DEVELOPMENT ONLY)
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages">
+            <summary>
+            Centralized repository for all user-facing messages in the application.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.Success">
+            <summary>
+            Success messages displayed to users.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.Errors">
+            <summary>
+            Error messages displayed to users.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.Validation">
+            <summary>
+            Validation error messages with placeholders.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.Info">
+            <summary>
+            Informational messages displayed to users.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.EmailSubjects">
+            <summary>
+            Email subject lines.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.AuditActions">
+            <summary>
+            Audit action descriptions.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Constants.Messages.LogMessages">
+            <summary>
+            Log messages for structured logging.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Controllers.AdminApplicationsController.BulkUpdateStatus(System.Collections.Generic.List{System.Guid},ERecruitment.Web.Models.ApplicationStatus,System.String)">
+            <summary>
+            Bulk update application statuses
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Controllers.AdminController.RunClaimsMigration">
+            <summary>
+            Manually runs the ApplicantId claims migration.
+            This endpoint allows admins to trigger the migration on demand.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Controllers.AdminController.VerifyClaimsMigration">
+            <summary>
+            Verifies that all applicants have correct ApplicantId claims.
+            Useful for debugging after migration.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Controllers.AdminController.FixOrphanedApplicants">
+            <summary>
+            Fixes orphaned applicants by creating Identity users for them.
+            Orphaned applicants are those that exist in the domain database but have no Identity user.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Controllers.AdminController.OrphanedApplicants">
+            <summary>
+            Shows a list of orphaned applicants (those without Identity users).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Controllers.HomeController.Error(System.Nullable{System.Int32})">
+            <summary>
+            Handles errors that occur during request processing.
+            Shows appropriate error view based on status code.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Data.ClaimsMigration">
+            <summary>
+            Migrates existing Identity users to include ApplicantId claims.
+            This is a one-time migration needed when switching from session-based to claims-based authentication.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.ClaimsMigration.MigrateApplicantClaimsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Migrates all existing applicants to have ApplicantId claims in their Identity user accounts.
+            Safe to run multiple times - will skip users that already have the claim.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.ClaimsMigration.MigrateApplicantClaimAsync(ERecruitment.Web.Models.Applicant,System.Threading.CancellationToken)">
+            <summary>
+            Migrates a single applicant's claim.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Data.MigrationRunner">
+            <summary>
+            Standalone migration runner for manual execution.
+            Can be called from command line or as a separate process.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.MigrationRunner.RunClaimsMigrationAsync(System.IServiceProvider)">
+            <summary>
+            Runs the ApplicantId claims migration.
+            This can be called manually if you want to skip automatic migration on startup.
+            </summary>
+            <param name="services">The application service provider</param>
+        </member>
+        <member name="M:ERecruitment.Web.Data.MigrationRunner.VerifyClaimsMigrationAsync(System.IServiceProvider)">
+            <summary>
+            Verifies that all applicants have corresponding ApplicantId claims.
+            Useful for debugging or verification after migration.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.MigrationRunner.RemoveAllApplicantClaimsAsync(System.IServiceProvider)">
+            <summary>
+            Removes all ApplicantId claims (for testing/rollback purposes only).
+            WARNING: This will break authentication for applicants!
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Data.OrphanedApplicantFixer">
+            <summary>
+            Fixes orphaned applicants by creating corresponding Identity users.
+            An orphaned applicant is one that exists in the domain database but has no Identity user.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.OrphanedApplicantFixer.FixOrphanedApplicantsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Finds and fixes all orphaned applicants by creating Identity users for them.
+            </summary>
+            <param name="defaultPassword">Default password for created Identity users. Use a strong password!</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>Number of orphaned applicants fixed</returns>
+        </member>
+        <member name="M:ERecruitment.Web.Data.OrphanedApplicantFixer.CreateIdentityUserForApplicantAsync(ERecruitment.Web.Models.Applicant,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Creates an Identity user for a specific orphaned applicant.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.OrphanedApplicantFixer.GetOrphanedApplicantsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets a list of all orphaned applicants (applicants without Identity users).
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Data.OrphanedApplicantFixResult">
+            <summary>
+            Result of the orphaned applicant fix operation.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.OrphanedApplicantFixResult.#ctor(System.Int32,System.Int32,System.Int32,System.Collections.Generic.List{System.String})">
+            <summary>
+            Result of the orphaned applicant fix operation.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Data.OrphanedApplicantInfo">
+            <summary>
+            Information about an orphaned applicant.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Data.OrphanedApplicantInfo.#ctor(System.Guid,System.String,System.String,System.String,System.DateTime)">
+            <summary>
+            Information about an orphaned applicant.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.ApplicationException">
+            <summary>
+            Base exception for application-specific errors.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">
+            <summary>
+            Exception raised when a requested resource is not found.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.ValidationException">
+            <summary>
+            Exception raised when a validation fails.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.AuthorizationException">
+            <summary>
+            Exception raised when a user is not authorized to perform an action.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.AuthenticationException">
+            <summary>
+            Exception raised when authentication fails.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.BusinessRuleException">
+            <summary>
+            Exception raised when an operation cannot be performed due to business rules.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Exceptions.ExternalServiceException">
+            <summary>
+            Exception raised when an external service fails.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Extensions.ClaimsPrincipalExtensions">
+            <summary>
+            Extension methods for ClaimsPrincipal to easily access custom claims.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ClaimsPrincipalExtensions.GetApplicantId(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Gets the ApplicantId from the user's claims.
+            </summary>
+            <param name="user">The ClaimsPrincipal representing the authenticated user</param>
+            <returns>The ApplicantId if found, otherwise null</returns>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ClaimsPrincipalExtensions.GetEmail(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Gets the user's email from claims.
+            </summary>
+            <param name="user">The ClaimsPrincipal representing the authenticated user</param>
+            <returns>The email if found, otherwise null</returns>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ClaimsPrincipalExtensions.IsAdmin(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Checks if the user is in the Admin role.
+            </summary>
+            <param name="user">The ClaimsPrincipal representing the authenticated user</param>
+            <returns>True if the user is an admin, otherwise false</returns>
+        </member>
+        <member name="T:ERecruitment.Web.Extensions.ErrorHandlingExtensions">
+            <summary>
+            Extension methods for consistent error handling in controllers.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.ValidationError(Microsoft.AspNetCore.Mvc.ControllerBase,System.String,System.Collections.Generic.IDictionary{System.String,System.String[]})">
+            <summary>
+            Creates a BadRequest response for validation errors.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.ValidationError(Microsoft.AspNetCore.Mvc.ControllerBase,System.String,System.String)">
+            <summary>
+            Creates a BadRequest response for a single validation error.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.ValidationError(Microsoft.AspNetCore.Mvc.ControllerBase,Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
+            <summary>
+            Creates a BadRequest response from ModelState errors.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.NotFoundError(Microsoft.AspNetCore.Mvc.ControllerBase,System.String,System.Object)">
+            <summary>
+            Creates a NotFound response.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.ConflictError(Microsoft.AspNetCore.Mvc.ControllerBase,System.String,System.String)">
+            <summary>
+            Creates a Conflict response for business rule violations.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.UnauthorizedError(Microsoft.AspNetCore.Mvc.ControllerBase)">
+            <summary>
+            Creates a Forbidden response for authorization failures.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.ErrorResponse(Microsoft.AspNetCore.Mvc.ControllerBase,System.Int32,System.String,System.String,System.String)">
+            <summary>
+            Creates a generic error response with custom status code.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.SafeExecuteAsync(Microsoft.AspNetCore.Mvc.ControllerBase,System.Func{System.Threading.Tasks.Task{Microsoft.AspNetCore.Mvc.IActionResult}},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Safely executes a controller action with error handling.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Extensions.ErrorHandlingExtensions.SafeExecuteAsync``1(Microsoft.AspNetCore.Mvc.ControllerBase,System.Func{System.Threading.Tasks.Task{``0}},Microsoft.Extensions.Logging.ILogger,System.Func{``0,Microsoft.AspNetCore.Mvc.IActionResult})">
+            <summary>
+            Safely executes a controller action with error handling and returns typed result.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Middleware.ExceptionHandlingMiddleware">
+            <summary>
+            Global exception handling middleware that catches unhandled exceptions
+            and returns consistent error responses.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Middleware.ExceptionHandlingExtensions">
+            <summary>
+            Extension methods for registering exception handling middleware.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.Z83Expansion">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.Z83Expansion.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.Z83Expansion.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.Z83Expansion.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.AddPasswordResetTable">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddPasswordResetTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddPasswordResetTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddPasswordResetTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.GovernmentJobPostingFormat">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.GovernmentJobPostingFormat.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.GovernmentJobPostingFormat.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.GovernmentJobPostingFormat.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.ConsolidateSalaryFields">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ConsolidateSalaryFields.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ConsolidateSalaryFields.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ConsolidateSalaryFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.ConsolidateRequirementsFields">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ConsolidateRequirementsFields.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ConsolidateRequirementsFields.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ConsolidateRequirementsFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.RemoveEnquiriesEmail">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.RemoveEnquiriesEmail.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.RemoveEnquiriesEmail.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.RemoveEnquiriesEmail.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.RemoveEmploymentEquityAndDiversityNotes">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.RemoveEmploymentEquityAndDiversityNotes.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.RemoveEmploymentEquityAndDiversityNotes.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.RemoveEmploymentEquityAndDiversityNotes.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.AddUniqueConstraintJobApplications">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddUniqueConstraintJobApplications.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddUniqueConstraintJobApplications.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddUniqueConstraintJobApplications.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.FixAuditEntryPrimaryKey">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.FixAuditEntryPrimaryKey.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.FixAuditEntryPrimaryKey.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.FixAuditEntryPrimaryKey.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.AddPerformanceIndexes">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddPerformanceIndexes.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddPerformanceIndexes.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.AddPerformanceIndexes.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Migrations.ApplicationIdentityDb.InitialIdentitySchema">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ApplicationIdentityDb.InitialIdentitySchema.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ApplicationIdentityDb.InitialIdentitySchema.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ERecruitment.Web.Migrations.ApplicationIdentityDb.InitialIdentitySchema.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ERecruitment.Web.Models.ErrorResponse">
+            <summary>
+            Standard error response model for API responses.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Models.ApiResponse`1">
+            <summary>
+            Generic API response model for wrapped responses.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Models.ErrorCode">
+            <summary>
+            Enum for standardized error codes.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Models.JobPosting">
+            <summary>
+            Government-compliant job posting model following official recruitment document structure.
+            Matches the format used in government job advertisements.
+            </summary>
+        </member>
+        <member name="P:ERecruitment.Web.Models.JobPosting.IsExpired">
+            <summary>
+            Determines if the job posting is expired based on the closing date.
+            </summary>
+            <returns>True if the closing date has passed, false otherwise.</returns>
+        </member>
+        <member name="P:ERecruitment.Web.Models.JobPosting.IsAcceptingApplications">
+            <summary>
+            Determines if the job is accepting applications.
+            A job accepts applications if it's active and not expired.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.AdministrationService">
+            <summary>
+            Service responsible for administrative operations and analytics.
+            Bounded context: Cross-cutting admin concerns.
+            LOC Target: ~100 lines
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.AdministrationService.BulkRejectApplicationsAsync(ERecruitment.Web.ViewModels.AdminBulkRejectViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Performs bulk rejection of applications with custom email notification template.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When no applications selected</exception>
+            <returns>Result containing count of rejected applications and audit entries</returns>
+        </member>
+        <member name="M:ERecruitment.Web.Services.AdministrationService.UpdateApplicationStatusAsync(System.Guid,ERecruitment.Web.Models.ApplicationStatus,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Updates the status of a job application with optional email notification.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When application or applicant not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.ValidationException">When rejection status requested without reason</exception>
+        </member>
+        <member name="T:ERecruitment.Web.Services.IAdministrationService">
+            <summary>
+            Interface for administration operations.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.AdminMasterListEntry">
+            <summary>
+            Snapshot of an application enriched with applicant profile insights
+            for the administrator master list experience.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.AdminMasterListEntry.#ctor(System.Guid,System.Guid,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Boolean,System.String,System.String,System.String,System.String,System.String,ERecruitment.Web.Models.ApplicationStatus,System.DateTime,System.Nullable{System.DateTime})">
+            <summary>
+            Snapshot of an application enriched with applicant profile insights
+            for the administrator master list experience.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.ApplicantManagementService">
+            <summary>
+            Service responsible for applicant lifecycle: registration, authentication, and profile management.
+            Bounded context: Applicant aggregate root.
+            LOC Target: ~180 lines
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicantManagementService.RegisterApplicantAsync(ERecruitment.Web.ViewModels.RegisterViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Registers a new applicant account.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ValidationException">When input validation fails</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When email already exists</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicantManagementService.AuthenticateAsync(ERecruitment.Web.ViewModels.LoginViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Authenticates an applicant.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.AuthenticationException">When credentials are invalid</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicantManagementService.UpdateProfileAsync(ERecruitment.Web.Models.Applicant,ERecruitment.Web.ViewModels.ProfileViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Updates an applicant's profile.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When applicant not found</exception>
+        </member>
+        <member name="T:ERecruitment.Web.Services.IApplicantManagementService">
+            <summary>
+            Interface for applicant management operations.
+            All methods throw exceptions instead of returning result objects for consistency.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicantManagementService.RegisterApplicantAsync(ERecruitment.Web.ViewModels.RegisterViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Registers a new applicant.
+            Throws ValidationException if validation fails, BusinessRuleException if email exists.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicantManagementService.AuthenticateAsync(ERecruitment.Web.ViewModels.LoginViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Authenticates an applicant.
+            Throws AuthenticationException if credentials are invalid.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicantManagementService.FindApplicantByEmailAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Finds an applicant by email.
+            Returns null if not found (non-exceptional case).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicantManagementService.GetApplicantAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Gets an applicant by ID.
+            Returns null if not found (non-exceptional case).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicantManagementService.UpdateProfileAsync(ERecruitment.Web.Models.Applicant,ERecruitment.Web.ViewModels.ProfileViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Updates an applicant's profile.
+            Throws ResourceNotFoundException if applicant not found.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationExportService.ExportApplicationsCsvAsync(System.String,System.Nullable{ERecruitment.Web.Models.ApplicationStatus},System.Nullable{System.Guid},System.Threading.CancellationToken)">
+            <summary>
+            Exports filtered job applications as CSV file.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When no applications match the filters</exception>
+        </member>
+        <member name="T:ERecruitment.Web.Services.ApplicationStatusRules">
+            <summary>
+            Centralised rules for permissible job application status transitions.
+            Keeps workflow services aligned and prevents invalid state changes.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationStatusRules.CanTransition(ERecruitment.Web.Models.ApplicationStatus,ERecruitment.Web.Models.ApplicationStatus)">
+            <summary>
+            Checks whether the application can move from the current status to the target status.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationStatusRules.BuildErrorMessage(ERecruitment.Web.Models.ApplicationStatus,ERecruitment.Web.Models.ApplicationStatus)">
+            <summary>
+            Generates a human-readable error message for invalid transitions.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.ApplicationWorkflowService">
+            <summary>
+            Service responsible for job application workflow and state transitions.
+            Bounded context: Application aggregate root and recruitment business rules.
+            LOC Target: ~150 lines
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationWorkflowService.StartApplicationAsync(System.Guid,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Starts a new application for a job posting.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When job posting not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job is expired or closed</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationWorkflowService.SubmitDirectApplicationAsync(System.Guid,System.String,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Submits an application directly (without screening questions).
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When job posting not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job constraints not met or application in invalid state</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationWorkflowService.SubmitKillerQuestionAsync(System.Guid,System.String,System.Guid,System.String,System.Boolean,System.Int32,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Submits an answer to a killer question for an application.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When job or application not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job expired, inactive, question index invalid, or state transitions not allowed</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationWorkflowService.SubmitScreenedApplicationAsync(System.Guid,System.String,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Submits a screened application after all killer questions have been passed.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When application or job not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job expired, inactive, or screening answers incomplete/failed</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ApplicationWorkflowService.WithdrawApplicationAsync(System.Guid,System.String,System.Guid,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Withdraws an application.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When application not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When application cannot be withdrawn from current state</exception>
+        </member>
+        <member name="T:ERecruitment.Web.Services.IApplicationWorkflowService">
+            <summary>
+            Interface for application workflow operations.
+            All methods now use exception-throwing pattern instead of returning result objects.
+            Follows bounded context patterns: Application aggregate root and recruitment business rules.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.StartApplicationAsync(System.Guid,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Starts a new application for a job posting.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When job posting not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job is expired or inactive</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.SubmitDirectApplicationAsync(System.Guid,System.String,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Submits an application directly without screening questions.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When job posting not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job expired, inactive, already submitted, or killer questions required</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.SubmitKillerQuestionAsync(System.Guid,System.String,System.Guid,System.String,System.Boolean,System.Int32,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Submits an answer to a killer question for an application.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When job or application not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job expired, inactive, question index invalid, or state transitions not allowed</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.SubmitScreenedApplicationAsync(System.Guid,System.String,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Submits a screened application after all killer questions have been passed.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When application or job not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When job expired, inactive, or screening answers incomplete/failed</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.WithdrawApplicationAsync(System.Guid,System.String,System.Guid,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Withdraws an application.
+            </summary>
+            <exception cref="T:ERecruitment.Web.Exceptions.ResourceNotFoundException">When application not found</exception>
+            <exception cref="T:ERecruitment.Web.Exceptions.BusinessRuleException">When application cannot be withdrawn from current state</exception>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.GetApplicantApplicationsAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Gets all applications for an applicant (does not throw, returns empty collection if none found).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.GetJobPostingAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Gets a job posting (does not throw, returns null if not found).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IApplicationWorkflowService.GetAllJobPostingsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets all job postings (does not throw, returns empty collection if none found).
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.AuditOptions">
+            <summary>
+            Configuration options for audit trail retention.
+            </summary>
+        </member>
+        <member name="P:ERecruitment.Web.Services.AuditOptions.MaxEntriesPerApplication">
+            <summary>
+            Maximum number of audit entries retained per job application.
+            Use 0 or a negative value to disable count-based pruning.
+            </summary>
+        </member>
+        <member name="P:ERecruitment.Web.Services.AuditOptions.RetentionDays">
+            <summary>
+            Number of days to retain audit entries. Entries older than this threshold are pruned.
+            Use 0 or a negative value to disable time-based pruning.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.EfRecruitmentRepository">
+            <summary>
+            Entity Framework Core implementation of the recruitment repository.
+            100% async, optimized queries, zero N+1 patterns.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.EfRecruitmentRepository.BulkUpdateApplicationStatusAsync(System.Collections.Generic.IEnumerable{System.Guid},ERecruitment.Web.Models.ApplicationStatus,System.String,System.Threading.CancellationToken)">
+            <summary>
+            OPTIMIZED: Bulk update for rejection workflow.
+            Eliminates N+1 query pattern: 3,000+ queries → 2 queries.
+            Uses single transaction for atomicity.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.EfRecruitmentRepository.GetDashboardStatisticsAsync(System.Threading.CancellationToken)">
+            <summary>
+            OPTIMIZED: Dashboard statistics using database aggregation.
+            Memory usage: O(1) - does NOT load all applicants.
+            Query count: 3 queries (stats + equity breakdown + jobs).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.EfRecruitmentRepository.GetApplicantFullProfileAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Gets full applicant profile with all related data for admin viewing.
+            Includes profile, equity declaration, applications with audit trails, and all owned entities.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.ICurrentApplicant">
+            <summary>
+            Abstracts access to the currently authenticated applicant from the session.
+            Decouples services from HttpContext and session management.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ICurrentApplicant.GetAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets the currently authenticated applicant from session.
+            Returns null if no applicant is logged in.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ICurrentApplicant.SetAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Sets the current applicant in session after successful login/registration.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ICurrentApplicant.Clear">
+            <summary>
+            Clears the current applicant from session (logout).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.ICurrentApplicant.GetApplicantId">
+            <summary>
+            Gets the applicant ID from session without loading the full entity.
+            Returns null if no applicant is logged in.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.InMemoryRecruitmentRepository">
+            <summary>
+            In-memory implementation of IRecruitmentRepository for testing and development.
+            NOT suitable for production use - data is lost on restart.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.IRecruitmentRepository">
+            <summary>
+            Repository interface for recruitment system data access.
+            All operations are asynchronous to prevent thread pool exhaustion.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IRecruitmentRepository.BulkUpdateApplicationStatusAsync(System.Collections.Generic.IEnumerable{System.Guid},ERecruitment.Web.Models.ApplicationStatus,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Optimized bulk update for rejection workflow.
+            Single transaction, single database round trip.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IRecruitmentRepository.GetDashboardStatisticsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets dashboard statistics using optimized database aggregation.
+            Does NOT load all applicants into memory.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.IRecruitmentRepository.GetApplicantFullProfileAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Gets full applicant profile with all related data for admin viewing.
+            Includes profile, equity declaration, applications, and all documents.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.DashboardStatistics">
+            <summary>
+            Dashboard statistics computed via database aggregation (not in-memory).
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.DashboardStatistics.#ctor(System.Int32,System.Int32,System.Int32,System.Collections.Generic.Dictionary{System.String,System.Int32})">
+            <summary>
+            Dashboard statistics computed via database aggregation (not in-memory).
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Services.MasterListProjection">
+            <summary>
+            Helper responsible for projecting persistent application data into
+            the admin master list snapshot format.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Services.QueryExtensions.ToPagedResultAsync``1(System.Linq.IQueryable{``0},System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Converts an IQueryable to a paginated result with a single optimized query.
+            Uses Count() and Skip().Take() - executes 2 database queries.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Utilities.ProfileExtensions">
+            <summary>
+            Extension methods for ApplicantProfile to calculate completion metrics
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Utilities.ProfileExtensions.CalculateCompletionPercentage(ERecruitment.Web.Models.ApplicantProfile)">
+            <summary>
+            Calculates the percentage of profile completion based on key fields.
+            Returns a value between 0 and 100.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Utilities.ProfileExtensions.GetCompletionStatus(ERecruitment.Web.Models.ApplicantProfile)">
+            <summary>
+            Returns a user-friendly completion status message
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Utilities.ProfileExtensions.GetCompletionBadgeClass(ERecruitment.Web.Models.ApplicantProfile)">
+            <summary>
+            Returns the CSS class for the completion badge
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Utilities.ProfileExtensions.GetMissingCriticalFields(ERecruitment.Web.Models.ApplicantProfile)">
+            <summary>
+            Gets missing critical fields that should be completed
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Utilities.ProfileExtensions.MeetsMinimumRequirements(ERecruitment.Web.Models.ApplicantProfile)">
+            <summary>
+            Checks if profile meets minimum requirements for job applications
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Validation.FileSizeAttribute">
+            <summary>
+            Validates the size of an uploaded file.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Validation.FileTypeAttribute">
+            <summary>
+            Validates the file extension of an uploaded file.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Validation.RequireEitherAttribute">
+            <summary>
+            Validation attribute that requires at least one of two properties to have a non-empty value.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.Validation.SafeStringAttribute">
+            <summary>
+            Validates that a string contains only safe characters (letters, numbers, spaces, and common punctuation).
+            Helps prevent XSS and injection attacks.
+            </summary>
+        </member>
+        <member name="M:ERecruitment.Web.Validation.SafeStringAttribute.SafeCharactersRegex">
+            <remarks>
+            Pattern:<br/>
+            <code>^[a-zA-Z0-9\\s\\-'.,&amp;()/]+$</code><br/>
+            Explanation:<br/>
+            <code>
+            ○ Match if at the beginning of the string.<br/>
+            ○ Match a character in the set [&amp;-),-9A-Za-z\s] greedily at least once.<br/>
+            ○ Match if at the end of the string or if before an ending newline.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="T:ERecruitment.Web.ViewModels.CreateJobPostingViewModel">
+            <summary>
+            ViewModel for creating government-compliant job postings.
+            Structured to match official government recruitment document format.
+            </summary>
+        </member>
+        <member name="T:ERecruitment.Web.ViewModels.ErrorViewModel">
+            <summary>
+            View model for error display pages.
+            </summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the SafeCharactersRegex method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.SafeCharactersRegex_0.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.Utilities">
+            <summary>Helper methods used by generated <see cref="T:System.Text.RegularExpressions.Regex"/>-derived implementations.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout">
+            <summary>Default timeout value set in <see cref="T:System.AppContext"/>, or <see cref="F:System.Text.RegularExpressions.Regex.InfiniteMatchTimeout"/> if none was set.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_hasTimeout">
+            <summary>Whether <see cref="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout"/> is non-infinite.</summary>
+        </member>
+    </members>
+</doc>
