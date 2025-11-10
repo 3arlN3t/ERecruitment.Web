@@ -1,0 +1,33 @@
+@model ERecruitment.Web.ViewModels.AdminApplicantProfileViewModel
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Screening</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.ScreeningAnswers.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var answer in Model.ScreeningAnswers)
+                    {
+                        <tr>
+                            <td>@answer.Question</td>
+                            <td>@answer.Answer</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No screening answers available.</p>
+        }
+    </div>
+</div>

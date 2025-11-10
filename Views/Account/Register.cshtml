@@ -109,7 +109,7 @@
                         </label>
                         <input asp-for="SaIdNumber" class="form-control form-control-sm" placeholder="0000000000000" autocomplete="off" />
                         <small class="form-text text-muted">
-                            <i class="fas fa-shield-alt me-1"></i>We validate the checksum to prevent data capture errors
+                            <i class="fas fa-info-circle me-1"></i>Must be exactly 13 digits
                         </small>
                         <span asp-validation-for="SaIdNumber" class="text-danger"></span>
                     </div>
@@ -145,15 +145,32 @@
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label asp-for="EquityEthnicity" class="form-label">Ethnicity</label>
-                                    <input asp-for="EquityEthnicity" class="form-control form-control-sm" placeholder="e.g., African" />
+                                    <select asp-for="EquityEthnicity" class="form-control form-control-sm">
+                                        <option value="">-- Select --</option>
+                                        <option value="African">African</option>
+                                        <option value="Coloured">Coloured</option>
+                                        <option value="Indian/Asian">Indian/Asian</option>
+                                        <option value="White">White</option>
+                                        <option value="Other">Other</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label asp-for="EquityGender" class="form-label">Gender</label>
-                                    <input asp-for="EquityGender" class="form-control form-control-sm" placeholder="e.g., Male" />
+                                    <select asp-for="EquityGender" class="form-control form-control-sm">
+                                        <option value="">-- Select --</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                        <option value="Prefer not to say">Prefer not to say</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label asp-for="EquityDisability" class="form-label">Disability</label>
-                                    <input asp-for="EquityDisability" class="form-control form-control-sm" placeholder="e.g., None" />
+                                    <select asp-for="EquityDisability" class="form-control form-control-sm">
+                                        <option value="">-- Select --</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
                                 </div>
                             </div>
 

@@ -1,0 +1,35 @@
+@model ERecruitment.Web.ViewModels.AdminApplicantProfileViewModel
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Qualifications</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Qualifications.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Institution</th>
+                        <th>Qualification</th>
+                        <th>Year Obtained</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var qualification in Model.Qualifications)
+                    {
+                        <tr>
+                            <td>@qualification.InstitutionName</td>
+                            <td>@qualification.QualificationName</td>
+                            <td>@qualification.YearObtained</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No qualifications listed.</p>
+        }
+    </div>
+</div>

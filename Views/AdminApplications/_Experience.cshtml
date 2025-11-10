@@ -1,0 +1,37 @@
+@model ERecruitment.Web.ViewModels.AdminApplicantProfileViewModel
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Work Experience</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.WorkExperience.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Employer</th>
+                        <th>Position</th>
+                        <th>From</th>
+                        <th>To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var experience in Model.WorkExperience)
+                    {
+                        <tr>
+                            <td>@experience.EmployerName</td>
+                            <td>@experience.PositionHeld</td>
+                            <td>@experience.FromDate?.ToString("MMMM yyyy")</td>
+                            <td>@experience.ToDate?.ToString("MMMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No work experience listed.</p>
+        }
+    </div>
+</div>

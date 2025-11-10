@@ -6,6 +6,7 @@ using ERecruitment.Web.Services;
 using ERecruitment.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace ERecruitment.Web.Controllers;
 
@@ -15,15 +16,18 @@ public class ApplicantController : Controller
     private readonly IApplicantManagementService _applicantService;
     private readonly IApplicationWorkflowService _workflowService;
     private readonly ICurrentApplicant _currentApplicant;
+    private readonly ILogger<ApplicantController> _logger;
 
     public ApplicantController(
         IApplicantManagementService applicantService,
         IApplicationWorkflowService workflowService,
-        ICurrentApplicant currentApplicant)
+        ICurrentApplicant currentApplicant,
+        ILogger<ApplicantController> logger)
     {
         _applicantService = applicantService;
         _workflowService = workflowService;
         _currentApplicant = currentApplicant;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Dashboard()
@@ -31,17 +35,28 @@ public class ApplicantController : Controller
         var applicant = await RequireApplicantAsync();
         if (applicant is null)
         {
+            _logger.LogWarning("Applicant not found, redirecting to login.");
             return RedirectToAction("Login", "Account");
         }
+        
+        _logger.LogInformation("Dashboard loaded for Applicant ID: {ApplicantId}", applicant.Id);
 
         var allJobs = await _workflowService.GetAllJobPostingsAsync();
         var allApplications = await _workflowService.GetApplicantApplicationsAsync(applicant.Id);
+        
+        _logger.LogInformation("Found {ApplicationCount} total applications for Applicant ID: {ApplicantId}", allApplications.Count, applicant.Id);
+        foreach (var app in allApplications)
+        {
+            _logger.LogInformation("  - Application for Job ID: {JobId}, Status: {Status}", app.JobPostingId, app.Status);
+        }
 
         // Filter to only show open jobs and applications to open jobs
         var openJobs = allJobs.Where(j => j.IsAcceptingApplications).ToList();
         var applicationsForOpenJobs = allApplications
             .Where(app => allJobs.Any(j => j.Id == app.JobPostingId && j.IsAcceptingApplications))
             .ToList();
+        
+        _logger.LogInformation("Found {ApplicationCount} applications for open jobs.", applicationsForOpenJobs.Count);
 
         var viewModel = new ApplicantDashboardViewModel
         {

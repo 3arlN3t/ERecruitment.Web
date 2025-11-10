@@ -292,9 +292,18 @@
                 }
                 else
                 {
-                    <a class="btn btn-primary-gradient" asp-controller="Applications" asp-action="Create" asp-route-jobId="@Model.Id">
-                        <i class="fas fa-paper-plane me-2"></i>Submit Application
-                    </a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="btn btn-primary-gradient" asp-controller="Applications" asp-action="Create" asp-route-jobId="@Model.Id">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Application
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary-gradient" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Jobs", new { id = Model.Id })">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Apply for Position
+                        </a>
+                    }
                 }
                 <a class="btn btn-outline-secondary" asp-action="Index">
                     <i class="fas fa-arrow-left me-2"></i>Back to Opportunities

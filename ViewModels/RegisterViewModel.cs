@@ -65,11 +65,20 @@ public class RegisterViewModel : IValidatableObject
                 new[] { nameof(SaIdNumber), nameof(PassportNumber) });
         }
 
-        if (!string.IsNullOrWhiteSpace(SaIdNumber) && SaIdNumber!.Length != 13)
+        if (!string.IsNullOrWhiteSpace(SaIdNumber))
         {
-            yield return new ValidationResult(
-                "South African ID numbers must be 13 digits long.",
-                new[] { nameof(SaIdNumber) });
+            if (SaIdNumber!.Length != 13)
+            {
+                yield return new ValidationResult(
+                    "South African ID numbers must be exactly 13 digits long.",
+                    new[] { nameof(SaIdNumber) });
+            }
+            else if (!SaIdNumber.All(char.IsDigit))
+            {
+                yield return new ValidationResult(
+                    "South African ID numbers must contain only digits.",
+                    new[] { nameof(SaIdNumber) });
+            }
         }
     }
 }

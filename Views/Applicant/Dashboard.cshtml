@@ -7,7 +7,7 @@
     var completionPercentage = Model.Applicant.Profile.CalculateCompletionPercentage();
     var completionStatus = Model.Applicant.Profile.GetCompletionStatus();
     var completionBadgeClass = Model.Applicant.Profile.GetCompletionBadgeClass();
-    var missingFields = Model.Applicant.Profile.GetMissingCriticalFields();
+    var missingSections = Model.Applicant.Profile.GetMissingSections();
 }
 
 <div class="container">
@@ -104,21 +104,28 @@
                             <span>50%</span>
                             <span>100%</span>
                         </div>
-                        @if (missingFields.Any())
+                        @if (missingSections.Any())
                         {
-                            <p class="mb-2 fw-semibold small text-uppercase profile-progress-subtitle">
-                                Key items still outstanding
+                            <p class="mb-3 fw-semibold small text-uppercase profile-progress-subtitle">
+                                <i class="fas fa-exclamation-circle me-2" style="color: var(--primary-color);"></i>Incomplete Areas
                             </p>
-                            <ul class="profile-missing-list mb-0">
-                                @foreach (var field in missingFields.Take(5))
+                            <div class="profile-missing-sections">
+                                @foreach (var missingArea in missingSections.Take(6))
                                 {
-                                    <li class="profile-missing-chip">@field</li>
+                                    var sectionIcon = GetSectionIcon(missingArea);
+                                    <div class="profile-incomplete-section">
+                                        <i class="@sectionIcon"></i>
+                                        <span>@missingArea</span>
+                                    </div>
                                 }
-                                @if (missingFields.Count > 5)
+                                @if (missingSections.Count > 6)
                                 {
-                                    <li class="profile-missing-chip profile-missing-chip--more">+ @(missingFields.Count - 5) more</li>
+                                    <div class="profile-incomplete-section profile-incomplete-section--more">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                        <span>+ @(missingSections.Count - 6) more areas</span>
+                                    </div>
                                 }
-                            </ul>
+                            </div>
                         }
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
@@ -373,6 +380,24 @@
         </div>
     </div>
 </div>
+
+@functions {
+    private string GetSectionIcon(string section)
+    {
+        return section switch
+        {
+            "Personal Information" => "fas fa-user",
+            "Contact & Availability" => "fas fa-envelope",
+            "Employment History" => "fas fa-briefcase",
+            "Qualifications" => "fas fa-graduation-cap",
+            "Documents" => "fas fa-file-pdf",
+            "References" => "fas fa-users",
+            "Declaration" => "fas fa-clipboard-check",
+            "Languages" => "fas fa-language",
+            _ => "fas fa-circle"
+        };
+    }
+}
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

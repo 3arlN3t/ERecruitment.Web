@@ -1,0 +1,51 @@
+@model ERecruitment.Web.ViewModels.AdminApplicantProfileViewModel
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Personal Details</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <p class="form-control-plaintext">@Model.FirstName</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <p class="form-control-plaintext">@Model.LastName</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Date of Birth</label>
+                    <p class="form-control-plaintext">@Model.DateOfBirth?.ToString("dd MMMM yyyy")</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">SA ID Number</label>
+                    <p class="form-control-plaintext">@Model.SaIdNumber</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Passport Number</label>
+                    <p class="form-control-plaintext">@Model.PassportNumber</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <p class="form-control-plaintext">@Model.Email</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <p class="form-control-plaintext">@Model.PhoneNumber</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <p class="form-control-plaintext">@Model.Location</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nationality</label>
+                    <p class="form-control-plaintext">@Model.Nationality</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

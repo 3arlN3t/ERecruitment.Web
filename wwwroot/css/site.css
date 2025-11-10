@@ -784,6 +784,64 @@ body {
     color: rgba(15, 118, 110, 0.9);
 }
 
+/* Profile Incomplete Sections (Section-based) */
+.profile-missing-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+    margin-top: 0.5rem;
+}
+
+.profile-incomplete-section {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.08), rgba(249, 115, 22, 0.04));
+    border: 1.5px solid rgba(249, 115, 22, 0.25);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    cursor: default;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+}
+
+.profile-incomplete-section i {
+    flex-shrink: 0;
+    width: 16px;
+    text-align: center;
+    color: var(--primary-color);
+    opacity: 0.9;
+}
+
+.profile-incomplete-section:hover {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(249, 115, 22, 0.08));
+    border-color: rgba(249, 115, 22, 0.35);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+}
+
+.profile-incomplete-section--more {
+    background: linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(15, 118, 110, 0.04));
+    border-color: rgba(15, 118, 110, 0.25);
+    color: rgba(15, 118, 110, 0.85);
+}
+
+.profile-incomplete-section--more i {
+    color: rgba(15, 118, 110, 0.7);
+}
+
+.profile-incomplete-section--more:hover {
+    background: linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(15, 118, 110, 0.08));
+    border-color: rgba(15, 118, 110, 0.35);
+}
+
 @media (max-width: 575.98px) {
     .profile-progress-percent {
         font-size: 1.8rem;
@@ -797,6 +855,16 @@ body {
     .profile-progress-track {
         height: 45px;
         border: 2px solid #d97706;
+    }
+
+    .profile-missing-sections {
+        /* Still use flexbox for horizontal layout on mobile */
+        flex-wrap: wrap;
+    }
+
+    .profile-incomplete-section {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.6rem;
     }
 
     .profile-progress-bar {

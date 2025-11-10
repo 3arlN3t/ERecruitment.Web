@@ -1,0 +1,39 @@
+@model ERecruitment.Web.ViewModels.AdminApplicantProfileViewModel
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Documents</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.CvDocument != null || Model.IdDocument != null || Model.QualificationDocument != null)
+        {
+            <ul class="list-group">
+                @if (Model.CvDocument != null)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @Model.CvDocument.FileName
+                        <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "cv" })" class="btn btn-primary btn-sm">Download CV</a>
+                    </li>
+                }
+                @if (Model.IdDocument != null)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @Model.IdDocument.FileName
+                        <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "id" })" class="btn btn-primary btn-sm">Download ID</a>
+                    </li>
+                }
+                @if (Model.QualificationDocument != null)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @Model.QualificationDocument.FileName
+                        <a href="@Url.Action("DownloadDocument", new { applicationId = Model.ApplicationId, documentType = "qualification" })" class="btn btn-primary btn-sm">Download Qualification</a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No documents uploaded.</p>
+        }
+    </div>
+</div>

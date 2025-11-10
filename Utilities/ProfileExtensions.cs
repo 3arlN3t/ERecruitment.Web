@@ -102,7 +102,7 @@ public static class ProfileExtensions
     }
 
     /// <summary>
-    /// Gets missing critical fields that should be completed
+    /// Gets missing critical fields that should be completed (individual fields)
     /// </summary>
     public static List<string> GetMissingCriticalFields(this ApplicantProfile profile)
     {
@@ -120,6 +120,64 @@ public static class ProfileExtensions
         if (!profile.DeclarationAccepted) missing.Add("Declaration Acceptance");
 
         return missing;
+    }
+
+    /// <summary>
+    /// Gets missing profile sections (grouped by category)
+    /// Returns section names that are incomplete
+    /// </summary>
+    public static List<string> GetMissingSections(this ApplicantProfile profile)
+    {
+        var missingSections = new List<string>();
+
+        // Personal Information Section
+        var personalInfoComplete = !string.IsNullOrWhiteSpace(profile.FirstName) &&
+                                   !string.IsNullOrWhiteSpace(profile.LastName) &&
+                                   profile.DateOfBirth.HasValue &&
+                                   !string.IsNullOrWhiteSpace(profile.PhoneNumber) &&
+                                   !string.IsNullOrWhiteSpace(profile.Location) &&
+                                   (!string.IsNullOrWhiteSpace(profile.SaIdNumber) || !string.IsNullOrWhiteSpace(profile.PassportNumber));
+        if (!personalInfoComplete)
+            missingSections.Add("Personal Information");
+
+        // Contact & Availability Section
+        var contactComplete = !string.IsNullOrWhiteSpace(profile.ContactEmail) &&
+                             (profile.AvailabilityDate.HasValue || !string.IsNullOrWhiteSpace(profile.AvailabilityNotice));
+        if (!contactComplete)
+            missingSections.Add("Contact & Availability");
+
+        // Employment History Section
+        var employmentComplete = (profile.PublicSectorYears.HasValue || profile.PrivateSectorYears.HasValue) &&
+                                profile.WorkExperience.Any();
+        if (!employmentComplete)
+            missingSections.Add("Employment History");
+
+        // Qualifications Section
+        var qualificationsComplete = profile.Qualifications.Any() &&
+                                    profile.QualificationDocument != null;
+        if (!qualificationsComplete)
+            missingSections.Add("Qualifications");
+
+        // Documents Section
+        var documentsComplete = profile.Cv != null &&
+                               profile.IdDocument != null;
+        if (!documentsComplete)
+            missingSections.Add("Documents");
+
+        // References Section
+        var referencesComplete = profile.References.Count >= 2;
+        if (!referencesComplete)
+            missingSections.Add("References");
+
+        // Declaration Section
+        if (!profile.DeclarationAccepted)
+            missingSections.Add("Declaration");
+
+        // Languages Section (optional but bonus)
+        if (!profile.Languages.Any())
+            missingSections.Add("Languages");
+
+        return missingSections;
     }
 
     /// <summary>

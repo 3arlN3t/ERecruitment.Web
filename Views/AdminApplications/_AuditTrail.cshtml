@@ -1,0 +1,35 @@
+@model ERecruitment.Web.ViewModels.AdminApplicantProfileViewModel
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Audit Trail</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.AuditTrail.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var audit in Model.AuditTrail)
+                    {
+                        <tr>
+                            <td>@audit.TimestampUtc.ToString("dd MMMM yyyy HH:mm")</td>
+                            <td>@audit.Actor</td>
+                            <td>@audit.Action</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No audit trail available.</p>
+        }
+    </div>
+</div>
