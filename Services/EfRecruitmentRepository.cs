@@ -37,6 +37,13 @@ public class EfRecruitmentRepository : IRecruitmentRepository
             .Include(a => a.Applications)
                 .ThenInclude(app => app.ScreeningAnswers)
             .Include(a => a.Profile)
+                .ThenInclude(p => p.Languages)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.Qualifications)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.WorkExperience)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.References)
             .Include(a => a.EquityDeclaration)
             .FirstOrDefaultAsync(a => a.Email == email, cancellationToken);
     }
@@ -47,6 +54,13 @@ public class EfRecruitmentRepository : IRecruitmentRepository
             .Include(a => a.Applications)
                 .ThenInclude(app => app.ScreeningAnswers)
             .Include(a => a.Profile)
+                .ThenInclude(p => p.Languages)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.Qualifications)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.WorkExperience)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.References)
             .Include(a => a.EquityDeclaration)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
@@ -70,9 +84,41 @@ public class EfRecruitmentRepository : IRecruitmentRepository
     public async Task UpdateApplicantAsync(Applicant applicant, CancellationToken cancellationToken = default)
     {
         var entry = _db.Entry(applicant);
+        
+        // Always ensure the entity is properly tracked
         if (entry.State == EntityState.Detached)
         {
             _db.Applicants.Update(applicant);
+        }
+        else
+        {
+            // Mark the entity as modified to ensure all changes are persisted
+            entry.State = EntityState.Modified;
+        }
+
+        // Explicitly mark navigation properties as modified to ensure collection changes are saved
+        if (applicant.Profile != null)
+        {
+            var profileEntry = _db.Entry(applicant.Profile);
+            if (profileEntry.State != EntityState.Added)
+            {
+                profileEntry.State = EntityState.Modified;
+            }
+
+            // Mark all profile collections as modified
+            profileEntry.Collection(p => p.Languages).IsModified = true;
+            profileEntry.Collection(p => p.Qualifications).IsModified = true;
+            profileEntry.Collection(p => p.WorkExperience).IsModified = true;
+            profileEntry.Collection(p => p.References).IsModified = true;
+        }
+
+        if (applicant.EquityDeclaration != null)
+        {
+            var equityEntry = _db.Entry(applicant.EquityDeclaration);
+            if (equityEntry.State != EntityState.Added)
+            {
+                equityEntry.State = EntityState.Modified;
+            }
         }
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -544,6 +590,13 @@ public class EfRecruitmentRepository : IRecruitmentRepository
         // Load the full applicant profile with all related data
         return await _db.Applicants
             .Include(a => a.Profile)
+                .ThenInclude(p => p.Languages)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.Qualifications)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.WorkExperience)
+            .Include(a => a.Profile)
+                .ThenInclude(p => p.References)
             .Include(a => a.EquityDeclaration)
             .Include(a => a.Applications)
                 .ThenInclude(app => app.ScreeningAnswers)
